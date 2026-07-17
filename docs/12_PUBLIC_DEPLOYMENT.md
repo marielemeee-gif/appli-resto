@@ -7,7 +7,8 @@ Le déploiement utilise un seul service Docker Render :
 1. Next.js exporte les six pages en fichiers statiques.
 2. FastAPI sert ces fichiers et les endpoints fictifs sur la même origine.
 3. Les six scénarios déterministes sont générés pendant la construction de l’image.
-4. Le service écoute le port fourni par Render et expose `/health`.
+4. Les backtests sont pré-calculés pendant la construction pour garder les écrans réactifs.
+5. Le service écoute le port fourni par Render et expose `/health`.
 
 Cette architecture produit une seule URL publique et évite la configuration CORS ou deux hébergements distincts.
 
@@ -32,6 +33,10 @@ Après connexion à Render :
 - activation du scénario concert autorisée en environnement public de démonstration ;
 - briefing calculé : 140 couverts et deux recommandations sur les données fictives générées ;
 - `pnpm check` réussi avec 5 tests web et 22 tests API.
+
+## URL créée
+
+Le service répond sur [https://pilotage-restaurants.onrender.com/](https://pilotage-restaurants.onrender.com/). Le 17 juillet 2026, les six routes, l’activation du scénario concert, le briefing et le registre ROI ont été vérifiés publiquement.
 
 ## Limites
 

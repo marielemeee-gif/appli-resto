@@ -14,6 +14,14 @@ from pilotage_api.simulation.storage import read_ndjson
 PARIS = ZoneInfo("Europe/Paris")
 
 
+def get_backtest(scenario_dir: Path) -> BacktestReport:
+    """Lit le rapport pré-calculé en déploiement, sinon le calcule localement."""
+    report_path = scenario_dir / "reports/backtest.json"
+    if report_path.exists():
+        return BacktestReport.model_validate_json(report_path.read_text())
+    return run_backtest(scenario_dir)
+
+
 def _metrics(
     actuals: list[tuple[int, int]], predictions: list[tuple[int, int, int, int]]
 ) -> MethodMetrics:

@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from fastapi import APIRouter, HTTPException, Query, status
 
 from pilotage_api.demo import active_scenario_dir
-from pilotage_api.forecasting.backtest import run_backtest
+from pilotage_api.forecasting.backtest import get_backtest
 from pilotage_api.forecasting.engine import forecast_service
 from pilotage_api.forecasting.models import BacktestReport, ForecastResult
 from pilotage_api.forecasting.repository import ForecastRepository
@@ -25,7 +25,7 @@ def forecasts(
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
     _, scenario_dir = active_scenario_dir()
     repository = ForecastRepository(scenario_dir)
-    report = run_backtest(scenario_dir)
+    report = get_backtest(scenario_dir)
     eligible = report.selected_method == "reservation_enriched"
     cutoff = as_of or datetime.combine(from_date, time(8, 0), PARIS)
     service_ids = [
@@ -51,4 +51,4 @@ def forecasts(
 @router.get("/backtests/current", response_model=BacktestReport, tags=["forecasts"])
 def current_backtest() -> BacktestReport:
     _, scenario_dir = active_scenario_dir()
-    return run_backtest(scenario_dir)
+    return get_backtest(scenario_dir)

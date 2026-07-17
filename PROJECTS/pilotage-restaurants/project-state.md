@@ -56,11 +56,12 @@ Prototype local terminé et publié. `main` suit `origin/main`, tous deux sur le
 ## Blockers and open questions
 
 - Aucun blocage Git restant.
-- Le déploiement public n’est pas encore configuré.
-- Le déploiement public nécessite le choix et la configuration d’un hébergeur après le push.
-- Le déploiement Render mono-service est préparé, validé localement et approuvé pour commit/push ; sa création dans le compte Render reste à confirmer.
+- Le service public répond sur `https://pilotage-restaurants.onrender.com/`.
+- Le parcours public est fonctionnel avec données et décisions fictives.
+- Une optimisation pré-calculant les backtests est prête ; elle réduit localement briefing et prévisions d’environ 26 secondes à moins de 0,05 seconde hors réveil Render.
 
 ## Next actions
 
-1. Créer le service avec le Blueprint Render publié sur `origin/main`.
-2. Vérifier le parcours sur l’URL `onrender.com` avant partage.
+1. Approuver, committer et pousser l’optimisation des backtests.
+2. Lancer un déploiement manuel du dernier commit dans Render (`autoDeploy` est désactivé).
+3. Rejouer le parcours public et partager le lien.

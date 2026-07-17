@@ -24,7 +24,8 @@ COPY data/config data/config
 COPY --from=web-builder /app/apps/web/out apps/web/out
 
 RUN python -m pip install --no-cache-dir -e apps/api && \
-    python -m pilotage_api.simulation.generator --scenario all
+    python -m pilotage_api.simulation.generator --scenario all && \
+    python -m pilotage_api.forecasting.backtest --scenario all
 
 EXPOSE 10000
 CMD ["sh", "-c", "uvicorn pilotage_api.main:app --app-dir apps/api/src --host 0.0.0.0 --port ${PORT:-10000}"]

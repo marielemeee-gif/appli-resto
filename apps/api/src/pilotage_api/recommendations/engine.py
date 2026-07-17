@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from pilotage_api.forecasting.backtest import run_backtest
+from pilotage_api.forecasting.backtest import get_backtest
 from pilotage_api.forecasting.engine import forecast_service
 from pilotage_api.forecasting.repository import ForecastRepository
 from pilotage_api.recommendations.models import (
@@ -159,7 +159,7 @@ def _purchase_recommendation(
 
 def build_briefing(scenario_dir: Path, service_id: str, cutoff: datetime) -> Briefing:
     repository = ForecastRepository(scenario_dir)
-    report = run_backtest(scenario_dir)
+    report = get_backtest(scenario_dir)
     forecast = forecast_service(
         repository,
         service_id,
@@ -223,7 +223,7 @@ def build_briefing(scenario_dir: Path, service_id: str, cutoff: datetime) -> Bri
 
 def build_dispatch(scenario_dir: Path, service_date: date, cutoff: datetime) -> DispatchResponse:
     repository = ForecastRepository(scenario_dir)
-    report = run_backtest(scenario_dir)
+    report = get_backtest(scenario_dir)
     plans = read_ndjson(scenario_dir / "observed/staff_plans.ndjson")
     sites: list[DispatchSite] = []
     for site_id in sorted(repository.sites):
