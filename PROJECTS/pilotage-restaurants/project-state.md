@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Créer le premier commit du projet et le pousser vers `marielemeee-gif/appli-resto` après validation explicite (« go »).
+Sauvegarder tout l’état avant de redémarrer Codex, afin de reprendre ensuite une refonte de la démonstration publique.
 
 ## Agreed scope and approvals
 
@@ -35,7 +35,7 @@ Créer le premier commit du projet et le pousser vers `marielemeee-gif/appli-res
 
 ## Current state
 
-Prototype local terminé et publié. `main` suit `origin/main`, tous deux sur le commit `0c6eddc` dans `marielemeee-gif/appli-resto`.
+Prototype local terminé et publié. Le service Render utilise le commit `7aea520` et répond sur `https://pilotage-restaurants.onrender.com/`.
 
 ## Touched files and artifacts
 
@@ -58,10 +58,14 @@ Prototype local terminé et publié. `main` suit `origin/main`, tous deux sur le
 - Aucun blocage Git restant.
 - Le service public répond sur `https://pilotage-restaurants.onrender.com/`.
 - Le parcours public est fonctionnel avec données et décisions fictives.
-- Une optimisation pré-calculant les backtests est prête ; elle réduit localement briefing et prévisions d’environ 26 secondes à moins de 0,05 seconde hors réveil Render.
+- L’optimisation du commit `7aea520` est déployée : `/health` répond en 0,2–0,5 seconde et le briefing public en 0,92 seconde lors de la vérification finale.
+- Retour utilisateur à traiter : la page « Pourquoi cette prévision ? » semble cassée, la démonstration manque d’exemples fictifs visibles et le design n’est pas assez premium.
+- Diagnostic confirmé : l’API fonctionne, mais l’écran affiche Liberté avec un sélecteur République, expose les codes techniques `abstain` et `low_data_quality`, explique surtout une abstention et conserve des cartes d’états ressemblant à des placeholders.
 
 ## Next actions
 
-1. Approuver, committer et pousser l’optimisation des backtests.
-2. Lancer un déploiement manuel du dernier commit dans Render (`autoDeploy` est désactivé).
-3. Rejouer le parcours public et partager le lien.
+1. Préparer une phase de refonte UX en reprenant le PDF premium comme direction visuelle.
+2. Corriger le diagnostic : site cohérent, libellés français, facteurs, fourchette, confiance et qualité expliqués visuellement.
+3. Ajouter une galerie des six scénarios fictifs et quelques exemples illustratifs clairement marqués « fictifs, non calculés ».
+4. Revoir cockpit, briefing, multi-sites et ROI avec une identité plus chaleureuse, de meilleurs graphiques et une hiérarchie plus riche.
+5. Tester puis redéployer sans introduire de donnée réelle.
