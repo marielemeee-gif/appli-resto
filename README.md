@@ -26,6 +26,7 @@ Prototype local d'aide à la décision pour un groupe fictif de trois restaurant
 | `docs/09_UX_IMPLEMENTATION.md` | Écrans réalisés, principes d’interface, contrôles et limites |
 | `docs/10_INTEGRATION_DEMO.md` | Parcours guidé, décisions locales, contrôles et limites de publication |
 | `docs/11_FINAL_REVIEW.md` | Revue de sécurité, reproductibilité et préparation à la publication |
+| `docs/12_PUBLIC_DEPLOYMENT.md` | Service Docker unique et procédure du lien public |
 
 ## Architecture cible proposée
 
@@ -91,4 +92,12 @@ pnpm backtest:data
 
 ## Statut
 
-Les phases 1 à 7 fournissent le prototype local complet et revu. Le prochain jalon est le premier commit contrôlé, sa publication GitHub, puis le déploiement donnant un lien public.
+Les phases 1 à 7 fournissent le prototype local complet, revu et publié sur GitHub. Le prochain jalon est la création du service Render donnant le lien public.
+
+## Déploiement public
+
+Le prototype peut être déployé comme un service Docker unique, avec interface et API fictive sur la même URL :
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://dashboard.render.com/blueprint/new?repo=https%3A%2F%2Fgithub.com%2Fmarielemeee-gif%2Fappli-resto)
+
+Voir [`docs/12_PUBLIC_DEPLOYMENT.md`](docs/12_PUBLIC_DEPLOYMENT.md) avant de partager le lien.

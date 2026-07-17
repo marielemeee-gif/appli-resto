@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: pilotage-restaurants
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEMO_MODE
+        value: true

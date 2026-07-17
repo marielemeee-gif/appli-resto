@@ -58,9 +58,9 @@ Prototype local terminé et publié. `main` suit `origin/main`, tous deux sur le
 - Aucun blocage Git restant.
 - Le déploiement public n’est pas encore configuré.
 - Le déploiement public nécessite le choix et la configuration d’un hébergeur après le push.
+- Le déploiement Render mono-service est préparé, validé localement et approuvé pour commit/push ; sa création dans le compte Render reste à confirmer.
 
 ## Next actions
 
-1. Enregistrer cette mise à jour d’état dans un petit commit de suivi après approbation.
-2. Choisir et configurer l’hébergement de l’interface et de l’API fictive.
-3. Vérifier le parcours sur le lien public avant partage.
+1. Créer le service avec le Blueprint Render publié sur `origin/main`.
+2. Vérifier le parcours sur l’URL `onrender.com` avant partage.

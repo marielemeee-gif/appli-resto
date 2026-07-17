@@ -1,0 +1,13 @@
+.git
+.env
+.venv
+.pnpm-store
+node_modules
+apps/web/.next
+apps/web/out
+data/generated
+data/decisions.json
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache

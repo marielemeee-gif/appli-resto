@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from pilotage_api.demo import router as demo_router
 from pilotage_api.forecasts import router as forecast_router
@@ -28,3 +29,8 @@ app.include_router(recommendation_router)
 def health() -> HealthResponse:
     settings = get_settings()
     return HealthResponse(version=settings.app_version, environment=settings.app_env)
+
+
+static_dir = get_settings().data_dir.parent / "apps/web/out"
+if static_dir.exists():
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="web")

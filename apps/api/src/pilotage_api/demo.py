@@ -42,7 +42,7 @@ def scenarios() -> list[ScenarioDefinition]:
 def activate_scenario(scenario_id: str) -> dict[str, str]:
     global _active_scenario_id
     settings = get_settings()
-    if settings.app_env != "development":
+    if not settings.demo_mode:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     known = {scenario.id for scenario in load_scenarios(settings.data_dir / "config")}
     scenario_dir = settings.data_dir / "generated" / scenario_id
