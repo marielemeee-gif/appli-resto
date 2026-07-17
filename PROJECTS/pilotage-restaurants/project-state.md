@@ -14,6 +14,7 @@ Transformer le site en véritable application de test : une seule galerie de sc�
 - Phase 8 de refonte UX validée le 17 juillet 2026.
 - Phase 9 validée le 17 juillet 2026 ; commit, push sur `main` et contrôle du redéploiement Render approuvés, avec exclusion de `prototype-use-cases/`.
 - Phase 10 validée le 17 juillet 2026 ; commit, push sur `main` et contrôle du redéploiement Render approuvés, avec exclusion de `prototype-use-cases/`.
+- Correctif `/valeur` et décisions de bar validé pour commit et push le 17 juillet 2026.
 - Commit et push sur `main` approuvés le 17 juillet 2026, avec exclusion explicite de `prototype-use-cases/`.
 - Message de commit approuvé : `Redesign fictional restaurant demo` avec le corps proposé.
 - Données exclusivement fictives et reproductibles.
@@ -56,6 +57,8 @@ Transformer le site en véritable application de test : une seule galerie de sc�
 - Cockpit, Briefing, Établissements, Valeur et Explications synchronisés sur le scénario actif.
 - Décisions de briefing et transfert multi-sites reliés au registre de valeur de la session.
 - Police éditoriale remplacée par une sans-serif système plus adaptée à une application.
+- Conflit public `/roi` identifié : la route API JSON masquait l'écran web ; navigation Valeur déplacée vers `/valeur`.
+- Scénario concert recentré sur des décisions de bar réalistes : fûts à mettre en froid et glaçons à sécuriser.
 
 ## Current state
 

@@ -58,7 +58,7 @@ pnpm dev:web
 pnpm dev:api
 ```
 
-L’interface est disponible sur `http://localhost:3000` et la santé de l’API sur `http://127.0.0.1:8000/health`. Les routes de démonstration sont `/cockpit`, `/briefing`, `/multisites`, `/roi` et `/diagnostic`.
+L’interface est disponible sur `http://localhost:3000` et la santé de l’API sur `http://127.0.0.1:8000/health`. Les routes de démonstration sont `/cockpit`, `/scenarios`, `/briefing`, `/multisites`, `/valeur` et `/diagnostic`. L’API conserve séparément son endpoint JSON `/roi`.
 
 Contrôles complets :
 

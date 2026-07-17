@@ -42,7 +42,7 @@ Puis lancer `pnpm dev:api` et `pnpm dev:web` dans deux terminaux.
 - `pnpm check` : lint, typage, tests et build web/API.
 - 5 tests de rendu web.
 - 22 tests API couvrant simulation, prévision sans fuite, recommandations, contraintes et décisions.
-- Build Next.js des routes `/`, `/cockpit`, `/briefing`, `/multisites`, `/roi` et `/diagnostic`.
+- Build Next.js des routes `/`, `/cockpit`, `/scenarios`, `/briefing`, `/multisites`, `/valeur` et `/diagnostic`.
 - Parcours HTTP réel : activation du concert, briefing, décision simulée, ROI sans gain observé.
 - Registre local remis à zéro après vérification.
 

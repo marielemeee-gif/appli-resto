@@ -10,7 +10,7 @@ Toutes les données et décisions restent fictives. Valider un bouton écrit uni
 
 1. Ouvrir `/cockpit` : le scénario `concert_dry_friday` est activé et l’API calcule couverts, chiffre d’affaires, fourchette, confiance, facteurs et recommandations.
 2. Ouvrir `/briefing` : valider, modifier ou refuser la première recommandation. Le message confirme qu’il s’agit d’une décision fictive.
-3. Ouvrir `/roi` : vérifier le nouveau statut, le gain estimé et l’absence volontaire de gain observé.
+3. Ouvrir `/valeur` : vérifier le nouveau statut, le gain estimé et l’absence volontaire de gain observé.
 4. Ouvrir `/multisites` : le scénario `multisite_staff_imbalance` propose un transfert sûr entre République et Liberté ; sa validation reste une écriture locale.
 5. Ouvrir `/diagnostic` : le scénario `bad_data_abstain` montre l’abstention et l’absence de recommandation précise.
 

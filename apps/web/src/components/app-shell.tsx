@@ -8,7 +8,7 @@ const navigation = [
   ["Scénarios", "/scenarios"],
   ["Briefing", "/briefing"],
   ["Établissements", "/multisites"],
-  ["Valeur", "/roi"],
+  ["Valeur", "/valeur"],
   ["Explications", "/diagnostic"],
 ];
 

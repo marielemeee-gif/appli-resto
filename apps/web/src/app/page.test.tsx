@@ -6,7 +6,7 @@ import BriefingPage from "./briefing/page";
 import DiagnosticPage from "./diagnostic/page";
 import MultisitesPage from "./multisites/page";
 import Home from "./page";
-import RoiPage from "./roi/page";
+import ValeurPage from "./valeur/page";
 import ScenariosPage from "./scenarios/page";
 
 const push = vi.fn();
@@ -41,7 +41,7 @@ describe("Application de démonstration", () => {
   it.each([
     [BriefingPage, "République doit replanifier maintenant"],
     [MultisitesPage, "Arbitrer sans déplacer le risque"],
-    [RoiPage, "La valeur évolue avec vos décisions"],
+    [ValeurPage, "La valeur évolue avec vos décisions"],
     [DiagnosticPage, "Pourquoi cette prévision ?"],
     [ScenariosPage, "Jouer les six scénarios"],
   ])("rend un écran métier cohérent", (Page, title) => {
@@ -72,7 +72,7 @@ describe("Application de démonstration", () => {
 
   it("une décision met à jour le briefing et le registre local", () => {
     renderDemo(<BriefingPage />);
-    const action = screen.getByRole("heading", { name: "Préparer 18,2 kg de plats principaux" }).closest("article");
+    const action = screen.getByRole("heading", { name: "Mettre en froid 2 fûts supplémentaires" }).closest("article");
     fireEvent.click(within(action!).getByRole("button", { name: "Valider" }));
     expect(within(action!).getByText("Validée")).toBeInTheDocument();
     expect(screen.getByText(/Registre mis à jour/i)).toBeInTheDocument();

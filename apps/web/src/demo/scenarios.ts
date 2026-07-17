@@ -106,7 +106,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "normal-calendar", label: "Calendrier local", category: "calendar", previous: "Aucun signal", current: "Aucun signal", impactCovers: 0, updatedAt: "06:00", explanation: "Ni vacances, ni événement majeur à proximité." },
     ],
     recommendations: [
-      { id: "normal-prep", type: "preparation", title: "Maintenir 12,5 kg de préparation", detail: "Le niveau prévu couvre la fourchette haute sans créer de surproduction inhabituelle.", deadline: "11:00", estimatedGain: 38, estimatedRisk: 52, confidence: 86, rule: "préparation = 96 couverts × 130 g" },
+      { id: "normal-prep", type: "preparation", title: "Maintenir la mise en place pour 96 couverts", detail: "Le niveau prévu couvre la médiane sans créer de surproduction inhabituelle.", deadline: "11:00", estimatedGain: 38, estimatedRisk: 52, confidence: 86, rule: "mise en place = prévision médiane du service" },
     ],
     sites: [site("republique", "République", 126, 7, 7, "Plan équilibré", "Faible"), site("liberte", "Liberté", 104, 6, 6, "Plan équilibré", "Faible"), site("gare", "Gare", 96, 5, 5, "Plan équilibré", "Faible")],
     history: [{ id: "hist-normal", scenarioId: "baseline_normal", recommendationId: "normal-check", recommendationType: "preparation", title: "Maintenir le plan de préparation", site: "Gare", status: "accepted", decidedAt: "2026-07-10T09:12:00+02:00", estimatedGain: 31 }],
@@ -125,11 +125,11 @@ export const demoScenarios: DemoScenario[] = [
       { id: "concert-res", label: "Réservations", category: "reservations", previous: "61 à J-1", current: "84 confirmées", impactCovers: 25, updatedAt: "07:52", explanation: "Le rythme dépasse de 31 % les vendredis comparables." },
       { id: "concert-event", label: "Concert à 450 m", category: "event", previous: "Annonce provisoire", current: "4 800 places · confirmé", impactCovers: 10, updatedAt: "07:10", explanation: "L'horaire concentre les arrivées avant le dîner." },
       { id: "concert-weather", label: "Terrasse", category: "weather", previous: "Risque d'averse 35 %", current: "Sec · 24 °C", impactCovers: 3, updatedAt: "07:30", explanation: "La capacité terrasse devient réellement exploitable." },
-      { id: "concert-stock", label: "Boissons fraîches", category: "stock", previous: "Couverture 1,2 service", current: "Couverture 0,8 service", impactCovers: 0, updatedAt: "07:40", explanation: "Le stock ne réduit pas la demande, mais crée une action d'achat urgente." },
+      { id: "concert-stock", label: "Fûts et glaçons", category: "stock", previous: "Couverture 1,2 service", current: "Couverture 0,8 service", impactCovers: 0, updatedAt: "07:40", explanation: "Le stock ne réduit pas la demande, mais crée une action bar urgente." },
     ],
     recommendations: [
-      { id: "concert-prep", type: "preparation", title: "Préparer 18,2 kg de plats principaux", detail: "Couvre 140 couverts et une marge courte, sans viser artificiellement le maximum de 146.", deadline: "11:00", estimatedGain: 126, estimatedRisk: 190, confidence: 84, rule: "préparation = 140 × 130 g" },
-      { id: "concert-purchase", type: "purchase", title: "Ajouter 36 boissons à la commande", detail: "Le stock actuel ne couvre que 80 % du besoin médian du service.", deadline: "14:00", estimatedGain: 92, estimatedRisk: 145, confidence: 81, rule: "besoin médian - stock disponible - marge de sécurité" },
+      { id: "concert-prep", type: "preparation", title: "Mettre en froid 2 fûts supplémentaires", detail: "Le débit attendu sur le pic dépasse la couverture habituelle du vendredi soir.", deadline: "11:00", estimatedGain: 126, estimatedRisk: 190, confidence: 84, rule: "débit attendu au pic - capacité déjà en froid" },
+      { id: "concert-purchase", type: "purchase", title: "Sécuriser 40 kg de glaçons", detail: "Le stock actuel couvre seulement 80 % du besoin médian du bar et de la terrasse.", deadline: "14:00", estimatedGain: 92, estimatedRisk: 145, confidence: 81, rule: "besoin bar + terrasse - stock disponible" },
       { id: "concert-staff", type: "staffing", title: "Décaler un serveur sur le pic 19:00–22:00", detail: "Le renfort couvre la pointe sans ajouter une vacation complète.", deadline: "16:00", estimatedGain: 74, estimatedRisk: 118, confidence: 78, rule: "1 serveur / 24 couverts au pic" },
     ],
     sites: [site("republique", "République", 140, 7, 8, "Renfort conseillé", "Élevé"), site("liberte", "Liberté", 108, 6, 6, "Demande stable", "Faible"), site("gare", "Gare", 91, 5, 5, "Demande stable", "Faible")],
@@ -219,7 +219,7 @@ export const demoScenarios: DemoScenario[] = [
     ],
     recommendations: [
       { id: "road-purchase", type: "purchase", title: "Avancer la livraison à 15:45", detail: "Le créneau passe avant la fermeture et évite une rupture sur les produits frais.", deadline: "10:30", estimatedGain: 143, estimatedRisk: 212, confidence: 90, rule: "stock < 0,8 service ET accès fermé avant créneau initial" },
-      { id: "road-prep", type: "preparation", title: "Réduire la préparation de 1,2 kg", detail: "La baisse de demande est confirmée par les annulations, mais la météo limite la réduction.", deadline: "11:00", estimatedGain: 48, estimatedRisk: 39, confidence: 76, rule: "écart médian × portion, borné par la fourchette haute" },
+      { id: "road-prep", type: "preparation", title: "Réduire la mise en place de 12 portions", detail: "La baisse de demande est confirmée par les annulations, mais la météo limite la réduction.", deadline: "11:00", estimatedGain: 48, estimatedRisk: 39, confidence: 76, rule: "écart médian, borné par la fourchette haute" },
     ],
     sites: [site("republique", "République", 125, 7, 7, "Plan stable", "Faible"), site("liberte", "Liberté", 106, 6, 6, "Plan stable", "Faible"), site("gare", "Gare", 82, 5, 5, "Accès et livraison", "Élevé")],
     history: [{ id: "hist-road", scenarioId: "roadworks_delivery_risk", recommendationId: "road-prev", recommendationType: "purchase", title: "Avancer une livraison avant travaux", site: "Gare", status: "accepted", decidedAt: "2026-06-26T09:41:00+02:00", estimatedGain: 132 }],

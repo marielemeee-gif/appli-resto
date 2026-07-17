@@ -51,6 +51,7 @@ Chaque monde contient aussi une matrice de signaux avec valeur antérieure, vale
 - `components/briefing-client.tsx` : décisions interactives et état après action.
 - `components/multisites-client.tsx` : trois sites cohérents et transfert conditionnel.
 - `components/roi-client.tsx` : registre fictif initial puis décisions de la session.
+- `app/valeur/page.tsx` : route web distincte de l'endpoint JSON API `/roi` afin d'éviter le conflit observé sur Render.
 - `components/diagnostic-client.tsx` : explication du seul scénario actif.
 - `app/diagnostic/page.tsx` : suppression de la seconde galerie.
 - `app/globals.css` et tests : états, transitions et responsive.
@@ -112,6 +113,8 @@ Le concert croise réservations, événement, météo et stock ; l'annulation re
 La direction typographique éditoriale a été remplacée par une sans-serif système d'application, sans téléchargement externe, avec chiffres tabulaires. La revue visuelle confirme quatre colonnes à 1280 px et une colonne à 390 px, sans débordement horizontal. `pnpm check` réussit avec 10 tests web et 22 tests API, lint, types et build des neuf routes.
 
 Publication : commit et push sur `main` approuvés explicitement le 17 juillet 2026, en excluant `prototype-use-cases/`. Le redéploiement Render sera contrôlé après le push.
+
+Correctif après publication : la page web Valeur est déplacée de `/roi` vers `/valeur`, car le service combiné Render réservait `/roi` à la réponse JSON de l'API. Le scénario concert utilise désormais des unités opérationnelles de bar - deux fûts à mettre en froid et 40 kg de glaçons à sécuriser - au lieu d'une préparation exprimée en kilos de plats.
 
 ## Phase 9 — scénarios jouables et étude révisée
 

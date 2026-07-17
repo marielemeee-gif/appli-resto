@@ -9,7 +9,7 @@ L’interface de démonstration couvre cinq vues statiques et navigables, alimen
 | `/cockpit` | activité du jour, fourchette, confiance, prévision à sept jours et deux décisions prioritaires |
 | `/briefing` | résumé opérationnel, causes, recommandations bornées et heures limites |
 | `/multisites` | comparaison de trois sites et proposition de transfert non automatique |
-| `/roi` | registre de décisions et distinction entre gain estimé et gain observé |
+| `/valeur` | registre de décisions et distinction entre gain estimé et gain observé |
 | `/diagnostic` | méthode, fraîcheur, données manquantes, abstention et historique des calculs |
 
 La route `/` présente le cockpit. Le bandeau « Démo fictive » et la note de bas de page empêchent de confondre les valeurs avec des données réelles.
