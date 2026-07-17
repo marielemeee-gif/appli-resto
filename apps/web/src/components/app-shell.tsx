@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useDemo } from "@/demo/demo-context";
 
 const navigation = [
   ["Aujourd’hui", "/cockpit"],
@@ -10,6 +13,7 @@ const navigation = [
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const { scenario, resetDemo, storageError } = useDemo();
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -25,9 +29,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link key={href} href={href}>{label}</Link>
           ))}
         </nav>
-        <span className="demo-pill"><span aria-hidden="true">●</span> Données fictives</span>
+        <div className="active-demo">
+          <span><small>Mode démo</small><strong>{scenario.shortName}</strong></span>
+          <Link href="/scenarios">Changer</Link>
+          <button type="button" onClick={resetDemo}>Réinitialiser</button>
+        </div>
       </header>
-      <main id="main-content" className="app-main">{children}</main>
+      <main id="main-content" className="app-main">
+        {storageError && <div className="storage-warning" role="status">{storageError}</div>}
+        {children}
+        <p className="fixture-note">Mode démo autonome · données fictives scénarisées · aucun système réel connecté.</p>
+      </main>
     </>
   );
 }

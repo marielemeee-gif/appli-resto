@@ -6,13 +6,14 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Rendre les six cas réellement jouables, améliorer l'UX avec davantage de contenu fictif explicitement identifié, conserver une expérience riche sur ordinateur et responsive sur mobile, puis réviser le document d'analyse initial.
+Transformer le site en véritable application de test : une seule galerie de scénarios, un lancement qui modifie toute l'application, des autres onglets vivants et cohérents, et une démo fictive autonome même si cela implique de simplifier l'API et les données.
 
 ## Agreed scope and approvals
 
 - Phases 1 à 7 validées successivement.
 - Phase 8 de refonte UX validée le 17 juillet 2026.
 - Phase 9 validée le 17 juillet 2026 ; commit, push sur `main` et contrôle du redéploiement Render approuvés, avec exclusion de `prototype-use-cases/`.
+- Phase 10 validée le 17 juillet 2026 ; commit, push sur `main` et contrôle du redéploiement Render approuvés, avec exclusion de `prototype-use-cases/`.
 - Commit et push sur `main` approuvés le 17 juillet 2026, avec exclusion explicite de `prototype-use-cases/`.
 - Message de commit approuvé : `Redesign fictional restaurant demo` avec le corps proposé.
 - Données exclusivement fictives et reproductibles.
@@ -32,6 +33,10 @@ Rendre les six cas réellement jouables, améliorer l'UX avec davantage de conte
 - Les nombres, fourchettes, facteurs et recommandations du laboratoire viennent de l'API ; la question manager et l'action pédagogique portent la mention « illustration fictive - non calculée ».
 - Responsive signifie ici desktop riche puis adaptation tablette/mobile, et non conception mobile prioritaire.
 - L'étude initiale est préservée ; la révision est un nouveau PDF de 32 pages avec un addendum daté de quatre pages.
+- Phase 10 proposée : les écrans publics utilisent des instantanés fictifs déterministes et un état partagé dans le navigateur ; l'API reste une preuve technique séparée.
+- Le laboratoire devient l'unique sélecteur de scénario ; les autres pages montrent seulement le cas actif.
+- Chaque scénario décisionnel doit croiser au moins trois paramètres et montrer référence, changement, contributions, heure limite et effet multi-sites éventuel.
+- Le différenciateur à démontrer est la replanification sous contrainte de temps et l'orchestration entre établissements, pas un tableau de bord prédictif générique.
 
 ## Work completed
 
@@ -47,10 +52,14 @@ Rendre les six cas réellement jouables, améliorer l'UX avec davantage de conte
 - Laboratoire `/scenarios` ajouté avec six boutons, calcul à la demande, abstention et transfert multi-sites.
 - Scénario d'annulation corrigé pour être rejoué à 13:45, après publication de l'annulation.
 - Source Markdown de l'étude complétée et PDF révisé généré.
+- Phase 10 locale : six mondes fictifs complets, état partagé de session et laboratoire unique.
+- Cockpit, Briefing, Établissements, Valeur et Explications synchronisés sur le scénario actif.
+- Décisions de briefing et transfert multi-sites reliés au registre de valeur de la session.
+- Police éditoriale remplacée par une sans-serif système plus adaptée à une application.
 
 ## Current state
 
-La phase 8 reste publiée sur `https://pilotage-restaurants.onrender.com/`. La phase 9 est terminée, vérifiée et validée ; sa publication sur `main` et Render est en cours.
+Le commit de phase 9 `872e5e8` est poussé sur `origin/main` et l'utilisateur indique l'avoir déployé manuellement sur Render. La phase 10 est terminée, vérifiée et validée ; sa publication Git est en cours.
 
 ## Touched files and artifacts
 
@@ -78,6 +87,9 @@ La phase 8 reste publiée sur `https://pilotage-restaurants.onrender.com/`. La p
 - Rejeu API des six cas réussi : normal 96, concert 140, annulation 124 avec facteur -10, multi-sites 112 avec une proposition, abstention explicite et travaux 82.
 - Responsive vérifié à 1280 px (trois colonnes, aucun débordement) et 390 px (une colonne, aucun débordement, boutons 48 px minimum).
 - PDF révisé : 32 pages A4 ; texte extrait avec accents et quatre pages ajoutées inspectées visuellement sans coupure ni chevauchement.
+- Phase 10 : 10 tests web et 22 tests API passent avec lint, types et build.
+- Parcours navigateur réussi : sélectionner multi-sites, lancer le monde, simuler le transfert, puis retrouver la décision et le gain estimé fictif dans Valeur.
+- Responsive : 1280 px en quatre colonnes et 390 px en une colonne, sans débordement horizontal.
 
 ## Blockers and open questions
 
@@ -91,6 +103,6 @@ La phase 8 reste publiée sur `https://pilotage-restaurants.onrender.com/`. La p
 
 ## Next actions
 
-1. Commiter les douze fichiers approuvés en excluant `prototype-use-cases/`, puis pousser sur `main`.
-2. Attendre le redéploiement Render et vérifier `/scenarios` ainsi que les six calculs publics.
-3. Enregistrer le commit et les preuves publiques après succès.
+1. Faire valider la phase 10 locale, son niveau de réalisme et la nouvelle typographie.
+2. Après validation explicite, commiter et pousser en excluant `prototype-use-cases/`.
+3. Redéployer sur Render puis vérifier le laboratoire et les cinq vues publiques.

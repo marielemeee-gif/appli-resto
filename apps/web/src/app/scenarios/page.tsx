@@ -8,7 +8,7 @@ export default function ScenariosPage() {
       <PageHeader
         eyebrow="Laboratoire fictif"
         title="Jouer les six scénarios"
-        description="Choisissez une situation : l’API recalcule la prévision, la fourchette et les actions proposées avec la même graine reproductible."
+        description="Explorez un cas, puis lancez-le : tous les onglets représenteront le même monde fictif et réagiront à vos décisions."
         site="3 établissements fictifs"
       />
       <ScenarioPlayer />

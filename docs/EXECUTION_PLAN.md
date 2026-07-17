@@ -1,7 +1,117 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 9 validée, publication en cours**
+Statut : **phase 10 validée, publication Git en cours**
 Date de cadrage : 17 juillet 2026
+
+## Phase 10 — application de démonstration cohérente
+
+### 1. Résultat de la phase
+
+Le prototype public devient une application de test autonome : un scénario fictif est choisi dans un laboratoire unique, puis Cockpit, Briefing, Établissements, Valeur et Explications représentent tous le même monde et évoluent avec les décisions de l'utilisateur. La profondeur fonctionnelle prime sur la fidélité d'une API de production ; aucune panne ou latence de l'API ne doit empêcher la démonstration.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : toutes les données restent fictives et la démo n'a pas à prouver une intégration réelle.
+- **Confirmé** : la cible est d'abord une expérience riche sur ordinateur, adaptée proprement aux tablettes et mobiles.
+- **Confirmé** : les scénarios ne doivent être présentés qu'à un seul endroit ; la galerie est supprimée de la page Explications.
+- **Proposé** : le laboratoire présente les six cas, un aperçu structuré et un bouton « Lancer dans l'app » ; il ne se contente plus d'ajouter un bloc de texte sous les cartes.
+- **Décidé** : le scénario actif est conservé pendant la navigation de la session et indiqué dans la coque par un résumé et un lien « Changer », sans dupliquer le sélecteur. Un rechargement complet repart volontairement du cas initial.
+- **Proposé** : la démo publique lit des instantanés TypeScript déterministes et complets. L'API FastAPI reste une preuve technique séparée, sans repli silencieux entre les deux modes.
+- **Proposé** : les décisions accepter, modifier, refuser et réinitialiser sont simulées dans le navigateur ; elles modifient immédiatement les priorités et le registre de valeur.
+- **Confirmé** : la démo doit matérialiser un positionnement différenciant de replanification, pas seulement exposer davantage de tableaux et de données.
+- **Décidé** : chaque scénario décisionnel croise au moins trois familles de signaux parmi réservations, météo, événement, calendrier, accès/travaux, équipe, stock et contrainte fournisseur.
+- **Décidé** : chaque décision majeure montre la référence sans signaux, l'effet cumulé des signaux, ce qui a changé depuis le calcul précédent, l'action encore possible et son heure limite.
+- **Décidé** : la vue groupe montre les effets secondaires d'une décision sur les autres établissements afin de démontrer l'orchestration multi-sites.
+- **À valider** : cette architecture de démo autonome remplace l'API comme source des écrans publics pendant cette phase.
+
+### 3. Architecture et flux
+
+```text
+Laboratoire unique
+  -> sélection du scénario
+  -> état de démo partagé pendant la session
+       -> Cockpit : journée, alertes et trois priorités
+       -> Briefing : prévision, facteurs et décisions interactives
+       -> Établissements : comparaison des trois sites et transfert
+       -> Valeur : journal local des décisions simulées
+       -> Explications : calcul et règles du scénario actif uniquement
+```
+
+Les données sont séparées en trois couches explicites : `forecast` pour les nombres et fourchettes, `recommendations` pour les règles et échéances, `explanations` pour la narration. Un fournisseur d'état client expose le scénario actif et les décisions. Les données de démonstration sont versionnées, reproductibles et marquées « fictives scénarisées » ; elles ne sont jamais présentées comme un résultat terrain ou un appel API temps réel.
+
+Chaque monde contient aussi une matrice de signaux avec valeur antérieure, valeur actuelle, impact et fraîcheur. Le cockpit résume les croisements utiles, tandis que la page Explications expose le calcul de référence, les contributions cumulées et le contrefactuel sans le principal signal. Les recommandations restent déterministes : la narration explique une règle structurée, elle ne produit ni la prévision ni l'action.
+
+### 4. Fichiers concernés
+
+- `apps/web/src/demo/scenarios.ts` : six mondes fictifs complets et typés.
+- `apps/web/src/demo/demo-context.tsx` : scénario actif, décisions locales et remise à zéro.
+- `apps/web/src/app/layout.tsx` et `components/app-shell.tsx` : fournisseur global et résumé du mode démo.
+- `components/scenario-player.tsx` : aperçu riche et lancement dans l'application.
+- `components/cockpit-page.tsx` : situation quotidienne du scénario actif.
+- `components/briefing-client.tsx` : décisions interactives et état après action.
+- `components/multisites-client.tsx` : trois sites cohérents et transfert conditionnel.
+- `components/roi-client.tsx` : registre fictif initial puis décisions de la session.
+- `components/diagnostic-client.tsx` : explication du seul scénario actif.
+- `app/diagnostic/page.tsx` : suppression de la seconde galerie.
+- `app/globals.css` et tests : états, transitions et responsive.
+
+### 5. Étapes d'implémentation
+
+1. Définir le contrat complet d'un monde de démonstration et les six jeux cohérents.
+   - Inclure au moins trois signaux croisés par scénario décisionnel.
+   - Inclure référence, dernière estimation, estimation actuelle et contrefactuel.
+2. Ajouter le fournisseur global de session avec réinitialisation et mention permanente du mode fictif.
+3. Transformer le laboratoire en aperçu puis lancement vers le Cockpit.
+4. Brancher Cockpit et Briefing sur le même scénario et rendre les recommandations actionnables.
+5. Brancher Établissements, Valeur et Explications sur ce même état ; supprimer toute galerie dupliquée.
+6. Harmoniser les états normal, alerte, abstention et décision prise.
+7. Vérifier les six parcours en ordinateur, tablette et mobile.
+
+### 6. Vérifications
+
+```bash
+pnpm lint:web
+pnpm typecheck:web
+pnpm test:web
+pnpm build:web
+pnpm check
+```
+
+Les tests vérifieront qu'un scénario lancé dans le laboratoire change les cinq autres vues, qu'une décision met à jour le briefing et la valeur, que l'abstention n'affiche aucun nombre, que la réinitialisation restaure l'état déterministe et que la galerie n'existe qu'une fois. Une revue visuelle sera menée à 1280 px, 768 px et 390 px.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : un schéma TypeScript unique et des invariants testés pour chaque monde.
+- **Fuite temporelle** : chaque scénario conserve un `asOf` explicite ; aucune donnée postérieure n'est affichée dans l'explication.
+- **Prévision trop précise** : fourchette, confiance et mention de simulation restent obligatoires ; l'abstention utilise des valeurs nulles.
+- **API simulée irréaliste** : l'interface n'affirme plus être en temps réel ; elle se présente clairement comme une démo scénarisée autonome.
+- **Règle inexécutable** : chaque recommandation possède contrainte, échéance, état et résultat après décision.
+- **Interface trompeuse** : les instantanés calculés pour la démo, les règles et la narration restent visuellement séparés.
+- **État local périmé** : l'état n'est conservé que pendant la navigation ; un rechargement ou le bouton « Réinitialiser » restaure le monde initial déterministe.
+
+### 8. Critères de sortie
+
+- Une seule page contient les six cartes de scénario.
+- « Lancer dans l'app » change réellement toutes les autres vues.
+- Chaque scénario décisionnel rend visibles au moins trois paramètres croisés et leur contribution.
+- La valeur différenciante « détecter un changement, agir avant l'heure limite, arbitrer entre sites » est démontrée sans discours marketing isolé.
+- Les cinq vues métier montrent le même site, le même instant et les mêmes priorités.
+- Accepter, modifier ou refuser une action produit un changement visible et réversible.
+- Les six scénarios montrent des parcours distincts, dont l'abstention et le transfert multi-sites.
+- Aucun écran public ne dépend de la disponibilité de l'API pour fonctionner.
+- Les frontières prévision, recommandation et explication restent explicites.
+- Aucun débordement horizontal n'existe aux trois largeurs contrôlées.
+- Tests, lint, types et build passent avant publication.
+
+### Résultat du 17 juillet 2026
+
+La démo publique ne dépend plus de l'API pour rendre ses écrans métier. Six mondes fictifs typés partagent le même contrat et croisent chacun trois à cinq signaux, avec au maximum trois recommandations. Le laboratoire est l'unique galerie : « Lancer dans l'app » active le monde choisi, puis Cockpit, Briefing, Établissements, Valeur et Explications restent cohérents pendant toute la navigation de la session.
+
+Le concert croise réservations, événement, météo et stock ; l'annulation recalcule seulement les décisions encore réversibles ; le multi-sites simule l'état source et cible après transfert ; les travaux relient accès, annulations, stock et fournisseur ; les données dégradées produisent une abstention sans nombre de secours. Les actions du briefing et le transfert mettent immédiatement à jour le registre fictif.
+
+La direction typographique éditoriale a été remplacée par une sans-serif système d'application, sans téléchargement externe, avec chiffres tabulaires. La revue visuelle confirme quatre colonnes à 1280 px et une colonne à 390 px, sans débordement horizontal. `pnpm check` réussit avec 10 tests web et 22 tests API, lint, types et build des neuf routes.
+
+Publication : commit et push sur `main` approuvés explicitement le 17 juillet 2026, en excluant `prototype-use-cases/`. Le redéploiement Render sera contrôlé après le push.
 
 ## Phase 9 — scénarios jouables et étude révisée
 
