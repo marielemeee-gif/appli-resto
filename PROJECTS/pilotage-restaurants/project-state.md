@@ -100,7 +100,7 @@ Transformer l'expérience mobile, jugée moins aboutie que le desktop, et modern
 
 ## Current state
 
-Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est terminée localement et attend validation : navigation mobile dédiée, rails de cartes et modernisation mesurée du langage visuel.
+Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est publiée dans `928a16c` (`Polish mobile restaurant demo`) sur `origin/main` : navigation mobile dédiée, rails de cartes et modernisation mesurée du langage visuel.
 
 ## Touched files and artifacts
 
@@ -151,6 +151,7 @@ Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité d
 - Phase 15 : `pnpm check` réussi avec 13 tests web et 22 tests API ; lint, types et build passent.
 - Phase 15 responsive : à 390 px, aucun débordement global, navigation fixe en bas, onglet actif, décisions et établissements en rails horizontaux ; hauteurs ramenées à environ 1 330 px et 1 440 px.
 - Phase 15 visuelle : palette plus fraîche, surfaces blanches, ombres allégées, accents turquoise/abricot et boutons moins massifs sur ordinateur comme sur mobile.
+- GitHub : phase 15 poussée avec succès de `main` vers `origin/main` dans le commit `928a16c` le 17 juillet 2026.
 
 ## Blockers and open questions
 
