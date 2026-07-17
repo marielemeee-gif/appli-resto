@@ -153,8 +153,8 @@ def build_addendum() -> None:
     canvas.setFont("Helvetica-Bold", 15)
     canvas.drawString(LEFT, y, "Ce que cette édition change")
     y -= 8 * mm
-    y = bullet(canvas, "Le prototype n'est plus une simple maquette : ses prévisions, fourchettes, facteurs, abstentions et recommandations proviennent d'une API locale testée.", LEFT, y, CONTENT_W)
-    y = bullet(canvas, "Les six situations sont jouables depuis une page dédiée, avec une distinction visible entre résultat calculé et illustration pédagogique.", LEFT, y, CONTENT_W)
+    y = bullet(canvas, "Le prototype n'est plus une simple maquette : prévisions, fourchettes, facteurs, abstentions et recommandations sont portés par des scénarios déterministes testés.", LEFT, y, CONTENT_W)
+    y = bullet(canvas, "Les six situations sont jouables dans une fenêtre isolée qui ne modifie jamais la session principale.", LEFT, y, CONTENT_W)
     y = bullet(canvas, "Aucun résultat terrain n'est revendiqué : le ROI observé reste vide et toutes les métriques portent sur un monde simulé.", LEFT, y, CONTENT_W)
     y -= 4 * mm
     canvas.setFillColor(NAVY)
@@ -177,20 +177,20 @@ def build_addendum() -> None:
     y = title(
         canvas,
         "Preuves disponibles",
-        "Ce que le prototype démontre",
-        "Les preuves ci-dessous sont reproductibles depuis le dépôt. Elles ne valent pas validation sur données réelles.",
+        "Spécifications de la démo actuelle",
+        "Prototype App organise les preuves en quatre tâches et sépare strictement calcul, règle métier et explication.",
         PAGE_H - 31 * mm,
     )
     y -= 8 * mm
     row_gap = 4 * mm
     card_h = 29 * mm
     rows = [
-        ("Simulation déterministe", "24 mois, trois sites, déjeuner et dîner, graine 20260717. Données observées et vérité simulée sont séparées.", TEAL_PALE, TEAL),
-        ("Prévision explicable", "Référence historique, méthode enrichie, intervalle, facteurs, confiance et possibilité de s'abstenir.", PALE, TEAL),
-        ("Décisions auditables", "Effectif, préparation, achats et transfert multi-sites avec heure limite, formule et droit de refus.", AMBER_PALE, AMBER),
-        ("Chronologie contrôlée", "Backtest glissant, coupure des données et tests qui refusent l'utilisation d'une information future.", PALE, TEAL),
-        ("Démonstration publique", "Cockpit, briefing, groupe, valeur, explications et laboratoire de scénarios sur un service Render partageable.", TEAL_PALE, TEAL),
-        ("Qualité logicielle", "8 tests web et 22 tests API, lint, types et build. Aucun secret ni donnée personnelle dans le dépôt.", PALE, TEAL),
+        ("TABLEAU DE BORD", "Service courant, fourchette, confiance, horizon fictif à sept jours et quatre échéances utiles.", TEAL_PALE, TEAL),
+        ("DÉCISIONS", "Trois priorités maximum, rôles Salle/Cuisine/Bar, échéances, motif et message préparé.", PALE, TEAL),
+        ("ÉTABLISSEMENTS", "Trois sites comparables et transfert simulé seulement s'il ne crée aucun déficit.", AMBER_PALE, AMBER),
+        ("JOURNAL", "Décisions de session, gains estimés fictifs et gain observé volontairement indisponible.", PALE, TEAL),
+        ("ACTIONS EXTERNES", "Brouillon fournisseur, SMS et WhatsApp nécessitent toujours une confirmation humaine.", TEAL_PALE, TEAL),
+        ("QUALITÉ LOGICIELLE", "13 tests web et 22 tests API, lint, types et build. Aucun secret ni donnée personnelle.", PALE, TEAL),
     ]
     for index, (heading, body, fill, accent) in enumerate(rows):
         card(canvas, LEFT, y, CONTENT_W, card_h, heading, body, fill, accent)
@@ -207,8 +207,8 @@ def build_addendum() -> None:
     y = title(
         canvas,
         "Laboratoire de démonstration",
-        "Six scénarios vraiment jouables",
-        "Chaque bouton active la configuration, recalcule le service et rend visibles les facteurs et actions disponibles.",
+        "Six exemples jouables et isolés",
+        "Chaque cas permet de simuler une décision ou une abstention, puis se ferme sans modifier l'application.",
         PAGE_H - 31 * mm,
     )
     y -= 8 * mm
@@ -231,11 +231,11 @@ def build_addendum() -> None:
     y -= card_h + 10 * mm
     canvas.setFillColor(NAVY)
     canvas.setFont("Helvetica-Bold", 14)
-    canvas.drawString(LEFT, y, "Deux niveaux volontairement séparés")
+    canvas.drawString(LEFT, y, "Trois responsabilités volontairement séparées")
     y -= 8 * mm
     half = (CONTENT_W - 5 * mm) / 2
-    card(canvas, LEFT, y, half, 35 * mm, "RÉSULTAT CALCULÉ", "Nombre, fourchette, facteurs, confiance et recommandations renvoyés par l'API fictive.", TEAL_PALE, TEAL)
-    card(canvas, LEFT + half + 5 * mm, y, half, 35 * mm, "ILLUSTRATION FICTIVE", "Question manager et décision pédagogique ajoutées pour expliquer le cas, sans se faire passer pour un calcul.", AMBER_PALE, AMBER)
+    card(canvas, LEFT, y, half, 35 * mm, "PRÉVISION NUMÉRIQUE", "Nombre, fourchette, facteurs et confiance issus du monde fictif déterministe.", TEAL_PALE, TEAL)
+    card(canvas, LEFT + half + 5 * mm, y, half, 35 * mm, "RÈGLE ET EXPLICATION", "Action déterministe avec heure limite, puis narration pédagogique clairement distincte.", AMBER_PALE, AMBER)
     canvas.showPage()
 
     # Page 32 - remaining proof and next decision.

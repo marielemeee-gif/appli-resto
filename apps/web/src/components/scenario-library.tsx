@@ -1,11 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { demoScenarios, getDemoScenario } from "@/demo/scenarios";
+import { demoScenarios, getDemoScenario, isDeadlineExpired } from "@/demo/scenarios";
 
 export function ScenarioLibrary({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [previewId, setPreviewId] = useState(demoScenarios[0].id);
+  const [localDecisions, setLocalDecisions] = useState<Record<string, "accepted" | "modified" | "refused">>({});
   const preview = getDemoScenario(previewId);
+
+  function selectPreview(id: string) {
+    setPreviewId(id);
+    setLocalDecisions({});
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -26,7 +32,7 @@ export function ScenarioLibrary({ open, onClose }: { open: boolean; onClose: () 
       </header>
       <div className="scenario-modal-body">
         <nav className="scenario-modal-list" aria-label="Exemples fictifs">
-          {demoScenarios.map((scenario) => <button className={scenario.id === preview.id ? "active" : ""} type="button" key={scenario.id} onClick={() => setPreviewId(scenario.id)}><span>{scenario.name}</span><small>{scenario.siteName} · {scenario.shortName}</small></button>)}
+          {demoScenarios.map((scenario) => <button className={scenario.id === preview.id ? "active" : ""} type="button" key={scenario.id} onClick={() => selectPreview(scenario.id)}><span>{scenario.name}</span><small>{scenario.siteName} · {scenario.shortName}</small></button>)}
         </nav>
         <article className="scenario-preview">
           <span className="fiction-badge">Exemple fictif · aperçu seulement</span>
@@ -38,6 +44,7 @@ export function ScenarioLibrary({ open, onClose }: { open: boolean; onClose: () 
             <div><dt>Résultat</dt><dd>{preview.forecast.expectedCovers ?? "Abstention"}{preview.forecast.expectedCovers !== null ? " couverts" : ""}</dd></div>
           </dl>
           <strong>{preview.recommendations[0]?.title ?? preview.forecast.abstentionReason}</strong>
+          <section className="scenario-simulation" aria-labelledby="scenario-simulation-title"><h4 id="scenario-simulation-title">Tester dans cette fenêtre</h4>{preview.forecast.expectedCovers === null ? <div className="simulation-abstain"><strong>Le moteur s’abstient</strong><p>{preview.forecast.abstentionReason}</p><small>Aucun nombre ni plan d’action précis n’est produit.</small></div> : <div className="simulation-actions">{preview.recommendations.map((recommendation) => { const status = localDecisions[recommendation.id]; const expired = isDeadlineExpired(preview.asOf, recommendation.deadline); return <article key={recommendation.id}><span>{expired ? `Fermée à ${recommendation.deadline}` : `Avant ${recommendation.deadline}`}</span><strong>{recommendation.title}</strong>{status ? <small>Simulation locale : {status === "accepted" ? "validée" : status === "modified" ? "modifiée" : "refusée"}</small> : expired ? <small>Échéance dépassée · action non exécutable</small> : <div><button type="button" onClick={() => setLocalDecisions((current) => ({ ...current, [recommendation.id]: "accepted" }))}>Valider</button><button type="button" onClick={() => setLocalDecisions((current) => ({ ...current, [recommendation.id]: "modified" }))}>Modifier</button><button type="button" onClick={() => setLocalDecisions((current) => ({ ...current, [recommendation.id]: "refused" }))}>Refuser</button></div>}</article>; })}</div>}</section>
           <p className="preview-note">Cet exemple n’est pas chargé dans le site. Fermez la fenêtre pour reprendre votre démonstration là où vous l’avez laissée.</p>
           <button className="button primary" type="button" onClick={onClose}>Fermer l’exemple</button>
         </article>

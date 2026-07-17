@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Réduire les répétitions entre onglets, organiser l'application autour de tâches opérationnelles, rendre les scénarios consultables sans modifier l'application, permettre une décision libre et préparer son partage SMS ou WhatsApp.
+Rééquilibrer les proportions, réduire le défilement mobile, ajouter un favicon et publier l'étude complète mise à jour via un bouton `Specs PDF`, avant le commit et le push.
 
 ## Agreed scope and approvals
 
@@ -21,6 +21,9 @@ Réduire les répétitions entre onglets, organiser l'application autour de tâc
 - API locale fictive, sans connecteur ni décision réelle.
 - Premier commit et push GitHub approuvés le 17 juillet 2026.
 - Message approuvé : `Build fictional restaurant steering prototype` avec le corps proposé.
+- Phase 13 autorisée le 17 juillet 2026 : compléter les preuves P0 utiles sans ajouter d'onglet ; validation du résultat encore attendue avant commit et push.
+- Phase 14 autorisée le 17 juillet 2026 ; résultat local terminé, validation encore attendue avant commit et push.
+- Phases 13 et 14 validées le 17 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Complete and rebalance restaurant demo` et exclusion de `prototype-use-cases/`.
 
 ## Decisions made
 
@@ -48,6 +51,9 @@ Réduire les répétitions entre onglets, organiser l'application autour de tâc
 - SMS et WhatsApp sont ouverts via des liens natifs avec message prérempli ; aucun contact n'est stocké et aucun envoi n'est automatique.
 - Phases 11 et 12 validées par l'utilisateur le 17 juillet 2026 ; commit et push vers `origin/main` explicitement autorisés.
 - Message de commit approuvé : `Simplify restaurant operations workflow` avec le corps proposé.
+- Phase 13 : horizon sept jours compact et filtrable localement par site/service, besoins Salle/Cuisine/Bar, motif obligatoire pour modifier/refuser, échéance réellement bloquée, cas fictifs jouables en vase clos et Journal mensuel distinguant estimé/observé.
+- Les filtres de l'horizon ne changent jamais le scénario actif ; les actions des cas fictifs ne sortent jamais de la fenêtre.
+- Le gain observé reste indisponible tant qu'aucune caisse réelle n'est connectée.
 
 ## Work completed
 
@@ -77,10 +83,21 @@ Réduire les répétitions entre onglets, organiser l'application autour de tâc
 - Décisions élagué : contexte compact, actions, décision terrain, partage et fournisseur.
 - Journal élagué : résumé prudent et historique, dont les décisions libres.
 - Logo « S » remplacé par un pictogramme simple assiette et couverts.
+- Horizon fictif déterministe de sept jours ajouté au Tableau de bord avec lecture des trois établissements et des deux services.
+- Besoins d'effectif affichés par rôle dans Décisions, sans simuler un planning juridiquement complet.
+- Préparation cuisine concrète ajoutée au cas principal tout en conservant le brouillon fournisseur fûts/glaçons.
+- Modifier ou refuser ouvre un motif obligatoire, ensuite visible dans le Journal.
+- Une recommandation dont l'heure limite est dépassée devient visible mais non exécutable.
+- La fenêtre Cas fictifs permet de jouer localement un scénario décisionnel ou l'abstention sans modifier l'application.
+- Journal mensuel complété avec période, gain estimé fictif et gain observé explicitement absent.
+- Nom visible `Service` remplacé par `Prototype App` dans l'en-tête, les métadonnées et le message de partage.
+- Phase 14 terminée localement : Établissements compare le groupe et conclut même sans transfert ; Décisions place les trois actions avant les outils secondaires.
+- Phase 14 inclut une réduction du défilement mobile et un favicon assiette/couverts pour l'onglet navigateur.
+- L'étude complète de 32 pages est conservée ; son addendum est actualisé et une copie publique est reliée par le bouton `Specs PDF`.
 
 ## Current state
 
-Les commits précédents sont poussés sur `origin/main`. Les phases 11 et 12 sont terminées, vérifiées et validées ; publication Git vers `origin/main` en cours avant un unique redéploiement Render.
+Le commit `3478491` de la phase 12 est poussé et déployé. Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public sont terminés, vérifiés et autorisés pour publication sur `origin/main`.
 
 ## Touched files and artifacts
 
@@ -91,6 +108,7 @@ Les commits précédents sont poussés sur `origin/main`. Les phases 11 et 12 so
 - Références produit : `references`.
 - Joueur : `apps/web/src/app/scenarios/page.tsx`, `apps/web/src/components/scenario-player.tsx` et styles responsive associés.
 - Étude révisée : `references/ETUDE_COMPLETE.md`, `scripts/build_revised_study.py` et `output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf`.
+- Copie publique du PDF : `apps/web/public/specs-prototype-app.pdf` ; accès dans l'en-tête via `Specs PDF`.
 - Données générées et `data/decisions.json` exclus de Git.
 
 ## Validation run and result
@@ -117,6 +135,13 @@ Les commits précédents sont poussés sur `origin/main`. Les phases 11 et 12 so
 - Phase 12 : 9 tests web et 22 tests API réussis ; lint, types et build passent.
 - Parcours navigateur réussi : fenêtre d'exemple fermée sans mutation, détail du calcul ouvert, décision libre ajoutée, message SMS/WhatsApp préparé puis décision retrouvée dans Journal.
 - Responsive Phase 12 : aucun débordement horizontal à 1280 px et 390 px.
+- Phase 13 : `pnpm check` réussi avec 12 tests web et 22 tests API ; lint, types et build passent.
+- Parcours testés : horizon sept jours et changement de service, rôles Salle/Cuisine/Bar, modification avec motif journalisé, abstention jouable, action expirée bloquée et scénario principal inchangé après fermeture.
+- Responsive Phase 13 : aucun débordement horizontal à 1280 px et 390 px ; la bande sept jours défile horizontalement sur mobile.
+- Phase 14 : `pnpm check` réussi avec 13 tests web et 22 tests API ; lint, types et build passent.
+- Contrôle étroit à 287 px sans débordement : Décisions environ 2 030 px, Tableau de bord et Établissements environ 2 100 px, Journal moins de 1 000 px. Outils terrain et fournisseur restent accessibles mais repliés.
+- PDF complet régénéré : 32 pages A4, 28 pages initiales inchangées et quatre pages d'addendum actualisées ; rendu PNG inspecté sans coupure ni chevauchement.
+- Les routes locales `/specs-prototype-app.pdf` et `/icon.svg` répondent `200` avec les bons types MIME.
 
 ## Blockers and open questions
 
@@ -126,10 +151,10 @@ Les commits précédents sont poussés sur `origin/main`. Les phases 11 et 12 so
 - L’optimisation du commit `7aea520` est déployée : `/health` répond en 0,2–0,5 seconde et le briefing public en 0,92 seconde lors de la vérification finale.
 - Aucun blocage de publication restant pour la phase 8.
 - Le dossier non suivi `prototype-use-cases/` préexistait ou appartient à l’utilisateur ; il reste hors du périmètre de la refonte et ne doit pas être ajouté sans validation explicite.
-- Les phases 11 et 12 ne sont pas encore publiques ; elles doivent être validées, poussées puis redéployées manuellement sur Render.
+- Les phases 13 et 14 ne sont pas encore publiques ; elles doivent être validées, commitées, poussées puis redéployées manuellement sur Render.
 
 ## Next actions
 
-1. Créer le commit approuvé et pousser `main` vers `origin` en excluant `prototype-use-cases/`.
-2. Demander un unique redéploiement manuel Render puis vérifier les quatre vues publiques.
-3. Mettre ensuite à jour l'étude PDF seulement si la démo produit est validée.
+1. Faire valider les phases 13 et 14 dans la démo locale.
+2. Après approbation du message, créer un commit et pousser `main` vers `origin` en excluant `prototype-use-cases/`.
+3. Demander un unique redéploiement manuel Render puis vérifier les quatre vues, le favicon et le PDF publics.

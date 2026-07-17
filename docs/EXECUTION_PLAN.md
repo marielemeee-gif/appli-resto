@@ -1,7 +1,182 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 12 réalisée localement et vérifiée, en attente de validation avant publication**
+Statut : **phase 14 terminée localement — en attente de validation**
 Date de cadrage : 17 juillet 2026
+
+## Phase 14 — rendre chaque onglet proportionné à sa tâche
+
+### 1. Résultat de la phase
+
+Établissements devient une vraie vue d'arbitrage groupe : synthèse, comparaison compacte et conclusion actionnable même lorsqu'aucun transfert n'est conseillé. Décisions donne la priorité aux trois actions, avec un seul résumé de service et les sources secondaires repliées.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : aucun nouvel onglet, scénario ou système tiers n'est ajouté.
+- **Décidé** : la grande typographie et les espacements de page sont légèrement réduits sur les quatre vues, sans banaliser la prévision principale.
+- **Décidé** : Établissements remplace les trois grandes fiches répétitives par une lecture groupe puis une ligne comparable par site.
+- **Décidé** : lorsqu'aucun transfert n'est utile, l'app explique le verrou et renvoie vers l'action locale pertinente au lieu d'afficher un simple état vide.
+- **Décidé** : Décisions supprime la répétition du changement de prévision déjà disponible dans le Tableau de bord.
+- **Décidé** : prévision utile, prochaine limite et effectifs par rôle sont fusionnés dans un seul résumé compact.
+- **Décidé** : les systèmes interrogés passent dans un détail repliable ; leurs preuves restent disponibles.
+- **Décidé** : les recommandations deviennent la zone dominante et s'affichent en trois colonnes sur ordinateur, puis une colonne sur mobile.
+- **Décidé** : les outils occasionnels et le brouillon fournisseur sont repliés par défaut, surtout pour raccourcir le parcours mobile.
+- **Décidé** : le pictogramme assiette/couverts devient aussi l'icône de l'onglet navigateur.
+
+### 3. Architecture et flux
+
+```text
+Tableau de bord -> comprendre la situation
+Décisions       -> résumé minimal -> 1 à 3 actions -> outils terrain
+Établissements  -> synthèse groupe -> comparaison -> transfert ou plan local
+Journal         -> trace estimée / observée
+```
+
+Aucune donnée ni règle ne change. Les composants recomposent les fixtures déterministes déjà présentes ; les décisions continuent d'utiliser le contexte de session existant.
+
+### 4. Fichiers concernés
+
+- `components/multisites-client.tsx` : synthèse groupe, comparaison et conclusion.
+- `components/briefing-client.tsx` : résumé fusionné, sources repliées et priorités numérotées.
+- `app/globals.css` : proportions, grilles desktop/mobile et densité.
+- `app/page.test.tsx` : structure opérationnelle et absence de répétition.
+- `app/icon.svg` : favicon cohérent avec le pictogramme de l'application.
+- `references/ETUDE_COMPLETE.md`, `scripts/build_revised_study.py` et `output/pdf/…revision.pdf` : étude complète conservée et addendum actualisé.
+- `public/specs-prototype-app.pdf` et `components/app-shell.tsx` : copie publique et accès `Specs PDF` dans l'en-tête.
+- `PROJECTS/pilotage-restaurants/project-state.md` : suivi de la phase avant commit.
+
+### 5. Étapes d'implémentation
+
+1. Réorganiser Établissements autour de l'arbitrage.
+2. Réduire Décisions à une seule couche de contexte.
+3. Donner la priorité visuelle aux recommandations.
+4. Harmoniser en-têtes, cartes secondaires et Journal.
+5. Vérifier les parcours et le responsive.
+
+### 6. Vérifications
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+Contrôles visuels à 1280 px et 390 px sur les quatre onglets. Les tests garantissent trois établissements comparables, une conclusion sans transfert, un résumé unique dans Décisions, trois rôles, trois priorités maximum et la conservation des interactions existantes.
+
+Résultat : `pnpm check` réussit avec 13 tests web et 22 tests API. Lint, types et build passent. À largeur étroite de contrôle (287 px, plus contraignante que la cible), aucun débordement n'est observé ; Décisions passe d'environ 2 600 px à 2 030 px de hauteur, les outils secondaires fermés occupent 63 px et le fournisseur 123 px. Tableau de bord et Établissements restent autour de 2 100 px, Journal sous 1 000 px. Le PDF public répond en `200`, contient 32 pages A4 et ses quatre pages d'addendum ont été rendues puis inspectées sans coupure ni chevauchement.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : tous les agrégats sont dérivés des mêmes fixtures de sites.
+- **Fuite temporelle** : aucune valeur future ni valeur observée n'est ajoutée.
+- **Prévision trop précise** : fourchette et confiance restent dans le résumé de décision.
+- **API simulée irréaliste** : les preuves des sources restent marquées fictives et seulement consultables.
+- **Règle inexécutable** : l'absence de marge mobilisable interdit toujours un transfert.
+- **Interface trompeuse** : la conclusion distingue explicitement transfert simulé et action locale.
+- **Perte d'information** : les sources sont repliées, jamais supprimées.
+
+### 8. Critères de sortie
+
+- La question « quel site a besoin d'aide et qui peut aider ? » se lit sans ouvrir trois fiches.
+- Le cas sans transfert débouche sur une orientation utile.
+- Les recommandations apparaissent avant les outils secondaires.
+- Une seule synthèse du service précède les actions.
+- Aucun nouvel onglet ni doublon fonctionnel n'est créé.
+- Le PDF public conserve les 28 pages initiales et actualise uniquement l'addendum de quatre pages.
+- Aucun débordement à 1280 px et 390 px.
+- Tests, lint, types et build passent.
+
+Phase terminée localement le 17 juillet 2026. Le commit, le push et le redéploiement restent soumis à validation explicite.
+
+## Phase 13 — compléter le P0 sans alourdir l'application
+
+### 1. Résultat de la phase
+
+Les quatre écrans restent inchangés dans leur rôle, mais récupèrent les preuves essentielles du brief initial : horizon à sept jours, lecture par site et service, besoins par rôle, décisions modifiables avec motif, exemples jouables en vase clos et suivi mensuel prévu/réel prudent.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : aucun nouvel onglet ne sera créé.
+- **Décidé** : la prévision à sept jours tient dans une seule bande compacte du Tableau de bord, avec choix local du site et du service.
+- **Décidé** : changer le site ou le service de cette bande ne modifie pas le reste de la démonstration ; il s'agit d'un horizon de consultation fictif clairement étiqueté.
+- **Décidé** : chaque exemple devient jouable à l'intérieur de la fenêtre, puis se referme sans modifier l'application principale.
+- **Décidé** : `Modifier` et `Refuser` exigent une note courte ; cette note est conservée dans le Journal.
+- **Décidé** : une décision dépassée est visible mais non actionnable selon l'heure de l'instantané fictif.
+- **Décidé** : le besoin d'effectif est résumé par rôle `Salle`, `Cuisine` et `Bar`, sans construire un planning complet.
+- **Décidé** : le cas principal conserve fûts et glaçons mais ajoute une préparation cuisine concrète parmi les trois priorités.
+- **Décidé** : le Journal affiche juillet 2026, le gain estimé et les champs réels volontairement indisponibles ; aucun résultat terrain ne sera inventé.
+
+### 3. Architecture et flux
+
+```text
+Fixtures déterministes
+  ├─ horizon[site][service][7 jours] -> bande du Tableau de bord
+  ├─ staffing[3 rôles]              -> contexte Décisions
+  ├─ recommandations + cutoff       -> action ou état expiré
+  └─ décisions + note               -> Journal mensuel
+
+Fenêtre Cas fictifs
+  scénario sélectionné -> action locale simulée -> résultat local
+  fermeture -> aucune mutation du contexte principal
+```
+
+L'horizon, les rôles et les scénarios restent des fixtures de démonstration typées. La prévision numérique, les recommandations et leur explication restent séparées. Les interactions de scénario utilisent exclusivement un état local au composant de fenêtre.
+
+### 4. Fichiers concernés
+
+- `demo/scenarios.ts` : horizon, besoins par rôle, note de décision et préparation cuisine.
+- `demo/demo-context.tsx` : conservation du motif de modification/refus.
+- `components/cockpit-page.tsx` : bande à sept jours et choix de lecture.
+- `components/briefing-client.tsx` : rôles, échéance et formulaire de motif.
+- `components/scenario-library.tsx` : mini-parcours jouable isolé.
+- `components/roi-client.tsx` : synthèse mensuelle et note de décision.
+- `app/globals.css` et `app/page.test.tsx` : présentation, responsive et tests.
+
+### 5. Étapes d'implémentation
+
+1. Étendre le contrat des fixtures avec horizon, rôles et note.
+2. Ajouter l'horizon sept jours filtrable au Tableau de bord.
+3. Afficher les besoins Salle/Cuisine/Bar dans Décisions.
+4. Exiger et tracer un motif pour modifier ou refuser.
+5. Rendre une décision expirée non actionnable.
+6. Rendre les exemples jouables uniquement dans leur fenêtre.
+7. Ajouter la lecture mensuelle prévu/réel dans Journal.
+8. Vérifier ordinateur, mobile et tous les parcours.
+
+### 6. Vérifications
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+Les tests couvriront les sept jours, les trois sites, les deux services, les trois rôles, le motif obligatoire, l'échéance expirée, l'abstention jouable, l'absence de mutation après fermeture et l'absence de gain observé fabriqué.
+
+Résultat : `pnpm check` réussit avec 12 tests web et 22 tests API. Le lint, les contrôles TypeScript/Python et le build Next.js passent. Le Tableau de bord a été contrôlé à 1280 px et 390 px sans débordement horizontal ; à 390 px, les sept jours défilent dans leur propre bande. L'écran Décisions affiche bien les trois rôles et leurs écarts. Les tests rejouent la modification motivée, sa trace dans le Journal, l'abstention, l'échéance expirée et l'absence de mutation du scénario principal.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : types uniques et valeurs d'horizon bornées autour des niveaux propres à chaque site.
+- **Fuite temporelle** : l'horizon reste une projection arrêtée à `asOf`, sans résultat futur observé.
+- **Prévision trop précise** : valeurs arrondies et mention de projection fictive ; le service courant conserve sa fourchette.
+- **API simulée irréaliste** : aucune mention de temps réel ou de connexion active n'est ajoutée.
+- **Règle inexécutable** : comparaison explicite entre heure limite et instantané du scénario.
+- **Interface trompeuse** : les scénarios joués restent dans une fenêtre marquée fictive ; le réel du Journal reste vide.
+- **Surcharge** : un seul composant compact par manque identifié et aucune navigation supplémentaire.
+
+### 8. Critères de sortie
+
+- Sept jours sont visibles sans grand graphique.
+- Les trois sites et les services déjeuner/dîner sont consultables.
+- Salle, Cuisine et Bar affichent planifié/requis.
+- Modifier ou refuser nécessite une note visible dans Journal.
+- Une action expirée est bloquée avec une raison.
+- L'abstention et au moins un cas décisionnel sont jouables sans changer l'application principale.
+- Le Journal distingue estimé et observé.
+- Aucun débordement à 1280 px et 390 px.
+- Tests, lint, types et build passent.
+
+Phase terminée localement le 17 juillet 2026. Aucun commit ni déploiement n'est réalisé avant validation explicite.
+
+Avant publication, le nom générique `Service` est remplacé par `Prototype App` dans l'en-tête, le titre du navigateur et le message de partage. Le sous-titre `Pilotage restaurants` conserve le contexte métier.
 
 ## Phase 12 — une navigation par tâches, sans répétition
 

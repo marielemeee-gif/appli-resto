@@ -887,13 +887,13 @@ Cette section complète l'étude initiale sans la réécrire rétroactivement. D
 | Recommandations | Effectif, préparation, achats et transfert multi-sites avec heure limite | Règles simplifiées, sans exécution automatique |
 | Décision humaine | Validation, modification ou refus enregistrés dans le prototype | Aucun planning ni fournisseur réel modifié |
 | Explication | Séparation entre nombre calculé, règle déterministe et narration | Aucun LLM utilisé comme moteur numérique |
-| Démonstration | Cockpit, briefing, multi-sites, valeur, diagnostic et laboratoire de scénarios | Ce n'est pas encore un produit de production |
+| Démonstration | Tableau de bord, Décisions, Établissements et Journal ; exemples fictifs isolés dans une fenêtre | Ce n'est pas encore un produit de production |
 
 Le prototype public est accessible à l'adresse `https://pilotage-restaurants.onrender.com/`. Son code est versionné sur `https://github.com/marielemeee-gif/appli-resto`.
 
 ### 18.2. Six scénarios de démonstration
 
-Les six scénarios ne sont plus seulement des descriptions. Ils peuvent être joués depuis le laboratoire de l'application :
+Les six scénarios ne sont plus seulement des descriptions. Ils peuvent être joués dans une fenêtre d'exemple fictif qui ne modifie jamais la session principale :
 
 1. **Semaine normale** - vérifier le comportement de référence sans perturbation majeure ;
 2. **Concert et météo sèche** - observer réservations, événement et terrasse dans le même service ;
@@ -902,12 +902,24 @@ Les six scénarios ne sont plus seulement des descriptions. Ils peuvent être jo
 5. **Données insuffisantes** - démontrer une abstention sans nombre de secours ;
 6. **Travaux et livraison** - montrer un facteur d'accès local sur le site Gare.
 
-Chaque résultat sépare désormais deux niveaux :
+Chaque résultat sépare désormais trois responsabilités :
 
-- **résultat calculé** : prévision, fourchette, facteurs et recommandations effectivement renvoyés par l'API fictive ;
-- **illustration fictive** : question manager et décision pédagogique ajoutées pour rendre le cas compréhensible, sans les présenter comme une sortie du moteur.
+- **prévision numérique** : nombre, fourchette, facteurs et confiance issus des fixtures déterministes ou de l'API fictive de preuve technique ;
+- **règle métier** : recommandation, heure limite, gain et risque estimés, conservés séparément de la prévision ;
+- **explication** : narration pédagogique ajoutée pour rendre le cas compréhensible, sans la présenter comme le moteur de calcul.
 
-### 18.3. Ce que le prototype ne prouve pas
+### 18.3. Organisation actuelle de l'application
+
+L'interface publique, nommée **Prototype App**, est volontairement limitée à quatre destinations :
+
+1. **Tableau de bord** - prévision du service, fourchette, confiance, horizon fictif à sept jours et échéances opérationnelles ;
+2. **Décisions** - jusqu'à trois actions, effectifs Salle/Cuisine/Bar, échéances, validation, modification motivée, refus et transmission préparée ;
+3. **Établissements** - comparaison des trois sites, marge d'effectif mobilisable et transfert simulé uniquement lorsqu'il ne crée pas un second déficit ;
+4. **Journal** - décisions de session, gain estimé fictif et gain observé explicitement indisponible.
+
+Les preuves des systèmes tiers sont consultables mais repliées. La commande fournisseur reste un brouillon fictif nécessitant une confirmation humaine ; aucun SMS, message WhatsApp, planning ou ordre fournisseur n'est envoyé automatiquement. L'interface privilégie l'ordinateur mais reste responsive, avec les outils secondaires repliés sur mobile.
+
+### 18.4. Ce que le prototype ne prouve pas
 
 - qu'un modèle battra la méthode d'un manager sur des données de caisse réelles ;
 - que les exports disponibles sont suffisamment propres et réguliers ;
@@ -919,7 +931,7 @@ Chaque résultat sépare désormais deux niveaux :
 
 Les gains visibles dans le registre restent des estimations fictives. Le champ de gain observé demeure volontairement vide.
 
-### 18.4. Décision recommandée après le prototype
+### 18.5. Décision recommandée après le prototype
 
 La priorité n'est plus d'ajouter des écrans. La prochaine preuve doit venir du terrain :
 
@@ -929,7 +941,7 @@ La priorité n'est plus d'ajouter des écrans. La prochaine preuve doit venir du
 4. présenter les six scénarios au responsable, puis supprimer ceux qui ne changeraient aucune décision ;
 5. lancer un pilote en parallèle du fonctionnement normal uniquement si le backtest et les retours manager sont concluants.
 
-### 18.5. Verdict actualisé
+### 18.6. Verdict actualisé
 
 La faisabilité technique du prototype est maintenant démontrée. La faisabilité commerciale et opérationnelle reste à établir. Le principal risque a donc changé : il ne s'agit plus de savoir si l'on peut construire l'interface et les moteurs simples, mais si des données réelles permettent de produire, au bon moment, une décision que le manager applique et dont le gain peut être mesuré.
 

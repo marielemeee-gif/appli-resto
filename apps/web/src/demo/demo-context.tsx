@@ -11,7 +11,7 @@ type DemoContextValue = {
   storageError: string;
   supplierStatus: SupplierStatus;
   selectScenario: (id: string) => void;
-  decide: (recommendationId: string, status: DecisionStatus) => void;
+  decide: (recommendationId: string, status: DecisionStatus, note?: string) => void;
   prepareSupplierDraft: () => void;
   confirmSupplierDraft: () => void;
   addCustomDecision: (title: string, owner: string, deadline: string) => void;
@@ -36,7 +36,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     storageError,
     supplierStatus,
     selectScenario: (id) => setScenarioId(getDemoScenario(id).id),
-    decide: (recommendationId, status) => {
+    decide: (recommendationId, status, note) => {
       const recommendation = scenario.recommendations.find((item) => item.id === recommendationId);
       const dispatch = scenario.dispatch?.id === recommendationId ? scenario.dispatch : undefined;
       if (!recommendation && !dispatch) return;
@@ -50,6 +50,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         status,
         decidedAt: "2026-07-17T09:05:00+02:00",
         estimatedGain: status === "refused" ? 0 : Math.round((recommendation?.estimatedGain ?? dispatch?.estimatedGain ?? 0) * (status === "modified" ? 0.72 : 1)),
+        deadline: recommendation?.deadline ?? dispatch?.deadline,
+        note: note?.trim() || undefined,
       };
       setSessionDecisions((current) => [...current.filter((item) => item.id !== decision.id), decision]);
     },

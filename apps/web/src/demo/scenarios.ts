@@ -45,6 +45,20 @@ export type DemoWatchItem = {
   urgency: "normal" | "soon" | "urgent";
 };
 
+export type DemoStaffingRole = {
+  role: "Salle" | "Cuisine" | "Bar";
+  planned: number | null;
+  required: number | null;
+};
+
+export type DemoHorizonDay = {
+  day: string;
+  date: string;
+  lunch: number | null;
+  dinner: number | null;
+  confidence: number;
+};
+
 export type DemoRecommendation = {
   id: string;
   type: "staffing" | "preparation" | "purchase";
@@ -79,6 +93,7 @@ export type DemoDecision = {
   estimatedGain: number;
   owner?: string;
   deadline?: string;
+  note?: string;
 };
 
 export type DemoScenario = {
@@ -107,6 +122,7 @@ export type DemoScenario = {
   };
   systems: DemoSystem[];
   watch: DemoWatchItem[];
+  staffing: DemoStaffingRole[];
   signals: DemoSignal[];
   recommendations: DemoRecommendation[];
   supplierWorkflow?: SupplierWorkflow;
@@ -129,6 +145,45 @@ export type DemoScenario = {
 const site = (id: DemoSite["id"], name: string, expectedCovers: number | null, plannedServers: number, requiredServers: number | null, alert: string, stockRisk: DemoSite["stockRisk"]): DemoSite => ({
   id, name, expectedCovers, plannedServers, requiredServers, alert, stockRisk,
 });
+
+const staffing = (salle: [number | null, number | null], cuisine: [number | null, number | null], bar: [number | null, number | null]): DemoStaffingRole[] => [
+  { role: "Salle", planned: salle[0], required: salle[1] },
+  { role: "Cuisine", planned: cuisine[0], required: cuisine[1] },
+  { role: "Bar", planned: bar[0], required: bar[1] },
+];
+
+const horizonDays = [
+  ["Ven.", "17 juil."], ["Sam.", "18 juil."], ["Dim.", "19 juil."], ["Lun.", "20 juil."],
+  ["Mar.", "21 juil."], ["Mer.", "22 juil."], ["Jeu.", "23 juil."],
+] as const;
+
+export function getDemoHorizon(sites: DemoSite[]): Record<DemoSite["id"], DemoHorizonDay[]> {
+  const result: Record<DemoSite["id"], DemoHorizonDay[]> = { republique: [], liberte: [], gare: [] };
+  const dinnerDeltas = [0, 5, -12, -18, -8, -4, 6];
+  const lunchDeltas = [0, 2, -7, -10, -5, -2, 3];
+  for (const currentSite of sites) {
+    result[currentSite.id] = horizonDays.map(([day, date], index) => {
+      const base = currentSite.expectedCovers;
+      return {
+        day,
+        date,
+        dinner: base === null ? null : Math.max(35, base + dinnerDeltas[index]),
+        lunch: base === null ? null : Math.max(25, Math.round(base * 0.62) + lunchDeltas[index]),
+        confidence: Math.max(60, 86 - index * 3),
+      };
+    });
+  }
+  return result;
+}
+
+export function isDeadlineExpired(asOf: string, deadline: string): boolean {
+  const asOfMatch = asOf.match(/(\d{2}):(\d{2})$/);
+  const deadlineMatch = deadline.match(/^(\d{2}):(\d{2})$/);
+  if (!asOfMatch || !deadlineMatch) return false;
+  const asOfMinutes = Number(asOfMatch[1]) * 60 + Number(asOfMatch[2]);
+  const deadlineMinutes = Number(deadlineMatch[1]) * 60 + Number(deadlineMatch[2]);
+  return asOfMinutes > deadlineMinutes;
+}
 
 const watch = (eventTitle: string, eventDetail: string, weatherTitle: string, supplierTitle: string): DemoWatchItem[] => [
   { id: "watch-weather", category: "Météo", title: weatherTitle, when: "Aujourd'hui · 18:00", site: "Groupe", detail: "Décision terrasse à confirmer au briefing de 16:00.", urgency: "normal" },
@@ -154,6 +209,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "normal-planning", name: "Planning", kind: "planning", status: "fresh", lastSync: "07:35", evidence: "5 serveurs planifiés" },
     ],
     watch: watch("Aucun événement majeur", "Aucun impact exceptionnel attendu.", "23 °C sec · terrasse standard", "Commande habituelle déjà couverte"),
+    staffing: staffing([5, 5], [3, 3], [1, 1]),
     signals: [
       { id: "normal-res", label: "Réservations", category: "reservations", previous: "37 à J-2", current: "39 à J-0", impactCovers: 1, updatedAt: "07:45", explanation: "Le rythme reste dans la bande habituelle du vendredi." },
       { id: "normal-weather", label: "Météo terrasse", category: "weather", previous: "22 °C", current: "23 °C sec", impactCovers: 2, updatedAt: "07:30", explanation: "Conditions légèrement favorables, sans rupture avec l'historique." },
@@ -182,6 +238,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "concert-supplier", name: "Catalogue fournisseur", kind: "supplier", status: "fresh", lastSync: "07:40", evidence: "2 références disponibles" },
     ],
     watch: watch("Concert · 4 800 places", "Arrivées concentrées avant le dîner, impact estimé +10 couverts.", "24 °C sec · terrasse ouverte", "Brouillon fûts et glaçons avant 14:00"),
+    staffing: staffing([7, 8], [3, 3], [1, 2]),
     signals: [
       { id: "concert-res", label: "Réservations", category: "reservations", previous: "61 à J-1", current: "84 confirmées", impactCovers: 25, updatedAt: "07:52", explanation: "Le rythme dépasse de 31 % les vendredis comparables." },
       { id: "concert-event", label: "Concert à 450 m", category: "event", previous: "Annonce provisoire", current: "4 800 places · confirmé", impactCovers: 10, updatedAt: "07:10", explanation: "L'horaire concentre les arrivées avant le dîner." },
@@ -189,7 +246,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "concert-stock", label: "Fûts et glaçons", category: "stock", previous: "Couverture 1,2 service", current: "Couverture 0,8 service", impactCovers: 0, updatedAt: "07:40", explanation: "Le stock ne réduit pas la demande, mais crée une action bar urgente." },
     ],
     recommendations: [
-      { id: "concert-prep", type: "preparation", title: "Mettre en froid 2 fûts supplémentaires", detail: "Le débit attendu sur le pic dépasse la couverture habituelle du vendredi soir.", deadline: "11:00", estimatedGain: 126, estimatedRisk: 190, confidence: 84, rule: "débit attendu au pic - capacité déjà en froid" },
+      { id: "concert-prep", type: "preparation", title: "Préparer 24 portions froides pour la terrasse", detail: "Un petit lot couvre la hausse probable sans engager toute la fourchette haute dès le matin.", deadline: "11:00", estimatedGain: 126, estimatedRisk: 190, confidence: 84, rule: "besoin terrasse médian - préparation déjà disponible" },
       { id: "concert-purchase", type: "purchase", title: "Sécuriser 40 kg de glaçons", detail: "Le stock actuel couvre seulement 80 % du besoin médian du bar et de la terrasse.", deadline: "14:00", estimatedGain: 92, estimatedRisk: 145, confidence: 81, rule: "besoin bar + terrasse - stock disponible" },
       { id: "concert-staff", type: "staffing", title: "Décaler un serveur sur le pic 19:00–22:00", detail: "Le renfort couvre la pointe sans ajouter une vacation complète.", deadline: "16:00", estimatedGain: 74, estimatedRisk: 118, confidence: 78, rule: "1 serveur / 24 couverts au pic" },
     ],
@@ -224,6 +281,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "cancel-supplier", name: "Fournisseur", kind: "supplier", status: "warning", lastSync: "13:45", evidence: "Commande modifiable 15 min" },
     ],
     watch: watch("Concert annulé à 13:32", "Replanification immédiate des achats et de l'équipe.", "24 °C sec · baisse partiellement amortie", "Réduire la commande avant 14:00"),
+    staffing: staffing([8, 7], [3, 3], [2, 2]),
     signals: [
       { id: "cancel-event", label: "Concert", category: "event", previous: "Confirmé · 4 800 places", current: "Annulé", impactCovers: -10, updatedAt: "13:32", explanation: "Le principal moteur de fréquentation disparaît avant le service." },
       { id: "cancel-res", label: "Réservations", category: "reservations", previous: "84 confirmées", current: "76 + 8 annulations", impactCovers: 5, updatedAt: "13:39", explanation: "Les annulations restent partielles : la demande ne revient pas à la référence basse." },
@@ -231,6 +289,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "cancel-supplier", label: "Commande boissons", category: "supplier", previous: "Modifiable jusqu'à 14:00", current: "15 min restantes", impactCovers: 0, updatedAt: "13:45", explanation: "Cette décision reste réversible, contrairement à une partie de la préparation." },
     ],
     recommendations: [
+      { id: "cancel-prep-expired", type: "preparation", title: "Réduire le lot froid déjà lancé", detail: "La fenêtre de correction est passée à 13:30 ; l'action reste visible uniquement pour expliquer l'abstention opérationnelle.", deadline: "13:30", estimatedGain: 0, estimatedRisk: 36, confidence: 88, rule: "heure actuelle > heure limite : action bloquée" },
       { id: "cancel-purchase", type: "purchase", title: "Retirer 31 boissons de la commande", detail: "La commande reste modifiable pendant 15 minutes ; la préparation déjà lancée n'est pas comptée comme récupérable.", deadline: "14:00", estimatedGain: 86, estimatedRisk: 44, confidence: 84, rule: "commande initiale - besoin révisé" },
       { id: "cancel-staff", type: "staffing", title: "Réaffecter un serveur après 20:30", detail: "La pointe se tasse, mais le début de service reste couvert par les réservations maintenues.", deadline: "16:00", estimatedGain: 61, estimatedRisk: 72, confidence: 77, rule: "besoin horaire révisé - équipe planifiée" },
     ],
@@ -253,6 +312,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "multi-local", name: "Accès & événements", kind: "local_signals", status: "fresh", lastSync: "07:40", evidence: "Trajet 12 min · afterwork confirmé" },
     ],
     watch: watch("Afterwork · 190 inscrits", "Impact concentré sur Liberté, sans hausse équivalente à République.", "22 °C · terrasse partielle", "Aucun risque fournisseur prioritaire"),
+    staffing: staffing([5, 6], [3, 3], [1, 1]),
     signals: [
       { id: "multi-res", label: "Réservations Liberté", category: "reservations", previous: "46", current: "58", impactCovers: 8, updatedAt: "07:48", explanation: "La hausse se concentre sur Liberté, pas sur l'ensemble du groupe." },
       { id: "multi-staff", label: "Équipe République", category: "staff", previous: "Plan équilibré", current: "+1 serveur après 19:00", impactCovers: 0, updatedAt: "07:35", explanation: "République peut céder un renfort sans passer sous son besoin calculé." },
@@ -282,6 +342,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "bad-local-system", name: "Météo", kind: "local_signals", status: "warning", lastSync: "J-1 12:30", evidence: "Donnée vieille de 19 h" },
     ],
     watch: watch("Événement non exploitable", "Le signal ne peut pas être croisé avec les sources dégradées.", "Météo périmée · terrasse à confirmer", "Commande bloquée tant que les données sont incomplètes"),
+    staffing: staffing([6, null], [3, null], [1, null]),
     signals: [
       { id: "bad-pos", label: "Caisse", category: "quality", previous: "Import complet", current: "17 % de tickets dupliqués", impactCovers: null, updatedAt: "07:50", explanation: "Le volume historique ne peut pas être comparé sans dédoublonnage." },
       { id: "bad-res", label: "Réservations", category: "quality", previous: "Synchronisé", current: "Dernière synchro J-2", impactCovers: null, updatedAt: "07:45", explanation: "Le rythme récent est inconnu et ne doit pas être extrapolé." },
@@ -307,6 +368,7 @@ export const demoScenarios: DemoScenario[] = [
       { id: "road-supplier", name: "Fournisseur", kind: "supplier", status: "warning", lastSync: "07:25", evidence: "Créneau à avancer" },
     ],
     watch: watch("Travaux autour de Gare", "Fermeture de rue prévue de 16:30 à 21:00.", "Soirée sèche · impact travaux dominant", "Avancer la livraison avant 10:30"),
+    staffing: staffing([5, 5], [3, 3], [1, 1]),
     signals: [
       { id: "road-access", label: "Accès rue", category: "access", previous: "Circulation alternée", current: "Fermeture 16:30–21:00", impactCovers: -9, updatedAt: "07:12", explanation: "Le passage spontané et l'accès livraison sont tous deux affectés." },
       { id: "road-res", label: "Réservations", category: "reservations", previous: "38", current: "33 dont 5 annulations", impactCovers: -7, updatedAt: "07:46", explanation: "Les annulations confirment que l'impact ne reste pas théorique." },

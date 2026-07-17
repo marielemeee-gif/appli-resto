@@ -3,7 +3,7 @@ import { DemoProvider } from "@/demo/demo-context";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Pilotage prédictif des restaurants",
+  title: "Prototype App · Pilotage restaurants",
   description: "Prototype local d'aide à la décision pour restaurants.",
 };
 
