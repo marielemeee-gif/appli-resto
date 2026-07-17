@@ -97,7 +97,7 @@ Rééquilibrer les proportions, réduire le défilement mobile, ajouter un favic
 
 ## Current state
 
-Le commit `3478491` de la phase 12 est poussé et déployé. Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public sont terminés, vérifiés et autorisés pour publication sur `origin/main`.
+Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public sont publiés dans le commit `5db2b38` (`Complete and rebalance restaurant demo`) sur `origin/main`. Le redéploiement Render de ce commit reste à lancer ou à confirmer.
 
 ## Touched files and artifacts
 
@@ -142,6 +142,7 @@ Le commit `3478491` de la phase 12 est poussé et déployé. Les phases 13 et 14
 - Contrôle étroit à 287 px sans débordement : Décisions environ 2 030 px, Tableau de bord et Établissements environ 2 100 px, Journal moins de 1 000 px. Outils terrain et fournisseur restent accessibles mais repliés.
 - PDF complet régénéré : 32 pages A4, 28 pages initiales inchangées et quatre pages d'addendum actualisées ; rendu PNG inspecté sans coupure ni chevauchement.
 - Les routes locales `/specs-prototype-app.pdf` et `/icon.svg` répondent `200` avec les bons types MIME.
+- GitHub : commit `5db2b38` poussé avec succès de `main` vers `origin/main` le 17 juillet 2026.
 
 ## Blockers and open questions
 
@@ -151,10 +152,9 @@ Le commit `3478491` de la phase 12 est poussé et déployé. Les phases 13 et 14
 - L’optimisation du commit `7aea520` est déployée : `/health` répond en 0,2–0,5 seconde et le briefing public en 0,92 seconde lors de la vérification finale.
 - Aucun blocage de publication restant pour la phase 8.
 - Le dossier non suivi `prototype-use-cases/` préexistait ou appartient à l’utilisateur ; il reste hors du périmètre de la refonte et ne doit pas être ajouté sans validation explicite.
-- Les phases 13 et 14 ne sont pas encore publiques ; elles doivent être validées, commitées, poussées puis redéployées manuellement sur Render.
+- Le dernier commit est sur GitHub mais pas encore confirmé sur Render ; un redéploiement puis une vérification publique restent nécessaires.
 
 ## Next actions
 
-1. Faire valider les phases 13 et 14 dans la démo locale.
-2. Après approbation du message, créer un commit et pousser `main` vers `origin` en excluant `prototype-use-cases/`.
-3. Demander un unique redéploiement manuel Render puis vérifier les quatre vues, le favicon et le PDF publics.
+1. Lancer ou confirmer le redéploiement Render du commit `5db2b38`.
+2. Vérifier les quatre vues publiques, le favicon et `/specs-prototype-app.pdf`.
