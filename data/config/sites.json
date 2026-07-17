@@ -1,0 +1,41 @@
+[
+  {
+    "id": "republique",
+    "name": "République",
+    "latitude": 44.8414,
+    "longitude": -0.5742,
+    "capacity": 140,
+    "terrace_capacity": 36,
+    "base_covers_lunch": 68,
+    "base_covers_dinner": 86,
+    "average_ticket_lunch_cents": 3150,
+    "average_ticket_dinner_cents": 4750,
+    "roles": ["manager", "server", "cook", "bartender"]
+  },
+  {
+    "id": "liberte",
+    "name": "Liberté",
+    "latitude": 44.8378,
+    "longitude": -0.5791,
+    "capacity": 112,
+    "terrace_capacity": 24,
+    "base_covers_lunch": 68,
+    "base_covers_dinner": 88,
+    "average_ticket_lunch_cents": 2950,
+    "average_ticket_dinner_cents": 4450,
+    "roles": ["manager", "server", "cook"]
+  },
+  {
+    "id": "gare",
+    "name": "Gare",
+    "latitude": 44.8265,
+    "longitude": -0.5562,
+    "capacity": 96,
+    "terrace_capacity": 16,
+    "base_covers_lunch": 61,
+    "base_covers_dinner": 70,
+    "average_ticket_lunch_cents": 2650,
+    "average_ticket_dinner_cents": 3850,
+    "roles": ["manager", "server", "cook", "barista"]
+  }
+]

@@ -1,0 +1,33 @@
+name: Phase de réalisation
+description: Préparer une phase vérifiable du prototype
+title: "[Phase] "
+labels: ["phase"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Résultat attendu
+      description: Décrire le résultat visible et testable.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Périmètre
+      description: Lister les éléments inclus et explicitement exclus.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      description: Référencer les critères A1 à A15 applicables.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Vérifications prévues
+      description: Indiquer les tests, commandes et preuves attendues.
+    validations:
+      required: true

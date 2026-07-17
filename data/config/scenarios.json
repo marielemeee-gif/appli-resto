@@ -1,0 +1,32 @@
+[
+  {
+    "id": "baseline_normal",
+    "name": "Semaine normale",
+    "description": "Semaine ordinaire sans perturbation majeure."
+  },
+  {
+    "id": "concert_dry_friday",
+    "name": "Concert et météo sèche",
+    "description": "Concert proche, terrasse favorable et réservations accélérées le vendredi soir."
+  },
+  {
+    "id": "event_cancelled",
+    "name": "Événement annulé",
+    "description": "Annulation tardive d’un événement initialement confirmé."
+  },
+  {
+    "id": "multisite_staff_imbalance",
+    "name": "Déséquilibre multi-sites",
+    "description": "République est en sureffectif et Liberté en sous-effectif sur la même plage."
+  },
+  {
+    "id": "bad_data_abstain",
+    "name": "Données insuffisantes",
+    "description": "Historique incomplet, doublons de caisse et météo très incertaine."
+  },
+  {
+    "id": "roadworks_delivery_risk",
+    "name": "Travaux et livraison",
+    "description": "Des travaux tardifs dégradent l’accès et modifient la fenêtre de livraison."
+  }
+]

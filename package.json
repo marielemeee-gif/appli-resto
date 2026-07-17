@@ -1,0 +1,25 @@
+{
+  "name": "pilotage-restaurants",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev:web": "pnpm --filter @pilotage/web dev",
+    "build:web": "pnpm --filter @pilotage/web build",
+    "lint:web": "pnpm --filter @pilotage/web lint",
+    "typecheck:web": "pnpm --filter @pilotage/web typecheck",
+    "test:web": "pnpm --filter @pilotage/web test",
+    "check:web": "pnpm lint:web && pnpm typecheck:web && pnpm test:web && pnpm build:web",
+    "dev:api": ".venv/bin/uvicorn pilotage_api.main:app --app-dir apps/api/src --reload",
+    "lint:api": ".venv/bin/ruff check apps/api",
+    "typecheck:api": ".venv/bin/mypy apps/api/src",
+    "test:api": ".venv/bin/pytest apps/api",
+    "check:api": "pnpm lint:api && pnpm typecheck:api && pnpm test:api",
+    "generate:data": ".venv/bin/python -m pilotage_api.simulation.generator --scenario all",
+    "backtest:data": ".venv/bin/python -m pilotage_api.forecasting.backtest --scenario all",
+    "check": "pnpm check:web && pnpm check:api"
+  }
+}
