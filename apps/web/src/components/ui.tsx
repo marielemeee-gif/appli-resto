@@ -1,4 +1,4 @@
-export function PageHeader({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) {
+export function PageHeader({ eyebrow, title, description, site = "République" }: { eyebrow: string; title: string; description: string; site?: string }) {
   return (
     <header className="page-header">
       <div>
@@ -7,17 +7,18 @@ export function PageHeader({ eyebrow, title, description }: { eyebrow: string; t
         <p>{description}</p>
       </div>
       <div className="site-select" aria-label="Établissement actif">
-        <span>Établissement</span>
-        <strong>République</strong>
+        <span>Vue active</span>
+        <strong>{site}</strong>
       </div>
     </header>
   );
 }
 
 export function Confidence({ score = 84 }: { score?: number }) {
+  const label = score >= 75 ? "Élevée" : score >= 55 ? "Modérée" : "Faible";
   return (
     <span className="confidence" aria-label={`Confiance ${score} pour cent`}>
-      <span aria-hidden="true">●</span> Confiance {score} %
+      <span aria-hidden="true">●</span> {label} · {score} %
     </span>
   );
 }

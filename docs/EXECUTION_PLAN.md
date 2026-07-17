@@ -1,7 +1,75 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 7 réalisée — publication Git approuvée**
+Statut : **phase 8 réalisée et validée — publication en attente**
 Date de cadrage : 17 juillet 2026
+
+## Phase 8 — refonte UX de la démonstration
+
+### 1. Résultat de la phase
+
+La démonstration doit paraître plus chaleureuse, plus premium et plus concrète, tout en restant immédiatement identifiable comme un prototype composé exclusivement de données fictives. La page « Pourquoi cette prévision ? » doit expliquer une prévision normale, puis montrer séparément le cas d'abstention, avec un établissement cohérent sur tout l'écran.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : aucune donnée réelle, aucun appel externe et aucune modification du moteur numérique.
+- **Confirmé** : les six scénarios simulés existants doivent devenir visibles et compréhensibles.
+- **Décidé pour cette phase** : direction « brasserie éditoriale premium » — ivoire chaud, encre profonde, turquoise, safran et brique — inspirée du PDF sans reproduire une marque.
+- **Décidé pour cette phase** : les exemples non calculés ne sont pas nécessaires ; la galerie s'appuie sur les six scénarios réellement configurés et les marque explicitement comme fictifs.
+- **Hors périmètre** : nouveau modèle de prévision, nouvelles règles métier, données réelles, authentification et connecteurs.
+
+### 3. Architecture et flux
+
+Les contrats API, la simulation, la prévision et les règles restent inchangés. Le web reformate uniquement les sorties structurées : libellés français, hiérarchie visuelle, facteurs, intervalle, confiance et qualité. Le diagnostic charge une prévision calculée du scénario concert et un cas d'abstention du scénario de données dégradées, sans les confondre.
+
+### 4. Fichiers concernés
+
+- `apps/web/src/app/globals.css` : tokens, responsive, animations et composants visuels.
+- `apps/web/src/components/app-shell.tsx` et `ui.tsx` : coque, navigation et éléments partagés.
+- `apps/web/src/components/diagnostic-client.tsx` : explication normale + abstention.
+- `apps/web/src/components/scenario-gallery.tsx` : six scénarios fictifs visibles.
+- `apps/web/src/components/{cockpit-page,briefing-client,multisites-client,roi-client}.tsx` : harmonisation des écrans.
+- `apps/web/src/app/*/page.tsx` et tests : microcopy et preuves de rendu.
+
+### 5. Étapes d'implémentation
+
+1. Refaire le socle visuel et la navigation sans modifier les routes.
+2. Corriger le diagnostic et traduire les codes techniques.
+3. Ajouter la galerie des six scénarios configurés.
+4. Harmoniser les quatre écrans de décision.
+5. Vérifier desktop, mobile, états asynchrones et accessibilité de base.
+
+### 6. Vérifications
+
+```bash
+pnpm lint:web
+pnpm typecheck:web
+pnpm test:web
+pnpm build:web
+pnpm check
+```
+
+Une vérification visuelle est réalisée sur les cinq routes principales en desktop et sur le briefing en mobile.
+
+### 7. Risques et solutions de repli
+
+- **Interface trompeuse** : badge permanent « données fictives » et provenance sur les scénarios.
+- **Confusion calcul/illustration** : aucun chiffre illustratif supplémentaire n'est présenté comme calculé.
+- **Diagnostic encore opaque** : traduire méthode, confiance et qualité, puis séparer clairement prévision et abstention.
+- **Régression responsive** : grilles à une colonne et cibles tactiles de 44 px sous 640 px.
+- **Régression métier** : aucun changement des contrats ou calculs API pendant cette phase.
+
+### 8. Critères de sortie
+
+- Le site affiché dans le diagnostic correspond aux données chargées.
+- Aucun code `abstain` ou `low_data_quality` n'est exposé à l'utilisateur.
+- Facteurs, fourchette, confiance, référence et qualité sont compréhensibles en français.
+- Les six scénarios fictifs sont visibles et nommés.
+- Les cinq routes partagent une identité cohérente et responsive.
+- Tests, lint, types et build passent avant demande de validation.
+
+### Résultat du 17 juillet 2026
+
+Le socle visuel adopte la direction « brasserie éditoriale premium » sur les cinq routes. Le diagnostic présente désormais une prévision enrichie de République avec référence, facteurs, impacts, fourchette, confiance et backtest, puis isole le cas d'abstention de Liberté dans un encart de prudence. Les six scénarios configurés sont visibles et explicitement marqués comme simulations. La vérification desktop et mobile ne montre aucun débordement horizontal ; `pnpm check` réussit avec 6 tests web et 22 tests API.
 
 ## 1. Résultat de la phase
 

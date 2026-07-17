@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import BriefingPage from "./briefing/page";
 import DiagnosticPage from "./diagnostic/page";
 import MultisitesPage from "./multisites/page";
@@ -15,6 +15,8 @@ vi.mock("@/lib/api", () => ({
   decide: vi.fn(),
 }));
 
+afterEach(cleanup);
+
 describe("Phase 5", () => {
   it("affiche le cockpit et identifie les données fictives", () => {
     render(<Home />);
@@ -22,7 +24,7 @@ describe("Phase 5", () => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "Vendredi 17 juillet",
     );
-    expect(screen.getByText("Démo fictive")).toBeInTheDocument();
+    expect(screen.getByText(/Données fictives/i)).toBeInTheDocument();
     expect(screen.getByText(/données 100 % fictives/i)).toBeInTheDocument();
     expect(screen.getByText(/calcul en cours/i)).toBeInTheDocument();
   });
@@ -36,5 +38,13 @@ describe("Phase 5", () => {
     render(<Page />);
 
     expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
+  });
+
+  it("présente les six scénarios comme des simulations", () => {
+    const view = render(<DiagnosticPage />);
+
+    expect(view.getByRole("heading", { name: "Six situations, toutes fictives" })).toBeInTheDocument();
+    expect(view.getAllByText("Scénario simulé")).toHaveLength(6);
+    expect(view.getByText("Données insuffisantes")).toBeInTheDocument();
   });
 });
