@@ -8,26 +8,29 @@ import { Confidence, PageHeader, StateBanner } from "./ui";
 const statusLabels = { accepted: "Validée", modified: "Modifiée", refused: "Refusée" };
 
 export function BriefingClient() {
-  const { scenario, decisions, decide, supplierStatus, prepareSupplierDraft, confirmSupplierDraft, addCustomDecision } = useDemo();
+  const { scenario, activeSite, decisions, decide, supplierStatus, prepareSupplierDraft, confirmSupplierDraft, addCustomDecision, selectActiveSite } = useDemo();
   const [customTitle, setCustomTitle] = useState("");
   const [customOwner, setCustomOwner] = useState("Responsable bar");
   const [customDeadline, setCustomDeadline] = useState("16:00");
+  const [customConfirmation, setCustomConfirmation] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [pendingReview, setPendingReview] = useState<{ recommendationId: string; status: "modified" | "refused" } | null>(null);
   const [reviewNote, setReviewNote] = useState("");
   const forecast = scenario.forecast;
-  const scenarioDecisions = decisions.filter((item) => item.scenarioId === scenario.id);
+  const isDetailedSite = activeSite.id === scenario.siteId;
+  const scenarioDecisions = decisions.filter((item) => item.scenarioId === scenario.id && (item.site === activeSite.name || item.site === "Groupe"));
   const decisionsToday = scenarioDecisions.filter((item) => item.decidedAt.startsWith("2026-07-17"));
   const workflow = scenario.supplierWorkflow;
   const workflowTotal = workflow?.items.reduce((sum, item) => sum + item.requestedQuantity * item.unitPrice, 0) ?? 0;
   const decisionLines = decisionsToday.map((item) => `- ${item.title}${item.owner ? ` · ${item.owner}` : ""}${item.deadline ? ` · avant ${item.deadline}` : ""}${item.note ? ` · ${item.note}` : ""}`);
-  const shareMessage = [`Briefing fictif · ${scenario.siteName} · dîner du 17 juillet`, `${forecast.expectedCovers ?? "Prévision suspendue"}${forecast.expectedCovers !== null ? ` couverts prévus (${forecast.lowerCovers}–${forecast.upperCovers})` : ""}`, "", "Décisions retenues", ...decisionLines, "", "Message préparé dans Prototype App."].join("\n");
+  const shareMessage = [`Briefing fictif · ${activeSite.name} · dîner du 17 juillet`, `${forecast.expectedCovers ?? "Prévision suspendue"}${forecast.expectedCovers !== null ? ` couverts prévus (${forecast.lowerCovers}–${forecast.upperCovers})` : ""}`, "", "Décisions retenues", ...decisionLines, "", "Message préparé dans Prototype App."].join("\n");
   const encodedMessage = encodeURIComponent(shareMessage);
 
   function addDecision(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     addCustomDecision(customTitle, customOwner, customDeadline);
     setCustomTitle("");
+    setCustomConfirmation(`Ajoutée au Journal de ${activeSite.name}.`);
   }
 
   function submitReview(event: FormEvent<HTMLFormElement>) {
@@ -38,8 +41,23 @@ export function BriefingClient() {
     setReviewNote("");
   }
 
+  if (!isDetailedSite) return <>
+    <PageHeader eyebrow="Décisions du service" title={`Vue terrain · ${activeSite.name}`} description={`Aucune recommandation calculée pour ${activeSite.name} dans cet instantané fictif.`} site={activeSite.name} />
+    <section className="active-site-summary briefing-site-summary" aria-labelledby="secondary-site-title">
+      <div><p className="eyebrow">Synthèse disponible</p><h2 id="secondary-site-title">Plan local sans fausse précision</h2><p>L’instantané groupe indique {activeSite.expectedCovers ?? "une prévision suspendue"}{activeSite.expectedCovers !== null ? " couverts attendus" : ""}, une équipe salle à {activeSite.plannedServers} / {activeSite.requiredServers ?? "—"} et un risque stock {activeSite.stockRisk.toLowerCase()}. Aucun besoin Cuisine/Bar ni gain n’est inventé.</p></div>
+      <div className="secondary-site-actions"><button className="button ghost" type="button" onClick={() => selectActiveSite(scenario.siteId)}>Voir le plan calculé · {scenario.siteName}</button></div>
+    </section>
+    <form className="custom-decision standalone" onSubmit={addDecision}>
+      <p className="eyebrow">Décision terrain · {activeSite.name}</p><h2>Ajouter une consigne locale</h2><p>Elle sera attribuée à {activeSite.name} et apparaîtra dans son Journal.</p>
+      <label>Action<input required value={customTitle} onChange={(event) => { setCustomTitle(event.target.value); setCustomConfirmation(""); }} placeholder="Ex. Confirmer l’ouverture de la terrasse" /></label>
+      <div><label>Responsable<input required value={customOwner} onChange={(event) => setCustomOwner(event.target.value)} /></label><label>Avant<input required type="time" value={customDeadline} onChange={(event) => setCustomDeadline(event.target.value)} /></label></div>
+      <button className="button primary" type="submit">Ajouter au plan de {activeSite.name}</button>
+      {customConfirmation && <p className="inline-confirmation" role="status">{customConfirmation}</p>}
+    </form>
+  </>;
+
   return <>
-    <PageHeader eyebrow="Décisions du service" title={forecast.expectedCovers === null ? "Corriger les données avant d’agir" : `${scenario.recommendations.length} décisions avant le dîner`} description={`${scenario.siteName} · ici, on arbitre et on transmet. Le détail du calcul reste dans le Tableau de bord.`} site={scenario.siteName} />
+    <PageHeader eyebrow="Décisions du service" title={forecast.expectedCovers === null ? "Corriger les données avant d’agir" : `${scenario.recommendations.length} décisions avant le dîner`} description={`${activeSite.name} · ici, on arbitre et on transmet. Le détail du calcul reste dans le Tableau de bord.`} site={activeSite.name} />
 
     <details className="systems-details">
       <summary><span><strong>Sources actualisées · {scenario.systems.filter((system) => system.status === "fresh").length}/{scenario.systems.length}</strong><small>Preuves fictives et heures de synchronisation</small></span><em>Voir le détail</em></summary>
@@ -75,9 +93,10 @@ export function BriefingClient() {
         <div className="decision-tools">
           <form className="custom-decision" onSubmit={addDecision}>
             <p className="eyebrow">Décision terrain</p><h2>Ajouter une action</h2><p>Pour une consigne utile qui ne vient pas du moteur.</p>
-            <label>Action<input required value={customTitle} onChange={(event) => setCustomTitle(event.target.value)} placeholder="Ex. Préparer le comptoir extérieur" /></label>
+            <label>Action<input required value={customTitle} onChange={(event) => { setCustomTitle(event.target.value); setCustomConfirmation(""); }} placeholder="Ex. Préparer le comptoir extérieur" /></label>
             <div><label>Responsable<input required value={customOwner} onChange={(event) => setCustomOwner(event.target.value)} /></label><label>Avant<input required type="time" value={customDeadline} onChange={(event) => setCustomDeadline(event.target.value)} /></label></div>
             <button className="button primary" type="submit">Ajouter au plan</button>
+            {customConfirmation && <p className="inline-confirmation" role="status">{customConfirmation}</p>}
           </form>
           <section className="share-briefing" aria-labelledby="share-title">
             <p className="eyebrow light">Transmission</p><h2 id="share-title">Envoyer le briefing au terrain</h2><p>{decisionsToday.length ? `${decisionsToday.length} décision${decisionsToday.length > 1 ? "s" : ""} prête${decisionsToday.length > 1 ? "s" : ""} à partager.` : "Validez ou ajoutez au moins une décision avant de préparer le message."}</p>

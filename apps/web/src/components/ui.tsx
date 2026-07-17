@@ -1,4 +1,15 @@
-export function PageHeader({ eyebrow, title, description, site = "République" }: { eyebrow: string; title: string; description: string; site?: string }) {
+"use client";
+
+import { useDemo } from "@/demo/demo-context";
+
+export function PageHeader({ eyebrow, title, description }: { eyebrow: string; title: string; description: string; site?: string }) {
+  const { scenario, activeSite, selectActiveSite } = useDemo();
+
+  function changeSite(value: string) {
+    const site = scenario.sites.find((item) => item.id === value);
+    if (site) selectActiveSite(site.id);
+  }
+
   return (
     <header className="page-header">
       <div>
@@ -6,10 +17,12 @@ export function PageHeader({ eyebrow, title, description, site = "République" }
         <h1>{title}</h1>
         <p>{description}</p>
       </div>
-      <div className="site-select" aria-label="Établissement actif">
+      <label className="site-select">
         <span>Vue active</span>
-        <strong>{site}</strong>
-      </div>
+        <select aria-label="Établissement actif" value={activeSite.id} onChange={(event) => changeSite(event.target.value)}>
+          {scenario.sites.map((site) => <option value={site.id} key={site.id}>{site.name}</option>)}
+        </select>
+      </label>
     </header>
   );
 }

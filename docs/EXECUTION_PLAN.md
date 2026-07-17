@@ -1,7 +1,101 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 15 terminée localement — en attente de validation**
+Statut : **phase 16 terminée localement — en attente de validation**
 Date de cadrage : 17 juillet 2026
+
+## Phase 16 — rendre la vue active utile et fiabiliser les parcours
+
+### 1. Résultat de la phase
+
+Le sélecteur `Vue active` devient interactif sur ordinateur et mobile : il filtre les informations réellement disponibles pour République, Liberté ou Gare, sans fabriquer une prévision détaillée absente des fixtures. La vue groupe permet de placer un établissement au centre de l'analyse, et l'audit corrige les incohérences de site, de décision et de période repérées dans les parcours.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : les trois établissements restent fictifs et appartiennent au même instantané de scénario.
+- **Décidé** : le site actif est un filtre de lecture partagé entre Tableau de bord, Décisions, Établissements et Journal.
+- **Décidé** : le site porteur du scénario conserve la prévision complète, ses facteurs et ses recommandations calculées.
+- **Décidé** : pour un autre site, l'app affiche seulement les données réellement présentes dans la comparaison groupe : couverts attendus, équipe salle, risque stock, alerte et horizon dérivé déjà existant.
+- **Écarté** : dériver silencieusement une fourchette, un chiffre d'affaires, des besoins Cuisine/Bar ou des recommandations pour un site secondaire.
+- **Décidé** : une vue secondaire sans recommandation montre un état calme et permet seulement une décision terrain libre.
+- **Décidé** : les vigies sont filtrées sur `Groupe` et le site actif ; leur compteur devient dynamique.
+- **Décidé** : la vue Établissements propose explicitement `Mettre en vue active` puis renvoie vers le Tableau de bord.
+- **Décidé** : l'identifiant de la décision de transfert est partagé entre Décisions et Établissements afin que les deux écrans se synchronisent.
+- **Décidé** : les historiques présentés comme juillet 2026 sont replacés dans juillet 2026.
+
+### 3. Architecture et flux
+
+```text
+DemoContext
+  activeSiteId + selectActiveSite
+          │
+          ├─ PageHeader : liste déroulante partagée
+          ├─ Tableau de bord : détail si site scénario / synthèse sinon
+          ├─ Décisions : recommandations du site scénario / état calme sinon
+          ├─ Établissements : site actif surligné + changement de focus
+          └─ Journal : décisions filtrées par établissement
+
+Fixture scénario
+  ├─ forecast / signals / recommendations -> site porteur uniquement
+  └─ sites[]                             -> synthèse honnête des trois sites
+```
+
+La sélection reste en mémoire de session React et revient au site du scénario lors d'un changement de cas fictif ou d'une réinitialisation. Aucune API ni persistance externe n'est ajoutée.
+
+### 4. Fichiers concernés
+
+- `demo/demo-context.tsx` : état de site actif et attribution des décisions libres.
+- `demo/scenarios.ts` : cohérence des vigies, dates du Journal et identifiant de transfert.
+- `components/ui.tsx` : véritable sélecteur accessible.
+- `components/cockpit-page.tsx` : détail complet ou synthèse honnête selon le site.
+- `components/briefing-client.tsx` : recommandations filtrées et état calme.
+- `components/multisites-client.tsx` : établissement actif et action de focus.
+- `components/roi-client.tsx` : journal filtré par site.
+- `app/globals.css`, `app/page.test.tsx` : responsive, états et tests de synchronisation.
+- `PROJECTS/pilotage-restaurants/project-state.md` : suivi de phase.
+
+### 5. Étapes d'implémentation
+
+1. Ajouter le site actif au contexte partagé.
+2. Transformer l'étiquette statique en liste déroulante accessible.
+3. Adapter Tableau de bord et Décisions sans fabriquer de données secondaires.
+4. Relier la vue groupe et le Journal au filtre.
+5. Corriger les incohérences révélées par l'audit.
+6. Rejouer les parcours desktop et mobile.
+
+### 6. Vérifications
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+Tests prévus : changement de site partagé, synthèse secondaire, absence de fausse fourchette, vigies filtrées, décision libre attribuée au bon site, transfert synchronisé entre deux écrans et Journal filtré. Contrôle visuel à 390 px et sur la largeur ordinateur disponible.
+
+Résultat : `pnpm check` réussit avec 14 tests web et 22 tests API ; lint, types et build passent. Le parcours navigateur à 390 px sélectionne Liberté depuis République, conserve ce choix dans Décisions et Journal, ajoute une consigne attribuée à Liberté avec confirmation immédiate, puis la retrouve dans son historique. Aucun débordement global ni erreur console n'est observé ; le rail Établissements conserve trois cartes, une seule vue active et deux actions de changement. À 920 px, la comparaison reste en cinq colonnes et le sélecteur occupe 176 px sans rupture de mise en page.
+
+L'audit ajoute également des invariants automatisés : le site principal doit correspondre à la prévision et au besoin Salle, la fourchette doit contenir la médiane, les contributions affichées doivent réconcilier l'écart à la référence, les vigies Événement/Fournisseur doivent porter le bon site, le Journal doit rester en juillet et le transfert doit partager l'identifiant de sa recommandation.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : une seule source `activeSiteId` et une recherche dans `scenario.sites`.
+- **Fuite temporelle** : aucun signal futur ni résultat observé n'est ajouté.
+- **Prévision trop précise** : les sites secondaires n'affichent ni intervalle ni CA détaillé.
+- **API simulée irréaliste** : la sélection reste locale et ne prétend pas interroger un nouveau connecteur.
+- **Règle inexécutable** : aucune recommandation n'est créée par simple changement de vue.
+- **Interface trompeuse** : un libellé distingue explicitement `vue synthèse groupe` et `prévision détaillée`.
+- **Surcharge** : aucun onglet et aucun panneau métier supplémentaire permanent.
+
+### 8. Critères de sortie
+
+- Les trois lieux sont sélectionnables sur ordinateur et mobile.
+- Le changement est cohérent sur les quatre écrans.
+- Les données détaillées ne sont affichées que pour le site qui les possède.
+- Une décision libre porte le nom du site actif.
+- Une décision de transfert est visible comme prise sur les deux écrans concernés.
+- Les vigies et le Journal ne mélangent plus silencieusement les sites ou périodes.
+- Tests, lint, types, build et responsive passent.
+
+Phase terminée localement le 17 juillet 2026. Aucun commit, push ni déploiement n'est réalisé avant validation explicite.
 
 ## Phase 15 — faire du mobile une vraie interface d'application
 

@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Transformer l'expérience mobile, jugée moins aboutie que le desktop, et moderniser les couleurs et les surfaces de l'application sur ordinateur comme sur mobile.
+Ajouter une véritable liste déroulante `Vue active` pour les trois lieux, davantage d'interactions utiles et vérifier/corriger la logique de l'ensemble du site.
 
 ## Agreed scope and approvals
 
@@ -100,7 +100,7 @@ Transformer l'expérience mobile, jugée moins aboutie que le desktop, et modern
 
 ## Current state
 
-Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est publiée dans `928a16c` (`Polish mobile restaurant demo`) sur `origin/main` : navigation mobile dédiée, rails de cartes et modernisation mesurée du langage visuel.
+Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est publiée dans `928a16c` (`Polish mobile restaurant demo`) sur `origin/main`. La phase 16 est terminée localement et attend validation : vue active partagée, interactions multi-sites et audit de cohérence des parcours.
 
 ## Touched files and artifacts
 
@@ -152,6 +152,9 @@ Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité d
 - Phase 15 responsive : à 390 px, aucun débordement global, navigation fixe en bas, onglet actif, décisions et établissements en rails horizontaux ; hauteurs ramenées à environ 1 330 px et 1 440 px.
 - Phase 15 visuelle : palette plus fraîche, surfaces blanches, ombres allégées, accents turquoise/abricot et boutons moins massifs sur ordinateur comme sur mobile.
 - GitHub : phase 15 poussée avec succès de `main` vers `origin/main` dans le commit `928a16c` le 17 juillet 2026.
+- Phase 16 : `pnpm check` réussi avec 14 tests web et 22 tests API ; lint, types et build passent.
+- Phase 16 responsive : parcours République → Liberté → Décisions → Journal validé à 390 px sans débordement ni erreur console ; comparaison validée à 920 px.
+- Audit phase 16 : vigies rattachées au bon site, historiques alignés sur juillet 2026, transfert synchronisé par identifiant et contributions numériques réconciliées avec la prévision.
 
 ## Blockers and open questions
 

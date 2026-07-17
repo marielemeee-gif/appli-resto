@@ -23,6 +23,19 @@ describe("Application de démonstration", () => {
       expect(scenario.recommendations.length).toBeLessThanOrEqual(3);
       expect(scenario.staffing.map((item) => item.role)).toEqual(["Salle", "Cuisine", "Bar"]);
       expect(scenario.watch).toHaveLength(4);
+      expect(scenario.watch.filter((item) => item.category === "Événement" || item.category === "Fournisseur").every((item) => item.site === scenario.siteName)).toBe(true);
+      expect(scenario.history.every((item) => item.decidedAt.startsWith("2026-07"))).toBe(true);
+      if (scenario.dispatch) expect(scenario.recommendations.some((item) => item.id === scenario.dispatch?.id)).toBe(true);
+      const primarySite = scenario.sites.find((site) => site.id === scenario.siteId);
+      expect(primarySite?.expectedCovers).toBe(scenario.forecast.expectedCovers);
+      expect(primarySite?.plannedServers).toBe(scenario.staffing.find((item) => item.role === "Salle")?.planned);
+      expect(primarySite?.requiredServers).toBe(scenario.staffing.find((item) => item.role === "Salle")?.required);
+      if (scenario.forecast.expectedCovers !== null && scenario.forecast.baselineCovers !== null) {
+        const explainedDelta = scenario.signals.reduce((sum, signal) => sum + (signal.impactCovers ?? 0), 0);
+        expect(explainedDelta).toBe(scenario.forecast.expectedCovers - scenario.forecast.baselineCovers);
+        expect(scenario.forecast.lowerCovers).toBeLessThanOrEqual(scenario.forecast.expectedCovers);
+        expect(scenario.forecast.upperCovers).toBeGreaterThanOrEqual(scenario.forecast.expectedCovers);
+      }
     }
     expect(demoScenarios.find((scenario) => scenario.id === "bad_data_abstain")?.supplierWorkflow).toBeUndefined();
   });
@@ -42,7 +55,8 @@ describe("Application de démonstration", () => {
     expect(navigation.querySelectorAll(".nav-icon")).toHaveLength(4);
     expect(screen.queryByRole("link", { name: "Explications" })).not.toBeInTheDocument();
     expect(screen.getByText("Concert · 4 800 places")).toBeInTheDocument();
-    expect(screen.getByText("CDD serveur arrive à échéance")).toBeInTheDocument();
+    expect(screen.queryByText("CDD serveur arrive à échéance")).not.toBeInTheDocument();
+    expect(screen.getByText("3 échéances utiles")).toBeInTheDocument();
     expect(screen.getByText("Brouillon fûts et glaçons avant 14:00")).toBeInTheDocument();
   });
 
@@ -78,12 +92,35 @@ describe("Application de démonstration", () => {
     const horizon = screen.getByRole("heading", { name: "Les 7 prochains jours" }).closest("section");
     expect(horizon).not.toBeNull();
     expect(within(horizon!).getAllByRole("article")).toHaveLength(7);
-    expect(within(horizon!).getByLabelText("Établissement")).toHaveValue("republique");
+    expect(screen.getByLabelText("Établissement actif")).toHaveValue("republique");
     expect(within(horizon!).getByLabelText("Service")).toHaveValue("dinner");
     expect(within(horizon!).getAllByText("140").length).toBeGreaterThan(0);
 
     fireEvent.change(within(horizon!).getByLabelText("Service"), { target: { value: "lunch" } });
     expect(within(horizon!).getAllByText("87").length).toBeGreaterThan(0);
+  });
+
+  it("partage la vue active sans inventer de prévision détaillée", () => {
+    const view = renderDemo(<Home />);
+    fireEvent.change(screen.getByLabelText("Établissement actif"), { target: { value: "liberte" } });
+
+    const summary = screen.getByRole("heading", { name: "Liberté" }).closest("section");
+    expect(summary).not.toBeNull();
+    expect(within(summary!).getByText("108")).toBeInTheDocument();
+    expect(within(summary!).getByText(/sans inventer de fourchette/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Aucune décision moteur" })).toBeInTheDocument();
+    expect(screen.getByText("2 échéances utiles")).toBeInTheDocument();
+
+    view.rerender(<DemoProvider><BriefingPage /></DemoProvider>);
+    expect(screen.getByRole("heading", { level: 1, name: "Vue terrain · Liberté" })).toBeInTheDocument();
+    expect(screen.queryByText("Gain estimé fictif")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Action"), { target: { value: "Confirmer la terrasse Liberté" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ajouter au plan de Liberté" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Ajoutée au Journal de Liberté.");
+
+    view.rerender(<DemoProvider><ValeurPage /></DemoProvider>);
+    expect(screen.getByRole("heading", { name: "Historique · Liberté" })).toBeInTheDocument();
+    expect(screen.getByText("Confirmer la terrasse Liberté")).toBeInTheDocument();
   });
 
   it("une décision met à jour l'écran et le Journal", () => {

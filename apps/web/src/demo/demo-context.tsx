@@ -1,16 +1,19 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
-import { defaultScenarioId, DemoDecision, getDemoScenario } from "./scenarios";
+import { defaultScenarioId, DemoDecision, type DemoSite, getDemoScenario } from "./scenarios";
 
 type DecisionStatus = DemoDecision["status"];
 export type SupplierStatus = "recommended" | "drafted" | "confirmed_demo";
 type DemoContextValue = {
   scenario: ReturnType<typeof getDemoScenario>;
+  activeSite: DemoSite;
+  activeSiteId: DemoSite["id"];
   decisions: DemoDecision[];
   storageError: string;
   supplierStatus: SupplierStatus;
   selectScenario: (id: string) => void;
+  selectActiveSite: (id: DemoSite["id"]) => void;
   decide: (recommendationId: string, status: DecisionStatus, note?: string) => void;
   prepareSupplierDraft: () => void;
   confirmSupplierDraft: () => void;
@@ -22,20 +25,31 @@ const DemoContext = createContext<DemoContextValue | null>(null);
 
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [scenarioId, setScenarioId] = useState(defaultScenarioId);
+  const [activeSiteId, setActiveSiteId] = useState<DemoSite["id"]>(getDemoScenario(defaultScenarioId).siteId);
   const [sessionDecisions, setSessionDecisions] = useState<DemoDecision[]>([]);
   const [supplierStates, setSupplierStates] = useState<Record<string, SupplierStatus>>({});
   const storageError = "";
 
   const scenario = getDemoScenario(scenarioId);
+  const activeSite = scenario.sites.find((item) => item.id === activeSiteId) ?? scenario.sites.find((item) => item.id === scenario.siteId)!;
   const decisions = useMemo(() => [...scenario.history, ...sessionDecisions], [scenario.history, sessionDecisions]);
   const supplierStatus = scenario.supplierWorkflow ? supplierStates[scenario.supplierWorkflow.id] ?? "recommended" : "recommended";
 
   const value = useMemo<DemoContextValue>(() => ({
     scenario,
+    activeSite,
+    activeSiteId: activeSite.id,
     decisions,
     storageError,
     supplierStatus,
-    selectScenario: (id) => setScenarioId(getDemoScenario(id).id),
+    selectScenario: (id) => {
+      const nextScenario = getDemoScenario(id);
+      setScenarioId(nextScenario.id);
+      setActiveSiteId(nextScenario.siteId);
+    },
+    selectActiveSite: (id) => {
+      if (scenario.sites.some((item) => item.id === id)) setActiveSiteId(id);
+    },
     decide: (recommendationId, status, note) => {
       const recommendation = scenario.recommendations.find((item) => item.id === recommendationId);
       const dispatch = scenario.dispatch?.id === recommendationId ? scenario.dispatch : undefined;
@@ -88,7 +102,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
           recommendationId: `custom-${customCount + 1}`,
           recommendationType: "custom",
           title: cleanTitle,
-          site: scenario.siteName,
+          site: activeSite.name,
           status: "accepted",
           decidedAt: "2026-07-17T09:12:00+02:00",
           estimatedGain: 0,
@@ -100,10 +114,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     },
     resetDemo: () => {
       setScenarioId(defaultScenarioId);
+      setActiveSiteId(getDemoScenario(defaultScenarioId).siteId);
       setSessionDecisions([]);
       setSupplierStates({});
     },
-  }), [decisions, scenario, storageError, supplierStatus]);
+  }), [activeSite, decisions, scenario, storageError, supplierStatus]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
