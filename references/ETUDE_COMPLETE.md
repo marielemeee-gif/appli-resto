@@ -867,3 +867,70 @@ La bonne séquence est :
 > **caisse + météo + calendrier + événements → prévision par service → recommandation d'effectif → préparation des principaux plats → stocks et commandes → automatisation.**
 
 Il serait prématuré de commencer par les données des voisins, tous les commerces ou la commande fournisseur automatique. Le premier objectif n'est pas de construire toute la plateforme : c'est de démontrer, sur les données du groupe pilote, qu'une prévision aurait changé une décision et économisé au moins plusieurs centaines d'euros par établissement et par mois.
+
+---
+
+## 18. Mise à jour après construction du prototype
+
+Date de mise à jour : 17 juillet 2026
+
+Cette section complète l'étude initiale sans la réécrire rétroactivement. Depuis sa rédaction, un prototype public et reproductible a été construit. Il utilise exclusivement des données simulées et ne constitue ni un pilote client, ni une validation économique, ni une preuve de performance sur données réelles.
+
+### 18.1. Ce qui est désormais démontré par le prototype
+
+| Capacité | Preuve disponible | Limite à conserver |
+|---|---|---|
+| Simulation multi-sites | Trois établissements fictifs, déjeuner/dîner et vingt-quatre mois générés avec la graine `20260717` | Aucune donnée de caisse réelle |
+| Signaux locaux | Adaptateurs simulés de météo, événements, calendrier et travaux, avec date de publication | Aucun connecteur externe réel |
+| Prévision | Référence historique, méthode enrichie, fourchette, facteurs, confiance et abstention | Les métriques mesurent un monde simulé |
+| Contrôle temporel | Backtest chronologique et absence de fuite future vérifiée par les tests | À reproduire sur un export client |
+| Recommandations | Effectif, préparation, achats et transfert multi-sites avec heure limite | Règles simplifiées, sans exécution automatique |
+| Décision humaine | Validation, modification ou refus enregistrés dans le prototype | Aucun planning ni fournisseur réel modifié |
+| Explication | Séparation entre nombre calculé, règle déterministe et narration | Aucun LLM utilisé comme moteur numérique |
+| Démonstration | Cockpit, briefing, multi-sites, valeur, diagnostic et laboratoire de scénarios | Ce n'est pas encore un produit de production |
+
+Le prototype public est accessible à l'adresse `https://pilotage-restaurants.onrender.com/`. Son code est versionné sur `https://github.com/marielemeee-gif/appli-resto`.
+
+### 18.2. Six scénarios de démonstration
+
+Les six scénarios ne sont plus seulement des descriptions. Ils peuvent être joués depuis le laboratoire de l'application :
+
+1. **Semaine normale** - vérifier le comportement de référence sans perturbation majeure ;
+2. **Concert et météo sèche** - observer réservations, événement et terrasse dans le même service ;
+3. **Événement annulé** - recalculer à 13 h 45 après une annulation fictive publiée tardivement ;
+4. **Déséquilibre multi-sites** - proposer un transfert de serveur de République vers Liberté ;
+5. **Données insuffisantes** - démontrer une abstention sans nombre de secours ;
+6. **Travaux et livraison** - montrer un facteur d'accès local sur le site Gare.
+
+Chaque résultat sépare désormais deux niveaux :
+
+- **résultat calculé** : prévision, fourchette, facteurs et recommandations effectivement renvoyés par l'API fictive ;
+- **illustration fictive** : question manager et décision pédagogique ajoutées pour rendre le cas compréhensible, sans les présenter comme une sortie du moteur.
+
+### 18.3. Ce que le prototype ne prouve pas
+
+- qu'un modèle battra la méthode d'un manager sur des données de caisse réelles ;
+- que les exports disponibles sont suffisamment propres et réguliers ;
+- que les recommandations respectent toutes les contraintes sociales, contractuelles et fournisseurs ;
+- qu'un manager ouvrira le briefing et modifiera réellement une décision ;
+- qu'un gain mensuel de 400 euros ou davantage sera observé ;
+- que l'onboarding peut être maintenu sous deux heures par semaine et par site ;
+- que l'architecture actuelle satisfait les exigences de sécurité et d'isolation d'un SaaS multi-client.
+
+Les gains visibles dans le registre restent des estimations fictives. Le champ de gain observé demeure volontairement vide.
+
+### 18.4. Décision recommandée après le prototype
+
+La priorité n'est plus d'ajouter des écrans. La prochaine preuve doit venir du terrain :
+
+1. obtenir un export anonymisé de douze à vingt-quatre mois pour trois établissements d'un même groupe ;
+2. mesurer qualité, fraîcheur et temps de normalisation avant de promettre un onboarding rapide ;
+3. rejouer huit à douze semaines sans fuite temporelle et comparer avec la référence simple et la méthode du manager ;
+4. présenter les six scénarios au responsable, puis supprimer ceux qui ne changeraient aucune décision ;
+5. lancer un pilote en parallèle du fonctionnement normal uniquement si le backtest et les retours manager sont concluants.
+
+### 18.5. Verdict actualisé
+
+La faisabilité technique du prototype est maintenant démontrée. La faisabilité commerciale et opérationnelle reste à établir. Le principal risque a donc changé : il ne s'agit plus de savoir si l'on peut construire l'interface et les moteurs simples, mais si des données réelles permettent de produire, au bon moment, une décision que le manager applique et dont le gain peut être mesuré.
+
+> **Décision actualisée : utiliser le prototype comme support d'entretien et de backtest, puis investir dans les connecteurs et la sécurité seulement après une preuve sur données réelles.**

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const navigation = [
   ["Aujourd’hui", "/cockpit"],
+  ["Scénarios", "/scenarios"],
   ["Briefing", "/briefing"],
   ["Établissements", "/multisites"],
   ["Valeur", "/roi"],

@@ -1,7 +1,84 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 8 réalisée et validée — publication en attente**
+Statut : **phase 9 validée, publication en cours**
 Date de cadrage : 17 juillet 2026
+
+## Phase 9 — scénarios jouables et étude révisée
+
+### 1. Résultat de la phase
+
+Une nouvelle route `/scenarios` permet de jouer chacun des six scénarios simulés et d’observer la prévision, la fourchette, les facteurs, l’abstention éventuelle et les recommandations réellement renvoyées par l’API. Une édition révisée du PDF initial conserve l’étude d’origine et ajoute un bilan daté du prototype construit.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : les scénarios restent déterministes, fictifs et servis par l’API existante.
+- **Confirmé** : une carte de scénario ne doit plus laisser croire qu’elle est interactive si elle ne déclenche aucun calcul.
+- **Décidé** : la page charge le catalogue API, puis active et calcule un scénario uniquement à la demande de l’utilisateur.
+- **Décidé** : chaque cas possède aussi une trame pédagogique fictive (question manager et décision illustrée), explicitement séparée des nombres calculés, afin que la démonstration reste complète lorsque le moteur s’abstient ou ne propose aucune action.
+- **Décidé** : République illustre les scénarios généraux, Liberté le déséquilibre et l’abstention, Gare les travaux.
+- **Décidé** : le PDF original est conservé ; une édition révisée séparée ajoute un addendum au lieu de réécrire rétroactivement l’étude initiale.
+- **Validé le 17 juillet 2026** : publication Git/Render de la phase 9 et conservation du PDF révisé comme livrable séparé.
+
+### 3. Architecture et flux
+
+La page web lit `GET /demo/scenarios`, puis utilise l’activation existante et `GET /briefings/{service_id}` de façon séquentielle. L’interface ne fabrique aucune valeur numérique : seules les métadonnées de présentation (site démontré, angle pédagogique et route complémentaire) sont locales. Le PDF révisé assemble les 28 pages originales et un addendum généré avec ReportLab ; le Markdown reçoit le même bilan sous forme éditable.
+
+### 4. Fichiers concernés
+
+- `apps/web/src/app/scenarios/page.tsx` : nouvelle route publique.
+- `apps/web/src/components/scenario-player.tsx` : catalogue, activation et résultat.
+- `apps/web/src/components/scenario-gallery.tsx` : liens explicites vers le joueur.
+- `apps/web/src/components/app-shell.tsx`, `globals.css`, `lib/api.ts` et tests : navigation, styles et contrat.
+- `references/ETUDE_COMPLETE.md` : addendum source.
+- `scripts/build_revised_study.py` : génération reproductible de l’addendum et assemblage.
+- `output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf` : livrable révisé.
+
+### 5. Étapes d’implémentation
+
+1. Ajouter le catalogue et l’exécution séquentielle des scénarios côté web.
+2. Construire la page de sélection et le panneau de résultat responsive.
+3. Relier la galerie existante à la nouvelle route.
+4. Rédiger l’addendum en distinguant démontré, simulé et restant à valider.
+5. Générer, rendre et inspecter toutes les nouvelles pages du PDF.
+
+### 6. Vérifications
+
+```bash
+pnpm check
+python3 scripts/build_revised_study.py
+pdfinfo output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf
+pdftoppm -f 29 -png output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf tmp/pdfs/revision
+```
+
+Le parcours vérifie au minimum un scénario normal, l’annulation, le multi-sites, l’abstention et les travaux. La page est contrôlée en desktop et mobile.
+
+### 7. Risques et solutions de repli
+
+- **Course entre activations** : appels séquentiels et résultat marqué comme démonstration mono-session ; endpoint atomique dédié seulement si le prototype doit devenir multi-utilisateur.
+- **Interface trompeuse** : bouton d’exécution explicite, état de calcul, mention permanente de données fictives et étiquette distincte « illustration fictive » pour la narration non calculée.
+- **Prévision trop précise** : fourchette et confiance restent affichées ; l’abstention ne produit aucun nombre de secours.
+- **PDF réécrivant l’histoire** : étude originale inchangée, addendum daté et statut de chaque preuve explicite.
+- **Données simulées prises pour des résultats terrain** : aucun ROI observé ni validation client n’est revendiqué.
+- **Régression de mise en page PDF** : rendu PNG et inspection des pages ajoutées avant livraison.
+
+### 8. Critères de sortie
+
+- Les six cartes possèdent un bouton fonctionnel et renvoient six résultats API distincts ou une abstention explicite.
+- Le scénario actif, le site et la provenance fictive restent visibles.
+- Aucun chiffre métier n’est codé en dur dans le joueur.
+- Le PDF révisé conserve les 28 pages originales et ajoute un bilan lisible, sans texte coupé ni chevauchement.
+- L’addendum sépare clairement « démontré par le prototype », « simulé uniquement » et « à valider en pilote réel ».
+- Tests, lint, types, build web et tests API passent avant validation.
+
+### Résultat du 17 juillet 2026
+
+La route `/scenarios` charge les six configurations depuis l'API et permet de les jouer séparément. Le scénario d'annulation utilise la coupure de 13:45 afin d'intégrer l'information tardive ; le cas de données insuffisantes s'abstient sans valeur de secours et le cas multi-sites renvoie une proposition de transfert. Les résultats numériques calculés et l'illustration pédagogique non calculée sont identifiés séparément.
+
+L'expérience conserve une mise en page riche à trois colonnes sur ordinateur, passe à deux colonnes sur tablette et à une colonne sur mobile. Le contrôle à 390 px confirme l'absence de débordement horizontal et une hauteur minimale de 48 px pour les boutons ; le contrôle à 1280 px confirme le retour à trois colonnes.
+
+`pnpm check` réussit avec 8 tests web et 22 tests API, lint, types et build. Les six scénarios ont été rejoués directement contre l'API : 96 couverts en semaine normale, 140 pour le concert, 124 après annulation, 112 pour le déséquilibre, abstention sur données dégradées et 82 pour les travaux. Le PDF révisé contient 32 pages : les 28 pages initiales sont préservées et quatre pages d'addendum ont été rendues puis inspectées sans texte coupé ni chevauchement.
+
+Publication : commit et push sur `main` approuvés explicitement le 17 juillet 2026, en excluant `prototype-use-cases/`.
 
 ## Phase 8 — refonte UX de la démonstration
 
@@ -70,6 +147,8 @@ Une vérification visuelle est réalisée sur les cinq routes principales en des
 ### Résultat du 17 juillet 2026
 
 Le socle visuel adopte la direction « brasserie éditoriale premium » sur les cinq routes. Le diagnostic présente désormais une prévision enrichie de République avec référence, facteurs, impacts, fourchette, confiance et backtest, puis isole le cas d'abstention de Liberté dans un encart de prudence. Les six scénarios configurés sont visibles et explicitement marqués comme simulations. La vérification desktop et mobile ne montre aucun débordement horizontal ; `pnpm check` réussit avec 6 tests web et 22 tests API.
+
+Publication : le commit `4fcfa18` est poussé sur `origin/main` et déployé sur Render. Les routes `/health`, `/cockpit`, `/briefing`, `/multisites`, `/roi` et `/diagnostic` répondent toutes `200`. Le diagnostic public contient la galerie des six scénarios et l’API publique renvoie la prévision enrichie attendue (140 couverts, fourchette 135–140, deux recommandations).
 
 ## 1. Résultat de la phase
 

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const scenarios = [
   { icon: "01", name: "Semaine normale", description: "Une semaine ordinaire, sans perturbation majeure.", signal: "Référence" },
   { icon: "02", name: "Concert & météo sèche", description: "Un concert proche accélère les réservations du vendredi soir.", signal: "Demande forte" },
@@ -22,9 +24,11 @@ export function ScenarioGallery() {
             <h3>{scenario.name}</h3>
             <p>{scenario.description}</p>
             <small>Scénario simulé</small>
+            <Link className="scenario-link" href="/scenarios">Jouer</Link>
           </article>
         ))}
       </div>
+      <Link className="button primary scenario-cta" href="/scenarios">Ouvrir le laboratoire des scénarios</Link>
     </section>
   );
 }

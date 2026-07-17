@@ -3,6 +3,7 @@ export const API_URL =
   (process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:8000");
 
 export type Driver = { code: string; impact_covers: number; explanation: string };
+export type ScenarioDefinition = { id: string; name: string; description: string };
 export type Forecast = {
   service_id: string;
   generated_at: string;
@@ -77,9 +78,15 @@ export async function activateScenario(id: string) {
   return request(`/demo/scenarios/${id}/activate`, { method: "POST" });
 }
 
-export async function getBriefing(scenario = "concert_dry_friday", site = "republique") {
+export const getScenarios = () => request<ScenarioDefinition[]>("/demo/scenarios");
+
+export async function getBriefing(
+  scenario = "concert_dry_friday",
+  site = "republique",
+  asOf = "2026-07-17T08:00:00+02:00",
+) {
   await activateScenario(scenario);
-  return request<Briefing>(`/briefings/${site}_2026-07-17_dinner?as_of=2026-07-17T08:00:00%2B02:00`);
+  return request<Briefing>(`/briefings/${site}_2026-07-17_dinner?as_of=${encodeURIComponent(asOf)}`);
 }
 
 export async function getForecasts() {
