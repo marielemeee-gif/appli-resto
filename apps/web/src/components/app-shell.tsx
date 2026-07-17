@@ -34,8 +34,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="active-demo">
           <span><small>Mode démo</small><strong>{scenario.shortName}</strong></span>
-          <button type="button" onClick={() => setExamplesOpen(true)}>Cas fictifs</button>
-          <button type="button" onClick={resetDemo}>Réinitialiser</button>
+          <button className="examples-button" type="button" onClick={() => setExamplesOpen(true)}>Cas fictifs</button>
+          <button className="reset-button" type="button" onClick={resetDemo}>Réinitialiser</button>
         </div>
       </header>
       <main id="main-content" className="app-main">

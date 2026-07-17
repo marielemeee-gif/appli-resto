@@ -32,6 +32,7 @@ describe("Application de démonstration", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Pilotage du jour" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Prototype App, pilotage restaurants, accueil" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Specs PDF" })).toHaveAttribute("href", "/specs-prototype-app.pdf");
+    expect(screen.getByRole("button", { name: "Cas fictifs" })).toHaveClass("examples-button");
     const navigation = screen.getByRole("navigation", { name: "Navigation principale" });
     expect(within(navigation).getAllByRole("link")).toHaveLength(4);
     expect(within(navigation).getByRole("link", { name: "Tableau de bord" })).toBeInTheDocument();

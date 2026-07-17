@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Rééquilibrer les proportions, réduire le défilement mobile, ajouter un favicon et publier l'étude complète mise à jour via un bouton `Specs PDF`, avant le commit et le push.
+Rendre les actions d'en-tête `Specs PDF` et `Cas fictifs` nettement plus visibles, notamment sur mobile, après la publication des phases 13 et 14.
 
 ## Agreed scope and approvals
 
@@ -24,6 +24,7 @@ Rééquilibrer les proportions, réduire le défilement mobile, ajouter un favic
 - Phase 13 autorisée le 17 juillet 2026 : compléter les preuves P0 utiles sans ajouter d'onglet ; validation du résultat encore attendue avant commit et push.
 - Phase 14 autorisée le 17 juillet 2026 ; résultat local terminé, validation encore attendue avant commit et push.
 - Phases 13 et 14 validées le 17 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Complete and rebalance restaurant demo` et exclusion de `prototype-use-cases/`.
+- Correctif de visibilité d'en-tête validé pour commit et push le 17 juillet 2026 avec le message `Improve header action visibility`, toujours sans `prototype-use-cases/`.
 
 ## Decisions made
 
@@ -94,10 +95,12 @@ Rééquilibrer les proportions, réduire le défilement mobile, ajouter un favic
 - Phase 14 terminée localement : Établissements compare le groupe et conclut même sans transfert ; Décisions place les trois actions avant les outils secondaires.
 - Phase 14 inclut une réduction du défilement mobile et un favicon assiette/couverts pour l'onglet navigateur.
 - L'étude complète de 32 pages est conservée ; son addendum est actualisé et une copie publique est reliée par le bouton `Specs PDF`.
+- Correctif local après `11d102c` : `Specs PDF` devient safran plein, `Cas fictifs` turquoise plein et reste visible sur mobile ; seul `Réinitialiser` y est masqué.
+- Le résumé fournisseur replié est aligné sur les dimensions de `Consigne terrain et transmission` en desktop.
 
 ## Current state
 
-Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public sont publiés dans le commit `5db2b38` (`Complete and rebalance restaurant demo`) sur `origin/main`. Le redéploiement Render de ce commit reste à lancer ou à confirmer.
+Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public sont publiés dans `5db2b38`, avec le suivi dans `11d102c`. Le correctif de visibilité des boutons d'en-tête est terminé et vérifié localement, mais pas encore commité ni poussé.
 
 ## Touched files and artifacts
 
@@ -143,6 +146,7 @@ Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public s
 - PDF complet régénéré : 32 pages A4, 28 pages initiales inchangées et quatre pages d'addendum actualisées ; rendu PNG inspecté sans coupure ni chevauchement.
 - Les routes locales `/specs-prototype-app.pdf` et `/icon.svg` répondent `200` avec les bons types MIME.
 - GitHub : commit `5db2b38` poussé avec succès de `main` vers `origin/main` le 17 juillet 2026.
+- Correctif d'en-tête : 13 tests web, lint, types et build réussis ; contrôle à 287 px sans débordement, avec `Specs PDF` safran et `Cas fictifs` turquoise tous deux visibles, `Réinitialiser` seul masqué.
 
 ## Blockers and open questions
 
@@ -156,5 +160,5 @@ Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public s
 
 ## Next actions
 
-1. Lancer ou confirmer le redéploiement Render du commit `5db2b38`.
-2. Vérifier les quatre vues publiques, le favicon et `/specs-prototype-app.pdf`.
+1. Valider puis commiter/pousser le correctif de visibilité des boutons.
+2. Redéployer Render et vérifier les quatre vues publiques, le favicon et `/specs-prototype-app.pdf`.

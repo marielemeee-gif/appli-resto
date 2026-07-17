@@ -86,6 +86,10 @@ Résultat : `pnpm check` réussit avec 13 tests web et 22 tests API. Lint, types
 
 Phase terminée localement le 17 juillet 2026. Le commit, le push et le redéploiement restent soumis à validation explicite.
 
+Correction post-validation : `Specs PDF` utilise désormais un bouton safran plein et `Cas fictifs` un bouton turquoise plein. Sur mobile, `Cas fictifs` reste visible avec une cible de 44 px ; seul `Réinitialiser`, action secondaire, est masqué.
+
+Le résumé replié du fournisseur est également ramené à la même hauteur et au même poids typographique que `Consigne terrain et transmission` sur ordinateur ; le montant et l'heure limite restent ses seuls accents.
+
 ## Phase 13 — compléter le P0 sans alourdir l'application
 
 ### 1. Résultat de la phase
