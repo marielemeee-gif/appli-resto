@@ -100,7 +100,7 @@ Ajouter une véritable liste déroulante `Vue active` pour les trois lieux, dava
 
 ## Current state
 
-Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est publiée dans `928a16c` (`Polish mobile restaurant demo`) sur `origin/main`. La phase 16 est terminée localement et attend validation : vue active partagée, interactions multi-sites et audit de cohérence des parcours.
+Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est publiée dans `928a16c` (`Polish mobile restaurant demo`) sur `origin/main`. La phase 16 est publiée dans `2e12e29` (`Add synchronized restaurant views`) sur `origin/main` : vue active partagée, interactions multi-sites et audit de cohérence des parcours.
 
 ## Touched files and artifacts
 
@@ -155,6 +155,7 @@ Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité d
 - Phase 16 : `pnpm check` réussi avec 14 tests web et 22 tests API ; lint, types et build passent.
 - Phase 16 responsive : parcours République → Liberté → Décisions → Journal validé à 390 px sans débordement ni erreur console ; comparaison validée à 920 px.
 - Audit phase 16 : vigies rattachées au bon site, historiques alignés sur juillet 2026, transfert synchronisé par identifiant et contributions numériques réconciliées avec la prévision.
+- GitHub : phase 16 poussée avec succès de `main` vers `origin/main` dans le commit `2e12e29` le 17 juillet 2026.
 
 ## Blockers and open questions
 
