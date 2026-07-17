@@ -35,7 +35,7 @@ Créer le premier commit du projet et le pousser vers `marielemeee-gif/appli-res
 
 ## Current state
 
-Prototype local terminé. Dépôt Git initialisé sur `main`, sans commit ni remote avant l’opération de publication approuvée.
+Prototype local terminé et publié. `main` suit `origin/main`, tous deux sur le commit `0c6eddc` dans `marielemeee-gif/appli-resto`.
 
 ## Touched files and artifacts
 
@@ -55,13 +55,12 @@ Prototype local terminé. Dépôt Git initialisé sur `main`, sans commit ni rem
 
 ## Blockers and open questions
 
-- Aucun remote Git n’est encore configuré.
+- Aucun blocage Git restant.
+- Le déploiement public n’est pas encore configuré.
 - Le déploiement public nécessite le choix et la configuration d’un hébergeur après le push.
 
 ## Next actions
 
-1. Indexer uniquement les fichiers versionnables approuvés.
-2. Créer et vérifier le premier commit.
-3. Configurer `origin` vers `https://github.com/marielemeee-gif/appli-resto.git`.
-4. Pousser `main` et vérifier le remote.
-5. Préparer le lien public dans une étape séparée.
+1. Enregistrer cette mise à jour d’état dans un petit commit de suivi après approbation.
+2. Choisir et configurer l’hébergement de l’interface et de l’API fictive.
+3. Vérifier le parcours sur le lien public avant partage.
