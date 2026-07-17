@@ -2,46 +2,53 @@
 
 import Link from "next/link";
 import { useDemo } from "@/demo/demo-context";
+import type { DemoWatchItem } from "@/demo/scenarios";
 import { Confidence, PageHeader, StateBanner } from "./ui";
 
 const recommendationLabels: Record<string, string> = { staffing: "Équipe", preparation: "Préparation", purchase: "Achats" };
-const days = ["ven.", "sam.", "dim.", "lun.", "mar.", "mer.", "jeu."];
+
+function OperationalWatch({ items }: { items: DemoWatchItem[] }) {
+  return <section className="panel" aria-labelledby="watch-title">
+    <div className="panel-heading"><div><p className="eyebrow">À surveiller</p><h2 id="watch-title">Horizon opérationnel</h2></div><span>4 échéances utiles</span></div>
+    <div className="watch-list">
+      {items.map((item) => <article className={`watch-item ${item.urgency}`} key={item.id}>
+        <div className="watch-meta"><span>{item.category}</span><small>{item.when}</small></div>
+        <div><strong>{item.title}</strong><p>{item.detail}</p></div>
+        <small className="watch-site">{item.site}</small>
+      </article>)}
+    </div>
+  </section>;
+}
 
 export function CockpitPage() {
   const { scenario, decisions } = useDemo();
   const forecast = scenario.forecast;
   const scenarioDecisions = decisions.filter((item) => item.scenarioId === scenario.id);
-  const week = forecast.expectedCovers === null ? [] : [0, 8, -14, -18, -11, -7, 3].map((delta) => Math.max(40, forecast.expectedCovers! + delta));
 
   return <>
-    <PageHeader eyebrow={`Cockpit · ${scenario.moment}`} title="Vendredi 17 juillet" description={`${scenario.siteName} · ${scenario.shortName} · instantané fictif ${scenario.asOf}.`} site={scenario.siteName} />
+    <PageHeader eyebrow={`Tableau de bord · ${scenario.moment}`} title="Pilotage du jour" description={`Vendredi 17 juillet · dîner · ${scenario.siteName} · données fictives arrêtées à ${scenario.asOf}.`} site={scenario.siteName} />
 
-    <section className="change-ribbon" aria-label="Changement détecté">
-      <span>Ce qui a changé</span>
-      <strong>{forecast.previousCovers === null || forecast.expectedCovers === null ? "La qualité des données ne permet plus de chiffrer le service" : `${forecast.previousCovers} → ${forecast.expectedCovers} couverts depuis le dernier point`}</strong>
-      <small>{scenario.signals.length} paramètres croisés · {scenario.recommendations.length} action{scenario.recommendations.length > 1 ? "s" : ""} encore possible{scenario.recommendations.length > 1 ? "s" : ""}</small>
-    </section>
+    {forecast.expectedCovers === null ? <>
+      <StateBanner tone="warning" title="Prévision suspendue">{forecast.abstentionReason} Les échéances opérationnelles restent visibles, mais aucune action chiffrée n’est proposée.</StateBanner>
+      <OperationalWatch items={scenario.watch} />
+    </> : <>
+      <section className="executive-forecast" aria-labelledby="forecast-title">
+        <div className="forecast-primary"><p className="eyebrow light">Dîner prévu</p><div><strong>{forecast.expectedCovers}</strong><span>couverts</span></div><p id="forecast-title">Fourchette {forecast.lowerCovers}–{forecast.upperCovers} · {forecast.expectedRevenue?.toLocaleString("fr-FR")} € de CA fictif</p></div>
+        <div className="forecast-change"><span>Depuis le dernier point</span><strong>{forecast.previousCovers} → {forecast.expectedCovers}</strong><p>{scenario.summary}</p><Confidence score={forecast.confidence} /></div>
+        <Link className="button amber" href="/briefing">Traiter {scenario.recommendations.length} décisions</Link>
+      </section>
 
-    {forecast.expectedCovers === null ? (
-      <>
-        <StateBanner tone="warning" title="Prévision suspendue">{forecast.abstentionReason} Aucun chiffre ni plan précis n’est produit.</StateBanner>
-        <section className="signal-grid" aria-label="Contrôles qualité bloquants">{scenario.signals.map((signal) => <article className="signal-card blocked" key={signal.id}><span>{signal.label}</span><strong>{signal.current}</strong><p>{signal.explanation}</p><small>Contrôlé à {signal.updatedAt}</small></article>)}</section>
-      </>
-    ) : <>
-      <section className="activity-card" aria-labelledby="activity-title">
-        <div className="activity-score" aria-label={`Confiance ${forecast.confidence} sur 100`}>{forecast.confidence}</div>
-        <div><p className="eyebrow">Activité prévue</p><h2 id="activity-title">{forecast.expectedCovers} couverts attendus</h2><p>Référence {forecast.baselineCovers} · estimation précédente {forecast.previousCovers} · fourchette {forecast.lowerCovers}–{forecast.upperCovers}.</p></div>
-        <Confidence score={forecast.confidence} />
-      </section>
-      <section className="kpi-grid" aria-label="Indicateurs du service">
-        <article className="kpi"><span>Prévision croisée</span><strong>{forecast.expectedCovers}</strong><small>{forecast.lowerCovers} à {forecast.upperCovers}</small></article>
-        <article className="kpi"><span>CA fictif</span><strong>{forecast.expectedRevenue?.toLocaleString("fr-FR")} €</strong><small>Non observé</small></article>
-        <article className="kpi attention"><span>Écart récent</span><strong>{forecast.expectedCovers - (forecast.previousCovers ?? forecast.expectedCovers) > 0 ? "+" : ""}{forecast.expectedCovers - (forecast.previousCovers ?? forecast.expectedCovers)}</strong><small>couverts depuis le dernier point</small></article>
-      </section>
-      <section className="signal-grid" aria-label="Paramètres croisés">{scenario.signals.map((signal) => <article className="signal-card" key={signal.id}><span>{signal.label}</span><strong>{signal.previous} → {signal.current}</strong><p>{signal.explanation}</p><footer><small>{signal.impactCovers !== null ? `${signal.impactCovers > 0 ? "+" : ""}${signal.impactCovers} couverts` : "Contrainte opérationnelle"}</small><small>{signal.updatedAt}</small></footer></article>)}</section>
-      <div className="cockpit-grid">
-        <section className="panel" aria-labelledby="week-title"><div className="panel-heading"><div><p className="eyebrow">Horizon</p><h2 id="week-title">Dîners à sept jours</h2></div><span>Projection du scénario actif</span></div><div className="bars" role="img" aria-label="Prévisions fictives à sept jours">{week.map((value, index) => <div className="bar-column" key={days[index]}><span className="bar-value">{value}</span><span className="bar" style={{ height: `${value / 1.5}px` }} /><span>{days[index]}</span></div>)}</div></section>
-        <section className="decision-panel" aria-labelledby="decisions-title"><p className="eyebrow light">Fenêtres d’action</p><h2 id="decisions-title">{scenario.recommendations.length} priorités maximum</h2>{scenario.recommendations.map((item) => { const decision = scenarioDecisions.find((entry) => entry.recommendationId === item.id); return <article className="decision-card" key={item.id}><span>{recommendationLabels[item.type]}</span><strong>{item.title}</strong><small>{decision ? `Décision ${decision.status}` : `avant ${item.deadline}`}</small></article>; })}<Link className="button amber" href="/briefing">Décider dans le briefing</Link></section>
+      <details className="forecast-details">
+        <summary>Voir le calcul et les facteurs</summary>
+        <div className="forecast-details-grid">
+          <div><span>Référence comparable</span><strong>{forecast.baselineCovers} couverts</strong><small>{forecast.method} · arrêté à {scenario.asOf}</small></div>
+          <ol>{scenario.signals.map((signal) => <li key={signal.id}><span>{signal.label}</span><strong>{signal.current}</strong><small>{signal.impactCovers === null ? "Contrainte non chiffrée" : `${signal.impactCovers > 0 ? "+" : ""}${signal.impactCovers} couverts`} · {signal.updatedAt}</small></li>)}</ol>
+        </div>
+      </details>
+
+      <div className="cockpit-grid dashboard-workspace">
+        <OperationalWatch items={scenario.watch} />
+        <section className="decision-panel" aria-labelledby="decisions-title"><p className="eyebrow light">À traiter</p><h2 id="decisions-title">{scenario.recommendations.length} décisions</h2>{scenario.recommendations.map((item) => { const decision = scenarioDecisions.find((entry) => entry.recommendationId === item.id); return <article className="decision-card" key={item.id}><span>{recommendationLabels[item.type]}</span><strong>{item.title}</strong><small>{decision ? `Décision ${decision.status}` : `avant ${item.deadline}`}</small></article>; })}<Link className="button amber" href="/briefing">Ouvrir les décisions</Link></section>
       </div>
     </>}
   </>;

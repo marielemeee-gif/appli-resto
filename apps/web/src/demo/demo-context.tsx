@@ -4,12 +4,17 @@ import { createContext, useContext, useMemo, useState } from "react";
 import { defaultScenarioId, DemoDecision, getDemoScenario } from "./scenarios";
 
 type DecisionStatus = DemoDecision["status"];
+export type SupplierStatus = "recommended" | "drafted" | "confirmed_demo";
 type DemoContextValue = {
   scenario: ReturnType<typeof getDemoScenario>;
   decisions: DemoDecision[];
   storageError: string;
+  supplierStatus: SupplierStatus;
   selectScenario: (id: string) => void;
   decide: (recommendationId: string, status: DecisionStatus) => void;
+  prepareSupplierDraft: () => void;
+  confirmSupplierDraft: () => void;
+  addCustomDecision: (title: string, owner: string, deadline: string) => void;
   resetDemo: () => void;
 };
 
@@ -18,15 +23,18 @@ const DemoContext = createContext<DemoContextValue | null>(null);
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [scenarioId, setScenarioId] = useState(defaultScenarioId);
   const [sessionDecisions, setSessionDecisions] = useState<DemoDecision[]>([]);
+  const [supplierStates, setSupplierStates] = useState<Record<string, SupplierStatus>>({});
   const storageError = "";
 
   const scenario = getDemoScenario(scenarioId);
   const decisions = useMemo(() => [...scenario.history, ...sessionDecisions], [scenario.history, sessionDecisions]);
+  const supplierStatus = scenario.supplierWorkflow ? supplierStates[scenario.supplierWorkflow.id] ?? "recommended" : "recommended";
 
   const value = useMemo<DemoContextValue>(() => ({
     scenario,
     decisions,
     storageError,
+    supplierStatus,
     selectScenario: (id) => setScenarioId(getDemoScenario(id).id),
     decide: (recommendationId, status) => {
       const recommendation = scenario.recommendations.find((item) => item.id === recommendationId);
@@ -45,11 +53,55 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       };
       setSessionDecisions((current) => [...current.filter((item) => item.id !== decision.id), decision]);
     },
+    prepareSupplierDraft: () => {
+      if (!scenario.supplierWorkflow) return;
+      setSupplierStates((current) => ({ ...current, [scenario.supplierWorkflow!.id]: "drafted" }));
+    },
+    confirmSupplierDraft: () => {
+      const workflow = scenario.supplierWorkflow;
+      if (!workflow || supplierStatus !== "drafted") return;
+      setSupplierStates((current) => ({ ...current, [workflow.id]: "confirmed_demo" }));
+      const decision: DemoDecision = {
+        id: `${scenario.id}-${workflow.id}`,
+        scenarioId: scenario.id,
+        recommendationId: workflow.id,
+        recommendationType: "supplier_order",
+        title: `Brouillon ${workflow.supplierName} confirmé dans la démo`,
+        site: scenario.siteName,
+        status: "accepted",
+        decidedAt: "2026-07-17T09:08:00+02:00",
+        estimatedGain: 0,
+      };
+      setSessionDecisions((current) => [...current.filter((item) => item.id !== decision.id), decision]);
+    },
+    addCustomDecision: (title, owner, deadline) => {
+      const cleanTitle = title.trim();
+      const cleanOwner = owner.trim();
+      if (!cleanTitle || !cleanOwner || !deadline) return;
+      setSessionDecisions((current) => {
+        const customCount = current.filter((item) => item.recommendationType === "custom").length;
+        const decision: DemoDecision = {
+          id: `${scenario.id}-custom-${customCount + 1}`,
+          scenarioId: scenario.id,
+          recommendationId: `custom-${customCount + 1}`,
+          recommendationType: "custom",
+          title: cleanTitle,
+          site: scenario.siteName,
+          status: "accepted",
+          decidedAt: "2026-07-17T09:12:00+02:00",
+          estimatedGain: 0,
+          owner: cleanOwner,
+          deadline,
+        };
+        return [...current, decision];
+      });
+    },
     resetDemo: () => {
       setScenarioId(defaultScenarioId);
       setSessionDecisions([]);
+      setSupplierStates({});
     },
-  }), [decisions, scenario, storageError]);
+  }), [decisions, scenario, storageError, supplierStatus]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

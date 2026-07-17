@@ -1,7 +1,192 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 10 validée, publication Git en cours**
+Statut : **phase 12 réalisée localement et vérifiée, en attente de validation avant publication**
 Date de cadrage : 17 juillet 2026
+
+## Phase 12 — une navigation par tâches, sans répétition
+
+### 1. Résultat de la phase
+
+L'application passe de six onglets qui racontent souvent la même prévision à quatre espaces correspondant à quatre tâches : comprendre, décider, arbitrer entre sites et consulter le journal. Les scénarios fictifs deviennent une bibliothèque modale sans effet sur l'état de l'application ; l'explication du calcul devient un détail contextuel du Tableau de bord.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : le responsable opérationnel doit comprendre où aller sans connaître le vocabulaire du prototype.
+- **Décidé** : navigation principale limitée à `Tableau de bord`, `Décisions`, `Établissements` et `Journal`.
+- **Décidé** : `Scénarios` quitte la navigation ; le bouton `Cas fictifs` ouvre une fenêtre et ne change jamais le scénario actif.
+- **Décidé** : `Explications` quitte la navigation ; la méthode, la référence et les facteurs sont consultables depuis la prévision du Tableau de bord.
+- **Décidé** : le Tableau de bord ne répète plus toutes les cartes de facteurs ; il montre la situation, les quatre vigies et les décisions à prendre.
+- **Décidé** : Décisions ne répète plus un faux écran de téléphone ni toute la narration ; il conserve un contexte chiffré compact, les actions, les systèmes et le fournisseur.
+- **Décidé** : Journal se concentre sur la trace et les montants estimés, sans bloc promotionnel renvoyant vers un autre onglet.
+- **Décidé** : le manager peut ajouter une décision libre avec responsable et heure limite ; elle rejoint immédiatement le Journal.
+- **Décidé** : un partage prépare un briefing texte et peut ouvrir SMS ou WhatsApp via les liens natifs du terminal ; aucun destinataire n'est prérempli et aucun message n'est envoyé automatiquement.
+- **Confirmé** : toute donnée reste fictive et toute action reste réversible ou simulée.
+
+### 3. Architecture et flux
+
+```text
+Tableau de bord
+  situation + vigies + raccourci vers Décisions
+  └─ détail contextuel « Voir le calcul »
+
+Décisions
+  contexte compact + 3 actions + décision libre + systèmes/fournisseur
+  └─ message préparé -> SMS ou WhatsApp -> confirmation dans l'app tierce
+
+Établissements
+  comparaison + transfert simulé
+
+Journal
+  décisions prises + gain estimé/non observé
+
+Cas fictifs (fenêtre)
+  aperçu local uniquement -> fermeture -> application inchangée
+```
+
+Le contexte fictif principal reste déterministe. La bibliothèque lit les mêmes fixtures mais n'appelle jamais `selectScenario`. Les décisions de session continuent d'alimenter le Journal. Prévision, recommandations et explication restent séparées dans les données, même lorsqu'elles sont rapprochées visuellement.
+
+### 4. Fichiers concernés
+
+- `components/app-shell.tsx` : quatre destinations et ouverture de la bibliothèque.
+- `components/scenario-library.tsx` : fenêtre d'aperçu fictif sans mutation.
+- `components/cockpit-page.tsx` : suppression des répétitions et explication contextuelle.
+- `components/briefing-client.tsx` : écran Décisions recentré sur l'action.
+- `demo/demo-context.tsx` : ajout traçable d'une décision libre.
+- `components/roi-client.tsx` : Journal simplifié.
+- `app/scenarios/page.tsx` : ancienne route mutante neutralisée.
+- `app/globals.css` et `app/page.test.tsx` : styles, responsive et parcours.
+
+### 5. Étapes d'implémentation
+
+1. Réduire la navigation et ajouter la fenêtre `Cas fictifs`.
+2. Garantir qu'explorer ou fermer un exemple ne modifie pas l'application.
+3. Élaguer le Tableau de bord et intégrer l'explication en disclosure.
+4. Élaguer Décisions et Journal autour de leurs tâches propres.
+5. Ajouter une décision libre et préparer son partage SMS/WhatsApp avec confirmation externe.
+6. Neutraliser l'ancien parcours `/scenarios` qui mutait toute l'application.
+7. Vérifier le parcours complet sur ordinateur et mobile.
+
+### 6. Vérifications
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+Tests attendus : quatre liens principaux seulement ; fenêtre accessible ; changement d'aperçu sans changement du scénario actif ; fermeture explicite ; prévision détaillable depuis le Tableau de bord ; décisions et fournisseur toujours actionnables ; décision libre ajoutée au Journal ; liens SMS/WhatsApp préremplis sans envoi automatique ; aucune régression responsive.
+
+Résultat : 9 tests web et 22 tests API réussis. Lint, types et build Next.js passent. Les parcours ont été joués dans le navigateur : aperçu d'un scénario puis fermeture avec prévision inchangée à 140, ajout d'une décision libre, préparation des liens SMS/WhatsApp et trace dans Journal. Aucun débordement horizontal n'a été observé à 1280 px et 390 px. Les anciennes routes `/diagnostic` et `/scenarios` répondent par une redirection vers `/cockpit`.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : la fenêtre lit les fixtures existantes sans créer de second état métier.
+- **Fuite temporelle** : l'instantané `asOf` reste visible dans le détail de calcul.
+- **Prévision trop précise** : fourchette et confiance restent visibles dans le résumé compact.
+- **API simulée irréaliste** : les systèmes restent marqués comme interrogés dans la démo, jamais réellement connectés.
+- **Règle inexécutable** : les actions et leur heure limite restent exclusivement dans Décisions.
+- **Interface trompeuse** : la fenêtre indique explicitement qu'elle ne modifie rien et qu'aucune donnée n'est réelle.
+- **Perte de profondeur** : le détail du calcul reste accessible depuis le Tableau de bord ; les anciennes routes `/diagnostic` et `/scenarios` redirigent vers lui au lieu de maintenir des écrans parallèles.
+
+### 8. Critères de sortie
+
+- Quatre destinations principales maximum.
+- Chaque destination répond à une question opérationnelle distincte.
+- Aucun bloc important n'est répété à l'identique entre Tableau de bord et Décisions.
+- Les scénarios sont consultables sans modifier l'application.
+- Le calcul reste accessible en un clic depuis la prévision.
+- Le workflow fournisseur et le Journal restent fonctionnels.
+- Une décision libre peut être ajoutée puis incluse dans un message préparé pour SMS ou WhatsApp.
+- Aucun débordement à 1280 px et 390 px.
+- Tests, lint, types et build passent.
+
+## Phase 11 — systèmes tiers et brouillons d'action
+
+### 1. Résultat de la phase
+
+La démo simule des intégrations concrètes avec caisse, réservations, planning et fournisseur. Le scénario concert permet d'interroger un catalogue fournisseur fictif, de vérifier disponibilité et contraintes, puis de préparer et confirmer une commande entièrement simulée, traçable dans le registre. Le premier écran devient un tableau de bord opérationnel : prévision, signaux croisés, météo, événement, échéance d'équipe, fenêtre fournisseur et trois décisions maximum.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : aucune API réelle, aucun fournisseur réel et aucune commande réelle ne sont appelés.
+- **Confirmé** : le parcours doit rester crédible pour un petit groupe urbain de trois établissements, notamment un groupe de taille comparable à une cible rennaise.
+- **Décidé** : l'interface affiche la fraîcheur et le statut de chaque système interrogé au lieu d'un vague badge « connecté ».
+- **Décidé** : la décision fournisseur suit deux étapes distinctes : « Préparer le brouillon » puis « Confirmer dans la démo ».
+- **Décidé** : la confirmation produit uniquement un événement fictif dans le registre ; elle ne prétend jamais avoir transmis une commande externe.
+- **Décidé** : le catalogue vérifie référence, conditionnement, stock disponible, prix, minimum de commande, heure limite et créneau de livraison.
+- **Décidé** : aucun nouvel onglet n'est nécessaire ; le détail des systèmes et le brouillon vivent dans le Briefing, puis la trace apparaît dans Valeur.
+- **Décidé** : l'onglet existant « Aujourd'hui » est renommé « Tableau de bord » ; sa projection décorative à sept jours est remplacée par quatre vigies opérationnelles.
+- **Décidé** : l'échéance d'équipe reste anonyme et fictive ; aucun nom ni donnée personnelle n'est présenté.
+
+### 3. Architecture et flux
+
+```text
+Signaux fictifs
+  caisse + réservations + événement + météo + stock
+                    |
+                    v
+          recommandation déterministe
+                    |
+                    v
+     catalogue fournisseur fictif interrogé
+     - 2 fûts de 30 L disponibles
+     - 4 sacs de glaçons de 10 kg disponibles
+     - minimum, prix, cutoff et livraison vérifiés
+                    |
+                    v
+       brouillon -> confirmation humaine fictive
+                    |
+                    v
+              registre de valeur
+```
+
+Les instantanés de scénario reçoivent une liste de `systems` et, lorsque pertinent, un `supplierWorkflow`. L'état de session distingue `recommended`, `drafted` et `confirmed_demo`. La prévision numérique reste indépendante ; le workflow fournisseur consomme seulement la recommandation déjà calculée.
+
+### 4. Fichiers concernés
+
+- `apps/web/src/demo/scenarios.ts` : systèmes interrogés, catalogue et contraintes fictives.
+- `apps/web/src/demo/demo-context.tsx` : état du brouillon et confirmation de démonstration.
+- `apps/web/src/components/briefing-client.tsx` : fraîcheur des systèmes, lignes de commande et double confirmation.
+- `apps/web/src/components/roi-client.tsx` : trace du brouillon et de la confirmation fictive.
+- `apps/web/src/components/cockpit-page.tsx` et `components/app-shell.tsx` : tableau de bord et navigation.
+- `apps/web/src/app/globals.css` et tests : présentation et parcours.
+
+### 5. Étapes d'implémentation
+
+1. Ajouter les contrats de système tiers et de catalogue fournisseur.
+2. Décrire le workflow concert : deux fûts de 30 L et quatre sacs de glaçons de 10 kg.
+3. Afficher les systèmes interrogés avec statut et dernière synchronisation.
+4. Créer le brouillon avec lignes, quantité, prix, total, cutoff et livraison.
+5. Ajouter la confirmation fictive et sa trace dans Valeur.
+6. Bloquer le workflow fournisseur lorsque la qualité des données est insuffisante.
+7. Remplacer la projection à sept jours par la vigie météo, événement, équipe et fournisseur.
+
+### 6. Vérifications
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+Résultat : 11 tests web réussis ; catalogue disponible, minimum respecté, brouillon créé, confirmation humaine obligatoire, aucune transmission externe, événement visible dans Valeur et aucun workflow fournisseur dans le scénario de données insuffisantes. Lint, types et build Next.js réussis. Le parcours a aussi été joué dans le navigateur ; à 390 px, aucune page contrôlée ne déborde horizontalement.
+
+### 7. Risques et solutions de repli
+
+- **Automatisation trompeuse** : utiliser systématiquement « brouillon » et « confirmation fictive », jamais « commande envoyée ».
+- **Catalogue irréaliste** : montrer conditionnement, quantité disponible, prix, cutoff et créneau.
+- **Trop de complexité** : un seul fournisseur et deux références dans le cas principal ; aucun écran d'administration.
+- **Couplage prévision/achat** : la prévision ne connaît ni prix ni fournisseur ; le workflow démarre après la recommandation.
+- **Donnée indisponible** : bloquer le brouillon avec une raison visible, sans produit de secours silencieux.
+
+### 8. Critères de sortie
+
+- Le manager voit quelles sources ont été interrogées et quand.
+- Le catalogue fictif produit un brouillon concret de deux fûts et quatre sacs de glaçons.
+- Prix, total, disponibilité, minimum, cutoff et livraison sont visibles.
+- La confirmation humaine est obligatoire et explicitement simulée.
+- Valeur conserve la trace de l'action sans revendiquer une commande réelle.
+- Le parcours reste utilisable sur ordinateur et mobile.
+- Le Tableau de bord montre quatre échéances opérationnelles et trois priorités maximum.
+- Tests, lint, types et build passent avant publication.
 
 ## Phase 10 — application de démonstration cohérente
 

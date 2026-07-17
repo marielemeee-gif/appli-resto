@@ -1,19 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useCallback, useState } from "react";
 import { useDemo } from "@/demo/demo-context";
+import { ScenarioLibrary } from "./scenario-library";
 
 const navigation = [
-  ["Aujourd’hui", "/cockpit"],
-  ["Scénarios", "/scenarios"],
-  ["Briefing", "/briefing"],
+  ["Tableau de bord", "/cockpit"],
+  ["Décisions", "/briefing"],
   ["Établissements", "/multisites"],
-  ["Valeur", "/valeur"],
-  ["Explications", "/diagnostic"],
+  ["Journal", "/valeur"],
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { scenario, resetDemo, storageError } = useDemo();
+  const [examplesOpen, setExamplesOpen] = useState(false);
+  const closeExamples = useCallback(() => setExamplesOpen(false), []);
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -21,7 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </a>
       <header className="topbar">
         <Link className="brand" href="/cockpit" aria-label="Service, pilotage restaurants, accueil">
-          <span className="brand-mark" aria-hidden="true">S</span>
+          <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" role="img"><circle cx="16" cy="17" r="7" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M16 10v14M12 13c1.1-1 2.4-1.5 4-1.5s2.9.5 4 1.5M7 7v7M5 7v4c0 1.7.7 3 2 3s2-1.3 2-3V7M25 7v17M25 7c2.2 1.3 3 3.5 3 6h-3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
           <span className="brand-copy"><strong>Service</strong><small>Pilotage restaurants</small></span>
         </Link>
         <nav aria-label="Navigation principale">
@@ -31,7 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="active-demo">
           <span><small>Mode démo</small><strong>{scenario.shortName}</strong></span>
-          <Link href="/scenarios">Changer</Link>
+          <button type="button" onClick={() => setExamplesOpen(true)}>Cas fictifs</button>
           <button type="button" onClick={resetDemo}>Réinitialiser</button>
         </div>
       </header>
@@ -40,6 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
         <p className="fixture-note">Mode démo autonome · données fictives scénarisées · aucun système réel connecté.</p>
       </main>
+      <ScenarioLibrary open={examplesOpen} onClose={closeExamples} />
     </>
   );
 }

@@ -9,6 +9,42 @@ export type DemoSignal = {
   explanation: string;
 };
 
+export type DemoSystem = {
+  id: string;
+  name: string;
+  kind: "pos" | "reservations" | "planning" | "local_signals" | "supplier";
+  status: "fresh" | "warning" | "blocked";
+  lastSync: string;
+  evidence: string;
+};
+
+export type SupplierWorkflow = {
+  id: string;
+  supplierName: string;
+  accountLabel: string;
+  minimumOrder: number;
+  cutoff: string;
+  deliverySlot: string;
+  items: Array<{
+    sku: string;
+    name: string;
+    packaging: string;
+    requestedQuantity: number;
+    availableQuantity: number;
+    unitPrice: number;
+  }>;
+};
+
+export type DemoWatchItem = {
+  id: string;
+  category: "Météo" | "Événement" | "Équipe" | "Fournisseur";
+  title: string;
+  when: string;
+  site: string;
+  detail: string;
+  urgency: "normal" | "soon" | "urgent";
+};
+
 export type DemoRecommendation = {
   id: string;
   type: "staffing" | "preparation" | "purchase";
@@ -41,6 +77,8 @@ export type DemoDecision = {
   status: "accepted" | "modified" | "refused";
   decidedAt: string;
   estimatedGain: number;
+  owner?: string;
+  deadline?: string;
 };
 
 export type DemoScenario = {
@@ -67,8 +105,11 @@ export type DemoScenario = {
     method: string;
     abstentionReason?: string;
   };
+  systems: DemoSystem[];
+  watch: DemoWatchItem[];
   signals: DemoSignal[];
   recommendations: DemoRecommendation[];
+  supplierWorkflow?: SupplierWorkflow;
   sites: DemoSite[];
   dispatch?: {
     id: string;
@@ -89,6 +130,13 @@ const site = (id: DemoSite["id"], name: string, expectedCovers: number | null, p
   id, name, expectedCovers, plannedServers, requiredServers, alert, stockRisk,
 });
 
+const watch = (eventTitle: string, eventDetail: string, weatherTitle: string, supplierTitle: string): DemoWatchItem[] => [
+  { id: "watch-weather", category: "Météo", title: weatherTitle, when: "Aujourd'hui · 18:00", site: "Groupe", detail: "Décision terrasse à confirmer au briefing de 16:00.", urgency: "normal" },
+  { id: "watch-event", category: "Événement", title: eventTitle, when: "Aujourd'hui · 20:00", site: "République", detail: eventDetail, urgency: "urgent" },
+  { id: "watch-contract", category: "Équipe", title: "CDD serveur arrive à échéance", when: "29 juillet", site: "Liberté", detail: "Arbitrer le renouvellement avant le 22 juillet. Aucun nom ni donnée personnelle dans la démo.", urgency: "soon" },
+  { id: "watch-supplier", category: "Fournisseur", title: supplierTitle, when: "Aujourd'hui · 14:00", site: "République", detail: "Prochaine fenêtre de modification du fournisseur fictif.", urgency: "soon" },
+];
+
 export const demoScenarios: DemoScenario[] = [
   {
     id: "baseline_normal",
@@ -100,6 +148,12 @@ export const demoScenarios: DemoScenario[] = [
     journey: "Contrôler la stabilité, confirmer la préparation et programmer le prochain point.",
     siteId: "gare", siteName: "Gare", moment: "Briefing 08:00", asOf: "17 juillet · 08:00",
     forecast: { baselineCovers: 95, previousCovers: 94, expectedCovers: 96, lowerCovers: 91, upperCovers: 101, counterfactualCovers: 95, expectedRevenue: 3648, confidence: 88, method: "Référence pondérée + signaux stables" },
+    systems: [
+      { id: "normal-pos", name: "Caisse", kind: "pos", status: "fresh", lastSync: "07:51", evidence: "Clôture J-1 importée" },
+      { id: "normal-booking", name: "Réservations", kind: "reservations", status: "fresh", lastSync: "07:45", evidence: "39 couverts confirmés" },
+      { id: "normal-planning", name: "Planning", kind: "planning", status: "fresh", lastSync: "07:35", evidence: "5 serveurs planifiés" },
+    ],
+    watch: watch("Aucun événement majeur", "Aucun impact exceptionnel attendu.", "23 °C sec · terrasse standard", "Commande habituelle déjà couverte"),
     signals: [
       { id: "normal-res", label: "Réservations", category: "reservations", previous: "37 à J-2", current: "39 à J-0", impactCovers: 1, updatedAt: "07:45", explanation: "Le rythme reste dans la bande habituelle du vendredi." },
       { id: "normal-weather", label: "Météo terrasse", category: "weather", previous: "22 °C", current: "23 °C sec", impactCovers: 2, updatedAt: "07:30", explanation: "Conditions légèrement favorables, sans rupture avec l'historique." },
@@ -121,6 +175,13 @@ export const demoScenarios: DemoScenario[] = [
     journey: "Détecter le pic, renforcer la préparation avant 11:00 puis sécuriser les boissons avant 14:00.",
     siteId: "republique", siteName: "République", moment: "Briefing 08:00", asOf: "17 juillet · 08:00",
     forecast: { baselineCovers: 102, previousCovers: 121, expectedCovers: 140, lowerCovers: 135, upperCovers: 146, counterfactualCovers: 130, expectedRevenue: 5740, confidence: 84, method: "Référence + rythme + signaux locaux" },
+    systems: [
+      { id: "concert-pos", name: "Caisse", kind: "pos", status: "fresh", lastSync: "07:52", evidence: "Historique vendredi disponible" },
+      { id: "concert-booking", name: "Réservations", kind: "reservations", status: "fresh", lastSync: "07:50", evidence: "84 couverts confirmés" },
+      { id: "concert-local", name: "Événements & météo", kind: "local_signals", status: "fresh", lastSync: "07:30", evidence: "Concert confirmé · soirée sèche" },
+      { id: "concert-supplier", name: "Catalogue fournisseur", kind: "supplier", status: "fresh", lastSync: "07:40", evidence: "2 références disponibles" },
+    ],
+    watch: watch("Concert · 4 800 places", "Arrivées concentrées avant le dîner, impact estimé +10 couverts.", "24 °C sec · terrasse ouverte", "Brouillon fûts et glaçons avant 14:00"),
     signals: [
       { id: "concert-res", label: "Réservations", category: "reservations", previous: "61 à J-1", current: "84 confirmées", impactCovers: 25, updatedAt: "07:52", explanation: "Le rythme dépasse de 31 % les vendredis comparables." },
       { id: "concert-event", label: "Concert à 450 m", category: "event", previous: "Annonce provisoire", current: "4 800 places · confirmé", impactCovers: 10, updatedAt: "07:10", explanation: "L'horaire concentre les arrivées avant le dîner." },
@@ -132,6 +193,18 @@ export const demoScenarios: DemoScenario[] = [
       { id: "concert-purchase", type: "purchase", title: "Sécuriser 40 kg de glaçons", detail: "Le stock actuel couvre seulement 80 % du besoin médian du bar et de la terrasse.", deadline: "14:00", estimatedGain: 92, estimatedRisk: 145, confidence: 81, rule: "besoin bar + terrasse - stock disponible" },
       { id: "concert-staff", type: "staffing", title: "Décaler un serveur sur le pic 19:00–22:00", detail: "Le renfort couvre la pointe sans ajouter une vacation complète.", deadline: "16:00", estimatedGain: 74, estimatedRisk: 118, confidence: 78, rule: "1 serveur / 24 couverts au pic" },
     ],
+    supplierWorkflow: {
+      id: "concert-supplier-order",
+      supplierName: "Boissons Ouest · fournisseur fictif",
+      accountLabel: "Compte démo · République",
+      minimumOrder: 150,
+      cutoff: "14:00",
+      deliverySlot: "15:30–16:00",
+      items: [
+        { sku: "FUT-BLONDE-30", name: "Fût blonde locale", packaging: "30 L consigné", requestedQuantity: 2, availableQuantity: 6, unitPrice: 92 },
+        { sku: "GLACE-ALIM-10", name: "Glaçons alimentaires", packaging: "sac de 10 kg", requestedQuantity: 4, availableQuantity: 8, unitPrice: 14 },
+      ],
+    },
     sites: [site("republique", "République", 140, 7, 8, "Renfort conseillé", "Élevé"), site("liberte", "Liberté", 108, 6, 6, "Demande stable", "Faible"), site("gare", "Gare", 91, 5, 5, "Demande stable", "Faible")],
     history: [{ id: "hist-concert", scenarioId: "concert_dry_friday", recommendationId: "concert-prev", recommendationType: "staffing", title: "Décaler le renfort sur 19:00–22:00", site: "République", status: "modified", decidedAt: "2026-06-19T15:20:00+02:00", estimatedGain: 68 }],
   },
@@ -145,6 +218,12 @@ export const demoScenarios: DemoScenario[] = [
     journey: "Identifier la baisse, préserver ce qui est engagé et agir sur achat puis équipe avant leurs échéances.",
     siteId: "republique", siteName: "République", moment: "Alerte 13:45", asOf: "17 juillet · 13:45",
     forecast: { baselineCovers: 126, previousCovers: 140, expectedCovers: 124, lowerCovers: 119, upperCovers: 129, counterfactualCovers: 134, expectedRevenue: 5084, confidence: 84, method: "Replanification après événement" },
+    systems: [
+      { id: "cancel-booking", name: "Réservations", kind: "reservations", status: "fresh", lastSync: "13:39", evidence: "8 annulations reçues" },
+      { id: "cancel-local", name: "Événements & météo", kind: "local_signals", status: "fresh", lastSync: "13:32", evidence: "Concert marqué annulé" },
+      { id: "cancel-supplier", name: "Fournisseur", kind: "supplier", status: "warning", lastSync: "13:45", evidence: "Commande modifiable 15 min" },
+    ],
+    watch: watch("Concert annulé à 13:32", "Replanification immédiate des achats et de l'équipe.", "24 °C sec · baisse partiellement amortie", "Réduire la commande avant 14:00"),
     signals: [
       { id: "cancel-event", label: "Concert", category: "event", previous: "Confirmé · 4 800 places", current: "Annulé", impactCovers: -10, updatedAt: "13:32", explanation: "Le principal moteur de fréquentation disparaît avant le service." },
       { id: "cancel-res", label: "Réservations", category: "reservations", previous: "84 confirmées", current: "76 + 8 annulations", impactCovers: 5, updatedAt: "13:39", explanation: "Les annulations restent partielles : la demande ne revient pas à la référence basse." },
@@ -168,6 +247,12 @@ export const demoScenarios: DemoScenario[] = [
     journey: "Comparer les besoins, vérifier rôle et trajet, puis simuler l'état des deux sites après décision.",
     siteId: "liberte", siteName: "Liberté", moment: "Vue groupe 08:00", asOf: "17 juillet · 08:00",
     forecast: { baselineCovers: 104, previousCovers: 108, expectedCovers: 112, lowerCovers: 107, upperCovers: 118, counterfactualCovers: 108, expectedRevenue: 4144, confidence: 82, method: "Demande + capacité groupe" },
+    systems: [
+      { id: "multi-booking", name: "Réservations", kind: "reservations", status: "fresh", lastSync: "07:48", evidence: "Hausse isolée à Liberté" },
+      { id: "multi-planning", name: "Planning groupe", kind: "planning", status: "fresh", lastSync: "07:35", evidence: "Rôles et disponibilités vérifiés" },
+      { id: "multi-local", name: "Accès & événements", kind: "local_signals", status: "fresh", lastSync: "07:40", evidence: "Trajet 12 min · afterwork confirmé" },
+    ],
+    watch: watch("Afterwork · 190 inscrits", "Impact concentré sur Liberté, sans hausse équivalente à République.", "22 °C · terrasse partielle", "Aucun risque fournisseur prioritaire"),
     signals: [
       { id: "multi-res", label: "Réservations Liberté", category: "reservations", previous: "46", current: "58", impactCovers: 8, updatedAt: "07:48", explanation: "La hausse se concentre sur Liberté, pas sur l'ensemble du groupe." },
       { id: "multi-staff", label: "Équipe République", category: "staff", previous: "Plan équilibré", current: "+1 serveur après 19:00", impactCovers: 0, updatedAt: "07:35", explanation: "République peut céder un renfort sans passer sous son besoin calculé." },
@@ -191,6 +276,12 @@ export const demoScenarios: DemoScenario[] = [
     journey: "Diagnostiquer la qualité, suspendre les actions chiffrées et demander une validation manuelle.",
     siteId: "liberte", siteName: "Liberté", moment: "Contrôle 08:00", asOf: "17 juillet · 08:00",
     forecast: { baselineCovers: null, previousCovers: 106, expectedCovers: null, lowerCovers: null, upperCovers: null, counterfactualCovers: null, expectedRevenue: null, confidence: 28, method: "Calcul suspendu", abstentionReason: "Trois sources critiques ne passent pas les contrôles qualité." },
+    systems: [
+      { id: "bad-pos-system", name: "Caisse", kind: "pos", status: "blocked", lastSync: "07:50", evidence: "17 % de doublons" },
+      { id: "bad-booking-system", name: "Réservations", kind: "reservations", status: "blocked", lastSync: "J-2", evidence: "Synchronisation incomplète" },
+      { id: "bad-local-system", name: "Météo", kind: "local_signals", status: "warning", lastSync: "J-1 12:30", evidence: "Donnée vieille de 19 h" },
+    ],
+    watch: watch("Événement non exploitable", "Le signal ne peut pas être croisé avec les sources dégradées.", "Météo périmée · terrasse à confirmer", "Commande bloquée tant que les données sont incomplètes"),
     signals: [
       { id: "bad-pos", label: "Caisse", category: "quality", previous: "Import complet", current: "17 % de tickets dupliqués", impactCovers: null, updatedAt: "07:50", explanation: "Le volume historique ne peut pas être comparé sans dédoublonnage." },
       { id: "bad-res", label: "Réservations", category: "quality", previous: "Synchronisé", current: "Dernière synchro J-2", impactCovers: null, updatedAt: "07:45", explanation: "Le rythme récent est inconnu et ne doit pas être extrapolé." },
@@ -210,6 +301,12 @@ export const demoScenarios: DemoScenario[] = [
     journey: "Réviser la demande, vérifier le stock tampon et avancer la livraison avant la fermeture.",
     siteId: "gare", siteName: "Gare", moment: "Alerte accès 08:00", asOf: "17 juillet · 08:00",
     forecast: { baselineCovers: 96, previousCovers: 91, expectedCovers: 82, lowerCovers: 77, upperCovers: 87, counterfactualCovers: 91, expectedRevenue: 3116, confidence: 79, method: "Référence + accès + stock" },
+    systems: [
+      { id: "road-pos", name: "Caisse", kind: "pos", status: "fresh", lastSync: "07:46", evidence: "Annulations rapprochées" },
+      { id: "road-local", name: "Accès & travaux", kind: "local_signals", status: "fresh", lastSync: "07:12", evidence: "Fermeture 16:30–21:00" },
+      { id: "road-supplier", name: "Fournisseur", kind: "supplier", status: "warning", lastSync: "07:25", evidence: "Créneau à avancer" },
+    ],
+    watch: watch("Travaux autour de Gare", "Fermeture de rue prévue de 16:30 à 21:00.", "Soirée sèche · impact travaux dominant", "Avancer la livraison avant 10:30"),
     signals: [
       { id: "road-access", label: "Accès rue", category: "access", previous: "Circulation alternée", current: "Fermeture 16:30–21:00", impactCovers: -9, updatedAt: "07:12", explanation: "Le passage spontané et l'accès livraison sont tous deux affectés." },
       { id: "road-res", label: "Réservations", category: "reservations", previous: "38", current: "33 dont 5 annulations", impactCovers: -7, updatedAt: "07:46", explanation: "Les annulations confirment que l'impact ne reste pas théorique." },

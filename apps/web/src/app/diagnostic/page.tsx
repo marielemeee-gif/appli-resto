@@ -1,10 +1,5 @@
-import { AppShell } from "@/components/app-shell";
-import { DiagnosticClient } from "@/components/diagnostic-client";
+import { redirect } from "next/navigation";
 
 export default function DiagnosticPage() {
-  return (
-    <AppShell>
-      <DiagnosticClient />
-    </AppShell>
-  );
+  redirect("/cockpit");
 }
