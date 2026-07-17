@@ -100,7 +100,7 @@ Rendre les actions d'en-tête `Specs PDF` et `Cas fictifs` nettement plus visibl
 
 ## Current state
 
-Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public sont publiés dans `5db2b38`, avec le suivi dans `11d102c`. Le correctif de visibilité des boutons d'en-tête est terminé et vérifié localement, mais pas encore commité ni poussé.
+Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`.
 
 ## Touched files and artifacts
 
@@ -147,6 +147,7 @@ Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public s
 - Les routes locales `/specs-prototype-app.pdf` et `/icon.svg` répondent `200` avec les bons types MIME.
 - GitHub : commit `5db2b38` poussé avec succès de `main` vers `origin/main` le 17 juillet 2026.
 - Correctif d'en-tête : 13 tests web, lint, types et build réussis ; contrôle à 287 px sans débordement, avec `Specs PDF` safran et `Cas fictifs` turquoise tous deux visibles, `Réinitialiser` seul masqué.
+- GitHub : correctif `8a345a1` poussé avec succès de `main` vers `origin/main` le 17 juillet 2026.
 
 ## Blockers and open questions
 
@@ -160,5 +161,5 @@ Les phases 13 et 14, le renommage `Prototype App`, le favicon et le PDF public s
 
 ## Next actions
 
-1. Valider puis commiter/pousser le correctif de visibilité des boutons.
-2. Redéployer Render et vérifier les quatre vues publiques, le favicon et `/specs-prototype-app.pdf`.
+1. Redéployer Render au dernier commit de `main`.
+2. Vérifier les boutons d'en-tête, les quatre vues publiques, le favicon et `/specs-prototype-app.pdf`.
