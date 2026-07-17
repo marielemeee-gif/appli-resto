@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Rendre les actions d'en-tête `Specs PDF` et `Cas fictifs` nettement plus visibles, notamment sur mobile, après la publication des phases 13 et 14.
+Transformer l'expérience mobile, jugée moins aboutie que le desktop, et moderniser les couleurs et les surfaces de l'application sur ordinateur comme sur mobile.
 
 ## Agreed scope and approvals
 
@@ -100,7 +100,7 @@ Rendre les actions d'en-tête `Specs PDF` et `Cas fictifs` nettement plus visibl
 
 ## Current state
 
-Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`.
+Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est terminée localement et attend validation : navigation mobile dédiée, rails de cartes et modernisation mesurée du langage visuel.
 
 ## Touched files and artifacts
 
@@ -148,6 +148,9 @@ Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité d
 - GitHub : commit `5db2b38` poussé avec succès de `main` vers `origin/main` le 17 juillet 2026.
 - Correctif d'en-tête : 13 tests web, lint, types et build réussis ; contrôle à 287 px sans débordement, avec `Specs PDF` safran et `Cas fictifs` turquoise tous deux visibles, `Réinitialiser` seul masqué.
 - GitHub : correctif `8a345a1` poussé avec succès de `main` vers `origin/main` le 17 juillet 2026.
+- Phase 15 : `pnpm check` réussi avec 13 tests web et 22 tests API ; lint, types et build passent.
+- Phase 15 responsive : à 390 px, aucun débordement global, navigation fixe en bas, onglet actif, décisions et établissements en rails horizontaux ; hauteurs ramenées à environ 1 330 px et 1 440 px.
+- Phase 15 visuelle : palette plus fraîche, surfaces blanches, ombres allégées, accents turquoise/abricot et boutons moins massifs sur ordinateur comme sur mobile.
 
 ## Blockers and open questions
 

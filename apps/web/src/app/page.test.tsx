@@ -39,6 +39,7 @@ describe("Application de démonstration", () => {
     expect(within(navigation).getByRole("link", { name: "Décisions" })).toBeInTheDocument();
     expect(within(navigation).getByRole("link", { name: "Établissements" })).toBeInTheDocument();
     expect(within(navigation).getByRole("link", { name: "Journal" })).toBeInTheDocument();
+    expect(navigation.querySelectorAll(".nav-icon")).toHaveLength(4);
     expect(screen.queryByRole("link", { name: "Explications" })).not.toBeInTheDocument();
     expect(screen.getByText("Concert · 4 800 places")).toBeInTheDocument();
     expect(screen.getByText("CDD serveur arrive à échéance")).toBeInTheDocument();
@@ -92,6 +93,7 @@ describe("Application de démonstration", () => {
     expect(screen.getByText("1 / 2")).toBeInTheDocument();
     expect(screen.queryByText("121 → 140")).not.toBeInTheDocument();
     expect(screen.getByText("Sources actualisées · 4/4")).toBeInTheDocument();
+    expect(screen.getByText("Glissez pour parcourir les 3 priorités")).toBeInTheDocument();
     expect(view.container.querySelector(".systems-details")).not.toHaveAttribute("open");
     expect(view.container.querySelectorAll(".interactive-action")).toHaveLength(3);
     const action = screen.getByRole("heading", { name: "Préparer 24 portions froides pour la terrasse" }).closest("article");
@@ -104,6 +106,7 @@ describe("Application de démonstration", () => {
     renderDemo(<MultisitesPage />);
     expect(screen.getByText("339")).toBeInTheDocument();
     expect(screen.getByText("Qui a besoin d’aide, qui peut aider ?")).toBeInTheDocument();
+    expect(screen.getByText("Glissez pour comparer les 3 établissements")).toBeInTheDocument();
     expect(screen.getByText("Manque 1")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Ne pas déplacer d’équipe aujourd’hui" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Traiter le plan local" })).toHaveAttribute("href", "/briefing");

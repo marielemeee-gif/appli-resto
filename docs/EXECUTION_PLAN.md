@@ -1,7 +1,56 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 14 terminée localement — en attente de validation**
+Statut : **phase 15 terminée localement — en attente de validation**
 Date de cadrage : 17 juillet 2026
+
+## Phase 15 — faire du mobile une vraie interface d'application
+
+### 1. Résultat visé
+
+La version ordinateur conserve sa densité opérationnelle, tandis que la version mobile cesse d'être une simple colonne très longue : navigation fixe en bas, en-tête compact, cartes prioritaires consultables par balayage et hiérarchie visuelle plus contemporaine sur toutes les tailles d'écran.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : aucune donnée, règle métier ou fonctionnalité n'est ajoutée ou supprimée.
+- **Décidé** : sous 42 rem, les quatre tâches principales passent dans une barre de navigation fixe en bas avec icône, libellé court et cible tactile d'au moins 44 px.
+- **Décidé** : l'en-tête mobile ne garde que la marque, `Specs PDF` et `Cas fictifs` ; le mode et la réinitialisation restent accessibles sur ordinateur.
+- **Décidé** : les décisions et les établissements deviennent des rails horizontaux à points d'arrêt sur mobile afin de réduire fortement la hauteur de page.
+- **Décidé** : une courte consigne de balayage rend ce comportement découvrable ; la première carte reste entièrement visible.
+- **Décidé** : la palette évolue vers un fond froid très clair, une encre bleutée, un turquoise plus lumineux et un accent abricot, avec des cartes moins massives et des ombres plus fines.
+- **Confirmé** : les couleurs d'état restent distinctes et ne portent jamais seules l'information.
+- **Confirmé** : le desktop reste riche et les changements visuels y améliorent la hiérarchie sans modifier sa structure.
+
+### 3. Fichiers concernés
+
+- `components/app-shell.tsx` : navigation mobile illustrée et état actif.
+- `components/briefing-client.tsx` : indication de balayage des priorités.
+- `components/multisites-client.tsx` : indication de balayage des établissements.
+- `app/globals.css` : palette, surfaces, navigation fixe, rails et densité mobile.
+- `app/page.test.tsx` : présence des affordances mobiles sans régression des parcours.
+- `PROJECTS/pilotage-restaurants/project-state.md` : suivi de la phase.
+
+### 4. Vérifications prévues
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+Contrôles visuels sur les quatre vues à 1280 px et 390 px, avec vérification des cibles tactiles, du contenu masqué par la barre basse, des rails, des fenêtres et de l'absence de débordement global.
+
+Résultat : `pnpm check` réussit avec 13 tests web et 22 tests API ; lint, types et build passent. À 390 px, Décisions et Établissements n'ont aucun débordement global, leur rail est réellement défilable, la navigation reste fixée au bas de la fenêtre et la page conserve une marge suffisante pour ne masquer aucun contenu. La vue Décisions mesure environ 1 330 px et Établissements environ 1 440 px dans le cas principal, contre plus de 2 000 px avant la phase. Aucun message d'erreur n'est émis dans la console. Le contrôle à la largeur disponible de 920 px confirme également la conservation de la composition tablette/ordinateur.
+
+### 5. Critères de sortie
+
+- Les quatre tâches sont accessibles au pouce sans remonter en haut de page.
+- Le contexte de page reste visible avec un en-tête mobile compact.
+- Les trois décisions et les trois établissements se consultent sans tripler la hauteur de page.
+- Les boutons `Specs PDF` et `Cas fictifs` restent immédiatement visibles.
+- La nouvelle palette fonctionne de façon cohérente sur ordinateur et mobile.
+- Aucun contenu ni comportement métier n'est perdu.
+- Tests, lint, types et build passent.
+
+Phase terminée localement le 17 juillet 2026. Aucun commit, push ni déploiement n'est réalisé avant validation explicite.
 
 ## Phase 14 — rendre chaque onglet proportionné à sa tâche
 

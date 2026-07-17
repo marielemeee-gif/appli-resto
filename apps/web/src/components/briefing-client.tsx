@@ -55,6 +55,7 @@ export function BriefingClient() {
 
       <section className="action-sheet decision-worklist" aria-labelledby="action-title">
         <div><p className="eyebrow">Plan du service</p><h2 id="action-title">Décider avant les échéances</h2></div>
+        {scenario.recommendations.length > 1 && <small className="mobile-swipe-hint">Glissez pour parcourir les {scenario.recommendations.length} priorités <span aria-hidden="true">→</span></small>}
         <div className={`action-stack count-${scenario.recommendations.length}`}>{scenario.recommendations.map((recommendation, index) => {
           const decision = scenarioDecisions.find((item) => item.recommendationId === recommendation.id);
           const expired = isDeadlineExpired(scenario.asOf, recommendation.deadline);

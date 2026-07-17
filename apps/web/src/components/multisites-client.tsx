@@ -25,6 +25,7 @@ export function MultisitesClient() {
 
     <section className="group-board" aria-labelledby="group-board-title">
       <header><div><p className="eyebrow">Comparaison opérationnelle</p><h2 id="group-board-title">Qui a besoin d’aide, qui peut aider ?</h2></div><small>planifié / requis</small></header>
+      <small className="mobile-swipe-hint">Glissez pour comparer les 3 établissements <span aria-hidden="true">→</span></small>
       <div className="group-table" role="table" aria-label="Situation des trois établissements">
         <div className="group-table-head" role="row"><span>Établissement</span><span>Prévision</span><span>Équipe salle</span><span>Stock</span><span>Lecture</span></div>
         {scenario.sites.map((site) => {

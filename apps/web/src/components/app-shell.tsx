@@ -1,20 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useDemo } from "@/demo/demo-context";
 import { ScenarioLibrary } from "./scenario-library";
 
 const navigation = [
-  ["Tableau de bord", "/cockpit"],
-  ["Décisions", "/briefing"],
-  ["Établissements", "/multisites"],
-  ["Journal", "/valeur"],
+  { label: "Tableau de bord", shortLabel: "Accueil", href: "/cockpit", icon: "home" },
+  { label: "Décisions", shortLabel: "Décisions", href: "/briefing", icon: "check" },
+  { label: "Établissements", shortLabel: "Sites", href: "/multisites", icon: "sites" },
+  { label: "Journal", shortLabel: "Journal", href: "/valeur", icon: "journal" },
 ];
+
+function NavIcon({ name }: { name: string }) {
+  if (name === "home") return <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z" /></svg>;
+  if (name === "check") return <svg viewBox="0 0 24 24"><path d="M5 12.5 9.2 17 19 7" /><path d="M19 12a7 7 0 1 1-4-6.3" /></svg>;
+  if (name === "sites") return <svg viewBox="0 0 24 24"><path d="M4 8h6v11H4zM14 4h6v15h-6z" /><path d="M7 5v3m10 11v2M2 21h20" /></svg>;
+  return <svg viewBox="0 0 24 24"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" /></svg>;
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { scenario, resetDemo, storageError } = useDemo();
   const [examplesOpen, setExamplesOpen] = useState(false);
+  const currentPath = usePathname()?.replace(/\/$/, "") || "/";
   const closeExamples = useCallback(() => setExamplesOpen(false), []);
   return (
     <>
@@ -28,8 +37,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Link>
         <a className="specs-link" href="/specs-prototype-app.pdf" target="_blank" rel="noreferrer">Specs PDF</a>
         <nav aria-label="Navigation principale">
-          {navigation.map(([label, href]) => (
-            <Link key={href} href={href}>{label}</Link>
+          {navigation.map(({ label, shortLabel, href, icon }) => (
+            <Link key={href} href={href} aria-label={label} aria-current={currentPath === href ? "page" : undefined}>
+              <span className="nav-icon" aria-hidden="true"><NavIcon name={icon} /></span>
+              <span className="nav-label-desktop">{label}</span>
+              <span className="nav-label-mobile" aria-hidden="true">{shortLabel}</span>
+            </Link>
           ))}
         </nav>
         <div className="active-demo">
