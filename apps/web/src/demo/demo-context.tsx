@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
-import { defaultScenarioId, DemoDecision, type DemoSite, getDemoScenario } from "./scenarios";
+import { defaultScenarioId, DemoDecision, type DemoSite, getDemoHistory, getDemoScenario, getDemoSiteView } from "./scenarios";
 
 type DecisionStatus = DemoDecision["status"];
 export type SupplierStatus = "recommended" | "drafted" | "confirmed_demo";
@@ -32,7 +32,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
   const scenario = getDemoScenario(scenarioId);
   const activeSite = scenario.sites.find((item) => item.id === activeSiteId) ?? scenario.sites.find((item) => item.id === scenario.siteId)!;
-  const decisions = useMemo(() => [...scenario.history, ...sessionDecisions], [scenario.history, sessionDecisions]);
+  const decisions = useMemo(() => [...getDemoHistory(scenario), ...sessionDecisions], [scenario, sessionDecisions]);
   const supplierStatus = scenario.supplierWorkflow ? supplierStates[scenario.supplierWorkflow.id] ?? "recommended" : "recommended";
 
   const value = useMemo<DemoContextValue>(() => ({
@@ -51,7 +51,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       if (scenario.sites.some((item) => item.id === id)) setActiveSiteId(id);
     },
     decide: (recommendationId, status, note) => {
-      const recommendation = scenario.recommendations.find((item) => item.id === recommendationId);
+      const recommendation = getDemoSiteView(scenario, activeSite.id).recommendations.find((item) => item.id === recommendationId);
       const dispatch = scenario.dispatch?.id === recommendationId ? scenario.dispatch : undefined;
       if (!recommendation && !dispatch) return;
       const decision: DemoDecision = {
@@ -60,7 +60,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         recommendationId,
         recommendationType: recommendation?.type ?? "dispatch",
         title: recommendation?.title ?? `Transférer ${dispatch?.quantity} serveur de ${dispatch?.source} vers ${dispatch?.target}`,
-        site: recommendation ? scenario.siteName : "Groupe",
+        site: recommendation ? activeSite.name : "Groupe",
         status,
         decidedAt: "2026-07-17T09:05:00+02:00",
         estimatedGain: status === "refused" ? 0 : Math.round((recommendation?.estimatedGain ?? dispatch?.estimatedGain ?? 0) * (status === "modified" ? 0.72 : 1)),

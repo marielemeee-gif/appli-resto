@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Ajouter une véritable liste déroulante `Vue active` pour les trois lieux, davantage d'interactions utiles et vérifier/corriger la logique de l'ensemble du site.
+Peupler Liberté et Gare avec des données fictives complètes et des décisions différentes par lieu, afin qu'aucune vue autre que République ne paraisse vide ou dégradée.
 
 ## Agreed scope and approvals
 
@@ -25,6 +25,7 @@ Ajouter une véritable liste déroulante `Vue active` pour les trois lieux, dava
 - Phase 14 autorisée le 17 juillet 2026 ; résultat local terminé, validation encore attendue avant commit et push.
 - Phases 13 et 14 validées le 17 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Complete and rebalance restaurant demo` et exclusion de `prototype-use-cases/`.
 - Correctif de visibilité d'en-tête validé pour commit et push le 17 juillet 2026 avec le message `Improve header action visibility`, toujours sans `prototype-use-cases/`.
+- Phase 17 validée le 18 juillet 2026 ; commit et push de ses huit fichiers vers `origin/main` autorisés avec le message `Populate restaurant views by location`, en excluant `prototype-use-cases/`.
 
 ## Decisions made
 
@@ -100,7 +101,7 @@ Ajouter une véritable liste déroulante `Vue active` pour les trois lieux, dava
 
 ## Current state
 
-Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité des boutons d'en-tête et d'équilibre du fournisseur est publié dans `8a345a1` (`Improve header action visibility`) sur `origin/main`. La phase 15 est publiée dans `928a16c` (`Polish mobile restaurant demo`) sur `origin/main`. La phase 16 est publiée dans `2e12e29` (`Add synchronized restaurant views`) sur `origin/main` : vue active partagée, interactions multi-sites et audit de cohérence des parcours.
+Les phases 13 à 16 sont publiées sur `origin/main`, dont la vue active partagée dans `2e12e29`. La phase 17 est terminée localement et attend la validation utilisateur : République, Liberté et Gare ont désormais un instantané complet et déterministe, ainsi que des décisions propres à leur contexte.
 
 ## Touched files and artifacts
 
@@ -156,6 +157,8 @@ Les phases 13 et 14 sont publiées dans `5db2b38`. Le correctif de visibilité d
 - Phase 16 responsive : parcours République → Liberté → Décisions → Journal validé à 390 px sans débordement ni erreur console ; comparaison validée à 920 px.
 - Audit phase 16 : vigies rattachées au bon site, historiques alignés sur juillet 2026, transfert synchronisé par identifiant et contributions numériques réconciliées avec la prévision.
 - GitHub : phase 16 poussée avec succès de `main` vers `origin/main` dans le commit `2e12e29` le 17 juillet 2026.
+- Phase 17 : `pnpm check` réussi avec 16 tests web et 22 tests API ; lint, types et build passent.
+- Phase 17 responsive : Liberté puis Gare vérifiées dans le navigateur à 392 px et en largeur ordinateur, sans débordement horizontal ; les prévisions, vigies et décisions changent bien par lieu.
 
 ## Blockers and open questions
 

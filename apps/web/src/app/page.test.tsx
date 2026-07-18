@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { DemoProvider } from "@/demo/demo-context";
-import { demoScenarios } from "@/demo/scenarios";
+import { demoScenarios, getDemoHistory, getDemoSiteView } from "@/demo/scenarios";
 import { BriefingClient } from "@/components/briefing-client";
 import { RoiClient } from "@/components/roi-client";
 import BriefingPage from "./briefing/page";
@@ -38,6 +38,40 @@ describe("Application de démonstration", () => {
       }
     }
     expect(demoScenarios.find((scenario) => scenario.id === "bad_data_abstain")?.supplierWorkflow).toBeUndefined();
+  });
+
+  it("peuple les trois établissements avec des vues locales cohérentes", () => {
+    for (const scenario of demoScenarios) {
+      for (const site of scenario.sites) {
+        const view = getDemoSiteView(scenario, site.id);
+        expect(view.site.id).toBe(site.id);
+        expect(view.systems.length).toBeGreaterThanOrEqual(3);
+        expect(view.staffing.map((item) => item.role)).toEqual(["Salle", "Cuisine", "Bar"]);
+        expect(new Set(view.recommendations.map((item) => item.id)).size).toBe(view.recommendations.length);
+        expect(view.recommendations.length).toBeLessThanOrEqual(3);
+
+        if (view.forecast.expectedCovers === null || view.forecast.baselineCovers === null) {
+          expect(view.recommendations).toHaveLength(0);
+        } else {
+          expect(view.watch.length).toBeGreaterThanOrEqual(3);
+          expect(view.recommendations.length).toBeGreaterThan(0);
+          expect(view.forecast.lowerCovers).toBeLessThanOrEqual(view.forecast.expectedCovers);
+          expect(view.forecast.upperCovers).toBeGreaterThanOrEqual(view.forecast.expectedCovers);
+          expect(view.signals.reduce((sum, signal) => sum + (signal.impactCovers ?? 0), 0)).toBe(view.forecast.expectedCovers - view.forecast.baselineCovers);
+        }
+      }
+
+      const journalSites = new Set(getDemoHistory(scenario).map((item) => item.site));
+      expect(["République", "Liberté", "Gare"].every((siteName) => journalSites.has(siteName))).toBe(true);
+    }
+  });
+
+  it("propose des décisions différentes selon le lieu", () => {
+    const scenario = demoScenarios.find((item) => item.id === "concert_dry_friday")!;
+    const titlesBySite = scenario.sites.map((site) => getDemoSiteView(scenario, site.id).recommendations.map((item) => item.title));
+    expect(titlesBySite[0]).not.toEqual(titlesBySite[1]);
+    expect(titlesBySite[1]).not.toEqual(titlesBySite[2]);
+    expect(titlesBySite[2]).not.toEqual(titlesBySite[0]);
   });
 
   it("présente quatre destinations opérationnelles distinctes", () => {
@@ -100,27 +134,27 @@ describe("Application de démonstration", () => {
     expect(within(horizon!).getAllByText("87").length).toBeGreaterThan(0);
   });
 
-  it("partage la vue active sans inventer de prévision détaillée", () => {
+  it("partage une vue Liberté complète et ses décisions propres", () => {
     const view = renderDemo(<Home />);
     fireEvent.change(screen.getByLabelText("Établissement actif"), { target: { value: "liberte" } });
 
-    const summary = screen.getByRole("heading", { name: "Liberté" }).closest("section");
-    expect(summary).not.toBeNull();
-    expect(within(summary!).getByText("108")).toBeInTheDocument();
-    expect(within(summary!).getByText(/sans inventer de fourchette/i)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Aucune décision moteur" })).toBeInTheDocument();
-    expect(screen.getByText("2 échéances utiles")).toBeInTheDocument();
+    expect(view.container.querySelector(".forecast-primary strong")).toHaveTextContent("108");
+    expect(screen.getByText(/Fourchette 103–114 · 3.996 € de CA fictif/)).toBeInTheDocument();
+    expect(screen.getByText("4 échéances utiles")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "2 décisions" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Aucune décision moteur" })).not.toBeInTheDocument();
 
     view.rerender(<DemoProvider><BriefingPage /></DemoProvider>);
-    expect(screen.getByRole("heading", { level: 1, name: "Vue terrain · Liberté" })).toBeInTheDocument();
-    expect(screen.queryByText("Gain estimé fictif")).not.toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Action"), { target: { value: "Confirmer la terrasse Liberté" } });
-    fireEvent.click(screen.getByRole("button", { name: "Ajouter au plan de Liberté" }));
-    expect(screen.getByRole("status")).toHaveTextContent("Ajoutée au Journal de Liberté.");
+    expect(screen.getByRole("heading", { level: 1, name: "2 décisions avant le dîner" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Préparer 18 assiettes afterwork à partager" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Décaler une prise de poste sur 19:00–21:00" })).toBeInTheDocument();
+    const action = screen.getByRole("heading", { name: "Décaler une prise de poste sur 19:00–21:00" }).closest("article");
+    fireEvent.click(within(action!).getByRole("button", { name: "Valider" }));
+    expect(within(action!).getByText("Validée")).toBeInTheDocument();
 
     view.rerender(<DemoProvider><ValeurPage /></DemoProvider>);
     expect(screen.getByRole("heading", { name: "Historique · Liberté" })).toBeInTheDocument();
-    expect(screen.getByText("Confirmer la terrasse Liberté")).toBeInTheDocument();
+    expect(screen.getByText("Décaler une prise de poste sur 19:00–21:00")).toBeInTheDocument();
   });
 
   it("une décision met à jour l'écran et le Journal", () => {

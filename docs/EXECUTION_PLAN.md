@@ -1,7 +1,98 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 16 terminée localement — en attente de validation**
-Date de cadrage : 17 juillet 2026
+Statut : **phase 17 terminée localement — validation utilisateur attendue**
+Date de cadrage : 18 juillet 2026
+
+## Phase 17 — peupler chaque vue active avec un instantané complet
+
+### 1. Résultat de la phase
+
+République, Liberté et Gare disposent chacun d'une démonstration opérationnelle complète dans le même scénario : prévision, fourchette, chiffre d'affaires fictif, facteurs, besoins par rôle, recommandations, vigies, systèmes simulés et historique. Changer `Vue active` ne produit plus un écran dégradé ou un message d'absence de données.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : toutes les nouvelles valeurs sont fictives, déterministes et locales au prototype.
+- **Décidé** : le site porteur du scénario conserve les fixtures métier détaillées déjà validées.
+- **Décidé** : les deux autres sites reçoivent un instantané généré par une fonction pure à partir de leur synthèse groupe.
+- **Décidé** : le générateur applique des paramètres stables par établissement — ticket moyen, amplitude, confiance et écart à la référence — plutôt que des nombres aléatoires.
+- **Décidé** : chaque instantané secondaire croise réservations, météo et capacité locale ; la somme des contributions réconcilie exactement la prévision avec sa référence.
+- **Décidé** : chaque établissement reçoit des décisions réellement différentes selon son contexte : terrasse/bar à République, équipe/afterwork à Liberté, livraison/préparation à Gare.
+- **Décidé** : chaque instantané comporte deux ou trois recommandations déterministes maximum, avec règle, heure limite, gain/risque fictif et confiance.
+- **Décidé** : le besoin Salle vient de la comparaison groupe ; Cuisine et Bar sont dérivés par ratios explicites et arrondis.
+- **Décidé** : les systèmes tiers secondaires sont des adaptateurs fictifs horodatés, jamais présentés comme des connexions réelles.
+- **Décidé** : le Journal complète automatiquement les sites sans historique avec une décision fictive passée, marquée estimée.
+- **Confirmé** : le scénario d'abstention reste une abstention uniquement pour son site porteur ; les autres sites fiables restent peuplés.
+
+### 3. Architecture et flux
+
+```text
+scenario + activeSiteId
+          │
+          ▼
+getDemoSiteView(scenario, siteId) ── fonction pure déterministe
+  ├─ site porteur -> fixtures validées inchangées
+  └─ autre site   -> forecast + systems + signals + staffing
+                    + recommendations propres au lieu + watch
+          │
+          ├─ Tableau de bord
+          ├─ Décisions / validation / modification / refus
+          └─ partage terrain
+
+getDemoHistory(scenario)
+  └─ historique existant + une trace de démonstration par site manquant
+```
+
+La prévision secondaire reste une fixture d'interface et non le résultat de l'API Python. Cette frontière est indiquée dans la méthode et dans la mention globale de données fictives. Les décisions utilisent les mêmes identifiants que les recommandations générées et rejoignent le contexte de session existant.
+
+### 4. Fichiers concernés
+
+- `demo/scenarios.ts` : contrat `DemoSiteView`, générateur déterministe et historique complété.
+- `demo/demo-context.tsx` : décisions et historique basés sur la vue active.
+- `components/cockpit-page.tsx` : même profondeur fonctionnelle pour les trois lieux.
+- `components/briefing-client.tsx` : recommandations, rôles, systèmes et partage propres au site actif.
+- `components/roi-client.tsx` : historique initial non vide pour chaque établissement.
+- `app/page.test.tsx` : invariants des 18 vues site/scénario et parcours secondaire complet.
+- `docs/EXECUTION_PLAN.md`, `PROJECTS/pilotage-restaurants/project-state.md` : suivi de phase.
+
+### 5. Étapes d'implémentation
+
+1. Définir le contrat d'un instantané complet par site.
+2. Générer les vues secondaires et leurs décisions propres de façon déterministe et réconciliable.
+3. Relier le contexte de décisions et l'historique au site actif.
+4. Remplacer les écrans secondaires dégradés par les composants complets existants.
+5. Vérifier validation, modification, partage et Journal pour Liberté et Gare.
+6. Contrôler desktop, mobile et l'ensemble des scénarios.
+
+### 6. Vérifications
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+Les tests couvrent les 18 couples scénario/site : médiane dans la fourchette, contributions réconciliées, trois rôles, une à trois recommandations, décisions distinctes par établissement, trois systèmes minimum, historique non vide et identifiants uniques. Le parcours navigateur contrôle Liberté puis Gare à 390 px et sur la largeur ordinateur disponible.
+
+Résultat : `pnpm check` réussit avec 16 tests web et 22 tests API ; lint, contrôle TypeScript et build Next.js passent. Le parcours navigateur confirme une vue Liberté complète (108 couverts, fourchette 103–114, 3 996 € fictifs, décisions afterwork/équipe) et une vue Gare distincte (91 couverts, décisions pic voyageurs/livraison). À 392 px, les cartes restent lisibles dans leur rail horizontal et aucun débordement global n'est observé.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : fonction pure unique, tests exhaustifs sur 18 vues.
+- **Fuite temporelle** : toutes les heures sont antérieures à l'instantané ou explicitement des échéances futures.
+- **Prévision trop précise** : fourchette obligatoire et méthode `simulation locale fictive` visible.
+- **API simulée irréaliste** : systèmes nommés et horodatés mais mention globale `aucun système réel connecté` conservée.
+- **Règle inexécutable** : recommandations bornées aux données disponibles et à trois actions.
+- **Interface trompeuse** : aucune promesse de données réelles ; tous les gains restent estimés fictifs.
+- **Duplication** : un générateur partagé alimente les composants existants sans créer de nouvel onglet.
+
+### 8. Critères de sortie
+
+- Aucun site fiable n'affiche `pas de données`, `aucune priorité` ou une vue synthétique dégradée.
+- Les trois sites proposent une prévision, des facteurs et au moins une action différente.
+- Les actions secondaires peuvent être validées, modifiées ou refusées puis retrouvées dans le Journal.
+- Les systèmes, vigies et décisions changent réellement avec le site actif.
+- L'abstention reste visible lorsque la qualité du site porteur est réellement insuffisante.
+- Les 18 vues sont déterministes, cohérentes et couvertes par les tests.
+- Tests, lint, types, build et responsive passent.
 
 ## Phase 16 — rendre la vue active utile et fiabiliser les parcours
 

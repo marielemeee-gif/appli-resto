@@ -142,6 +142,17 @@ export type DemoScenario = {
   history: DemoDecision[];
 };
 
+export type DemoSiteView = {
+  site: DemoSite;
+  forecast: DemoScenario["forecast"];
+  systems: DemoSystem[];
+  watch: DemoWatchItem[];
+  staffing: DemoStaffingRole[];
+  signals: DemoSignal[];
+  recommendations: DemoRecommendation[];
+  generated: boolean;
+};
+
 const site = (id: DemoSite["id"], name: string, expectedCovers: number | null, plannedServers: number, requiredServers: number | null, alert: string, stockRisk: DemoSite["stockRisk"]): DemoSite => ({
   id, name, expectedCovers, plannedServers, requiredServers, alert, stockRisk,
 });
@@ -174,6 +185,99 @@ export function getDemoHorizon(sites: DemoSite[]): Record<DemoSite["id"], DemoHo
     });
   }
   return result;
+}
+
+const siteProfiles: Record<DemoSite["id"], { ticket: number; delta: number; confidence: number; event: string; supplier: string; preparation: string; operations: string }> = {
+  republique: { ticket: 41, delta: 6, confidence: 83, event: "Flux centre-ville en hausse dès 18:45", supplier: "Sécuriser le froid bar et terrasse", preparation: "Ouvrir la terrasse en deux paliers", operations: "Mettre 1 fût et 20 kg de glaçons en froid" },
+  liberte: { ticket: 37, delta: 4, confidence: 82, event: "Afterwork de quartier · 190 inscrits", supplier: "Confirmer les softs et le sans-alcool", preparation: "Préparer 18 assiettes afterwork à partager", operations: "Décaler une prise de poste sur 19:00–21:00" },
+  gare: { ticket: 38, delta: -4, confidence: 80, event: "Arrivées TGV concentrées à 19:10", supplier: "Avancer la réception des produits frais", preparation: "Caler la mise en place sur le pic voyageurs", operations: "Confirmer la livraison avant le flux de 18:30" },
+};
+
+export function getDemoSiteView(scenario: DemoScenario, siteId: DemoSite["id"]): DemoSiteView {
+  const currentSite = scenario.sites.find((item) => item.id === siteId) ?? scenario.sites.find((item) => item.id === scenario.siteId)!;
+  if (currentSite.id === scenario.siteId) {
+    return { site: currentSite, forecast: scenario.forecast, systems: scenario.systems, watch: scenario.watch.filter((item) => item.site === "Groupe" || item.site === currentSite.name), staffing: scenario.staffing, signals: scenario.signals, recommendations: scenario.recommendations, generated: false };
+  }
+
+  const profile = siteProfiles[currentSite.id];
+  const expected = currentSite.expectedCovers;
+  if (expected === null) {
+    return {
+      site: currentSite,
+      forecast: { baselineCovers: null, previousCovers: null, expectedCovers: null, lowerCovers: null, upperCovers: null, counterfactualCovers: null, expectedRevenue: null, confidence: 30, method: "Simulation locale suspendue", abstentionReason: "La synthèse groupe signale une qualité insuffisante pour cet établissement." },
+      systems: [
+        { id: `${scenario.id}-${currentSite.id}-pos`, name: `Caisse ${currentSite.name}`, kind: "pos", status: "blocked", lastSync: "J-1", evidence: "Import à contrôler" },
+        { id: `${scenario.id}-${currentSite.id}-booking`, name: `Réservations ${currentSite.name}`, kind: "reservations", status: "warning", lastSync: "J-1", evidence: "Synchronisation incomplète" },
+        { id: `${scenario.id}-${currentSite.id}-planning`, name: `Planning ${currentSite.name}`, kind: "planning", status: "fresh", lastSync: "07:35", evidence: `${currentSite.plannedServers} serveurs planifiés` },
+      ],
+      watch: scenario.watch.filter((item) => item.site === "Groupe" || item.site === currentSite.name),
+      staffing: staffing([currentSite.plannedServers, currentSite.requiredServers], [null, null], [null, null]),
+      signals: [
+        { id: `${scenario.id}-${currentSite.id}-quality`, label: "Qualité locale", category: "quality", previous: "Sources synchronisées", current: "Contrôle requis", impactCovers: null, updatedAt: "07:50", explanation: "L'app s'abstient tant que les sources locales ne sont pas réconciliées." },
+      ],
+      recommendations: [],
+      generated: true,
+    };
+  }
+
+  const weatherImpact = profile.delta > 0 ? 1 : profile.delta < 0 ? -1 : 0;
+  const bookingImpact = profile.delta - weatherImpact;
+  const baseline = expected - profile.delta;
+  const kitchenRequired = Math.max(2, Math.ceil(expected / 45));
+  const barRequired = expected >= 115 ? 2 : 1;
+  const serverGap = currentSite.requiredServers === null ? 0 : currentSite.plannedServers - currentSite.requiredServers;
+  const staffingAction = serverGap < 0 ? `Confirmer ${Math.abs(serverGap)} renfort salle pour ${currentSite.name}` : profile.operations;
+  const recommendations: DemoRecommendation[] = [
+    { id: `${scenario.id}-${currentSite.id}-prep`, type: "preparation", title: profile.preparation, detail: `Dimensionner un premier lot sur la médiane de ${expected} couverts, puis réévaluer avant la fourchette haute.`, deadline: "11:00", estimatedGain: 42 + currentSite.id.length * 3, estimatedRisk: 64 + currentSite.id.length * 4, confidence: profile.confidence, rule: "préparation locale = médiane - stock prêt" },
+    { id: `${scenario.id}-${currentSite.id}-ops`, type: serverGap < 0 ? "staffing" : currentSite.id === "gare" ? "purchase" : "staffing", title: staffingAction, detail: serverGap < 0 ? `Le plan salle est à ${currentSite.plannedServers}/${currentSite.requiredServers} sur le pic ; le renfort couvre l'écart sans surdimensionner tout le service.` : currentSite.id === "gare" ? "Le créneau est positionné avant le pic voyageurs et protège la mise en place fraîche." : "L'action cible uniquement la plage de demande la plus dense, sans ajouter une vacation complète.", deadline: currentSite.id === "gare" ? "10:30" : "16:00", estimatedGain: 56 + Math.abs(profile.delta) * 5, estimatedRisk: 82 + Math.abs(profile.delta) * 7, confidence: profile.confidence - 3, rule: serverGap < 0 ? "besoin salle - équipe planifiée" : currentSite.id === "gare" ? "livraison avant pic + stock tampon" : "charge horaire - équipe présente" },
+  ];
+
+  return {
+    site: currentSite,
+    forecast: { baselineCovers: baseline, previousCovers: baseline + Math.trunc(profile.delta / 2), expectedCovers: expected, lowerCovers: expected - 5, upperCovers: expected + 6, counterfactualCovers: baseline, expectedRevenue: expected * profile.ticket, confidence: profile.confidence, method: `Simulation locale fictive · référence pondérée ${currentSite.name}` },
+    systems: [
+      { id: `${scenario.id}-${currentSite.id}-pos`, name: `Caisse ${currentSite.name}`, kind: "pos", status: "fresh", lastSync: "07:51", evidence: "Clôture locale J-1 importée" },
+      { id: `${scenario.id}-${currentSite.id}-booking`, name: `Réservations ${currentSite.name}`, kind: "reservations", status: "fresh", lastSync: "07:47", evidence: `${Math.round(expected * .55)} couverts confirmés` },
+      { id: `${scenario.id}-${currentSite.id}-planning`, name: `Planning ${currentSite.name}`, kind: "planning", status: "fresh", lastSync: "07:35", evidence: `${currentSite.plannedServers} serveurs planifiés` },
+      { id: `${scenario.id}-${currentSite.id}-local`, name: "Signaux locaux", kind: "local_signals", status: "fresh", lastSync: "07:30", evidence: profile.event },
+    ],
+    watch: [
+      { id: `${scenario.id}-${currentSite.id}-weather`, category: "Météo", title: profile.delta < 0 ? "22 °C sec · salle privilégiée" : "24 °C sec · terrasse exploitable", when: "Aujourd'hui · 18:00", site: currentSite.name, detail: "Capacité extérieure confirmée dans la simulation locale.", urgency: "normal" },
+      { id: `${scenario.id}-${currentSite.id}-event`, category: "Événement", title: profile.event, when: "Aujourd'hui · 19:00", site: currentSite.name, detail: "Le signal est croisé avec les réservations sans être compté deux fois.", urgency: "urgent" },
+      { id: `${scenario.id}-${currentSite.id}-team`, category: "Équipe", title: serverGap < 0 ? `Manque ${Math.abs(serverGap)} en salle sur le pic` : "Équipe locale alignée sur la médiane", when: "Aujourd'hui · 16:00", site: currentSite.name, detail: `Plan salle ${currentSite.plannedServers}/${currentSite.requiredServers ?? "—"}.`, urgency: serverGap < 0 ? "urgent" : "normal" },
+      { id: `${scenario.id}-${currentSite.id}-supplier`, category: "Fournisseur", title: profile.supplier, when: `Aujourd'hui · ${currentSite.id === "gare" ? "10:30" : "14:00"}`, site: currentSite.name, detail: "Vérification fictive avant toute confirmation humaine.", urgency: "soon" },
+    ],
+    staffing: staffing([currentSite.plannedServers, currentSite.requiredServers], [kitchenRequired, kitchenRequired], [barRequired, barRequired]),
+    signals: [
+      { id: `${scenario.id}-${currentSite.id}-reservations`, label: `Réservations ${currentSite.name}`, category: "reservations", previous: `${Math.round(baseline * .5)} à J-1`, current: `${Math.round(expected * .55)} confirmées`, impactCovers: bookingImpact, updatedAt: "07:47", explanation: "Le rythme local est comparé aux mêmes services historiques de cet établissement." },
+      { id: `${scenario.id}-${currentSite.id}-weather`, label: "Météo et terrasse", category: "weather", previous: "Prévision J-1", current: profile.delta < 0 ? "Sec · impact neutre" : "Sec · terrasse exploitable", impactCovers: weatherImpact, updatedAt: "07:30", explanation: "Seule la contribution non déjà captée dans les réservations est retenue." },
+      { id: `${scenario.id}-${currentSite.id}-capacity`, label: "Capacité opérationnelle", category: "staff", previous: "Plan initial", current: currentSite.alert, impactCovers: 0, updatedAt: "07:35", explanation: "La capacité borne les actions mais ne crée pas artificiellement de demande." },
+    ],
+    recommendations,
+    generated: true,
+  };
+}
+
+export function getDemoHistory(scenario: DemoScenario): DemoDecision[] {
+  const existingSites = new Set(scenario.history.map((item) => item.site));
+  const historyTitles: Record<DemoSite["id"], string> = {
+    republique: "Ajuster le briefing terrasse après les réservations",
+    liberte: "Décaler le renfort sur le pic afterwork",
+    gare: "Avancer la réception avant le pic voyageurs",
+  };
+  const generated = scenario.sites.filter((currentSite) => !existingSites.has(currentSite.name)).map((currentSite, index): DemoDecision => ({
+    id: `${scenario.id}-${currentSite.id}-history`,
+    scenarioId: scenario.id,
+    recommendationId: `${scenario.id}-${currentSite.id}-history`,
+    recommendationType: currentSite.id === "gare" ? "purchase" : currentSite.id === "liberte" ? "staffing" : "preparation",
+    title: historyTitles[currentSite.id],
+    site: currentSite.name,
+    status: index === 1 ? "modified" : "accepted",
+    decidedAt: `2026-07-${String(8 + index).padStart(2, "0")}T${String(9 + index).padStart(2, "0")}:20:00+02:00`,
+    estimatedGain: 36 + index * 11,
+    note: index === 1 ? "Horaire adapté par le responsable de site." : undefined,
+  }));
+  return [...scenario.history, ...generated];
 }
 
 export function isDeadlineExpired(asOf: string, deadline: string): boolean {
