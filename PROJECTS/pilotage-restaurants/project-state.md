@@ -101,7 +101,7 @@ Peupler Liberté et Gare avec des données fictives complètes et des décisions
 
 ## Current state
 
-Les phases 13 à 16 sont publiées sur `origin/main`, dont la vue active partagée dans `2e12e29`. La phase 17 est terminée localement et attend la validation utilisateur : République, Liberté et Gare ont désormais un instantané complet et déterministe, ainsi que des décisions propres à leur contexte.
+Les phases 13 à 17 sont publiées sur `origin/main`. La phase 17 est dans `3dbf6cd` (`Populate restaurant views by location`) : République, Liberté et Gare ont désormais un instantané complet et déterministe, ainsi que des décisions propres à leur contexte.
 
 ## Touched files and artifacts
 
@@ -159,6 +159,7 @@ Les phases 13 à 16 sont publiées sur `origin/main`, dont la vue active partag�
 - GitHub : phase 16 poussée avec succès de `main` vers `origin/main` dans le commit `2e12e29` le 17 juillet 2026.
 - Phase 17 : `pnpm check` réussi avec 16 tests web et 22 tests API ; lint, types et build passent.
 - Phase 17 responsive : Liberté puis Gare vérifiées dans le navigateur à 392 px et en largeur ordinateur, sans débordement horizontal ; les prévisions, vigies et décisions changent bien par lieu.
+- GitHub : phase 17 poussée avec succès de `main` vers `origin/main` dans le commit `3dbf6cd` le 18 juillet 2026 ; la branche distante pointe sur ce hash.
 
 ## Blockers and open questions
 

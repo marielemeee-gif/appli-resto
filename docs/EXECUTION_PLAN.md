@@ -1,6 +1,6 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 17 terminée localement — validation utilisateur attendue**
+Statut : **phase 17 validée et publiée sur `origin/main`**
 Date de cadrage : 18 juillet 2026
 
 ## Phase 17 — peupler chaque vue active avec un instantané complet
