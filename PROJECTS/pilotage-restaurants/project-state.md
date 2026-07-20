@@ -103,7 +103,7 @@ Moderniser l'application avec un accueil plus attrayant : vue globale des lieux 
 
 ## Current state
 
-Les phases 13 à 17 sont publiées sur `origin/main`. La phase 18 est validée localement et prête à être commitée puis poussée : accueil groupe moderne, trois cartes peuplées, mini-tendances utiles, détail local explicite, navigation ramenée à trois destinations et ancienne route `Établissements` redirigée, sans changer les moteurs de données et de décision.
+Les phases 13 à 18 sont publiées sur `origin/main`. La phase 18 est dans `73796a6` (`Modernize restaurant group cockpit`) : accueil groupe moderne, trois cartes peuplées, mini-tendances utiles, détail local explicite, navigation ramenée à trois destinations et ancienne route `Établissements` redirigée, sans changer les moteurs de données et de décision.
 
 ## Touched files and artifacts
 
@@ -165,6 +165,7 @@ Les phases 13 à 17 sont publiées sur `origin/main`. La phase 18 est validée l
 - Phase 18 : `pnpm check` réussi avec 16 tests web et 22 tests API ; lint, types, build Next.js, Ruff et mypy passent.
 - Phase 18 visuelle : accueil groupe et détail République contrôlés sur ordinateur ; vue mobile sans débordement global, en-tête allégé et trois cartes accessibles dans un rail horizontal compact.
 - Phase 18 anti-doublon : l'onglet `Établissements` et sa page parallèle disparaissent, et la seconde liste répétant les trois actions prioritaires a été retirée de l'accueil.
+- GitHub : phase 18 poussée avec succès de `main` vers `origin/main` dans le commit `73796a6` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
 
 ## Blockers and open questions
 
@@ -178,6 +179,6 @@ Les phases 13 à 17 sont publiées sur `origin/main`. La phase 18 est validée l
 
 ## Next actions
 
-1. Faire approuver le message de commit de la phase 18.
-2. Commiter les fichiers de la phase, pousser `main` vers `origin/main`, sans ajouter `prototype-use-cases/`.
-3. Redéployer Render puis vérifier l'accueil, les trois détails, les boutons d'en-tête, le favicon et `/specs-prototype-app.pdf` sur le lien public.
+1. Enregistrer et pousser ce suivi de publication, sans ajouter `prototype-use-cases/`.
+2. Redéployer Render au commit `73796a6`.
+3. Vérifier l'accueil, les trois détails, les boutons d'en-tête, le favicon et `/specs-prototype-app.pdf` sur le lien public.
