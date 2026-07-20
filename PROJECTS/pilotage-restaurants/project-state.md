@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Peupler Liberté et Gare avec des données fictives complètes et des décisions différentes par lieu, afin qu'aucune vue autre que République ne paraisse vide ou dégradée.
+Moderniser l'application avec un accueil plus attrayant : vue globale des lieux et des chiffres, puis entrée simple dans le détail de chaque établissement, avec un parcours cohérent sur desktop et mobile.
 
 ## Agreed scope and approvals
 
@@ -26,6 +26,8 @@ Peupler Liberté et Gare avec des données fictives complètes et des décisions
 - Phases 13 et 14 validées le 17 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Complete and rebalance restaurant demo` et exclusion de `prototype-use-cases/`.
 - Correctif de visibilité d'en-tête validé pour commit et push le 17 juillet 2026 avec le message `Improve header action visibility`, toujours sans `prototype-use-cases/`.
 - Phase 17 validée le 18 juillet 2026 ; commit et push de ses huit fichiers vers `origin/main` autorisés avec le message `Populate restaurant views by location`, en excluant `prototype-use-cases/`.
+- Phase 18 validée le 20 juillet 2026 : accueil groupe moderne, navigation à trois destinations, détail local explicite et suppression de la redondance avec `Établissements`.
+- Résultat de la phase 18 validé par l'utilisateur le 20 juillet 2026 ; commit et push vers `origin/main` autorisés, toujours sans `prototype-use-cases/`, après validation du message de commit.
 
 ## Decisions made
 
@@ -101,7 +103,7 @@ Peupler Liberté et Gare avec des données fictives complètes et des décisions
 
 ## Current state
 
-Les phases 13 à 17 sont publiées sur `origin/main`. La phase 17 est dans `3dbf6cd` (`Populate restaurant views by location`) : République, Liberté et Gare ont désormais un instantané complet et déterministe, ainsi que des décisions propres à leur contexte.
+Les phases 13 à 17 sont publiées sur `origin/main`. La phase 18 est validée localement et prête à être commitée puis poussée : accueil groupe moderne, trois cartes peuplées, mini-tendances utiles, détail local explicite, navigation ramenée à trois destinations et ancienne route `Établissements` redirigée, sans changer les moteurs de données et de décision.
 
 ## Touched files and artifacts
 
@@ -160,6 +162,9 @@ Les phases 13 à 17 sont publiées sur `origin/main`. La phase 17 est dans `3dbf
 - Phase 17 : `pnpm check` réussi avec 16 tests web et 22 tests API ; lint, types et build passent.
 - Phase 17 responsive : Liberté puis Gare vérifiées dans le navigateur à 392 px et en largeur ordinateur, sans débordement horizontal ; les prévisions, vigies et décisions changent bien par lieu.
 - GitHub : phase 17 poussée avec succès de `main` vers `origin/main` dans le commit `3dbf6cd` le 18 juillet 2026 ; la branche distante pointe sur ce hash.
+- Phase 18 : `pnpm check` réussi avec 16 tests web et 22 tests API ; lint, types, build Next.js, Ruff et mypy passent.
+- Phase 18 visuelle : accueil groupe et détail République contrôlés sur ordinateur ; vue mobile sans débordement global, en-tête allégé et trois cartes accessibles dans un rail horizontal compact.
+- Phase 18 anti-doublon : l'onglet `Établissements` et sa page parallèle disparaissent, et la seconde liste répétant les trois actions prioritaires a été retirée de l'accueil.
 
 ## Blockers and open questions
 
@@ -173,5 +178,6 @@ Les phases 13 à 17 sont publiées sur `origin/main`. La phase 17 est dans `3dbf
 
 ## Next actions
 
-1. Redéployer Render au dernier commit de `main`.
-2. Vérifier les boutons d'en-tête, les quatre vues publiques, le favicon et `/specs-prototype-app.pdf`.
+1. Faire approuver le message de commit de la phase 18.
+2. Commiter les fichiers de la phase, pousser `main` vers `origin/main`, sans ajouter `prototype-use-cases/`.
+3. Redéployer Render puis vérifier l'accueil, les trois détails, les boutons d'en-tête, le favicon et `/specs-prototype-app.pdf` sur le lien public.

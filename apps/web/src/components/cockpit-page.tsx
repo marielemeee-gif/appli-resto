@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useDemo } from "@/demo/demo-context";
 import { getDemoHorizon, getDemoSiteView, type DemoWatchItem } from "@/demo/scenarios";
 import { Confidence, PageHeader, StateBanner } from "./ui";
+import { GroupHome } from "./group-home";
 
 const recommendationLabels: Record<string, string> = { staffing: "Équipe", preparation: "Préparation", purchase: "Achats" };
 function isService(value: string): value is "lunch" | "dinner" {
@@ -25,14 +26,17 @@ function OperationalWatch({ items }: { items: DemoWatchItem[] }) {
 }
 
 export function CockpitPage() {
-  const { scenario, activeSite, decisions } = useDemo();
+  const { scenario, activeSite, cockpitMode, decisions, openSite, showGroup } = useDemo();
   const [horizonService, setHorizonService] = useState<"lunch" | "dinner">("dinner");
   const siteView = getDemoSiteView(scenario, activeSite.id);
   const forecast = siteView.forecast;
   const scenarioDecisions = decisions.filter((item) => item.scenarioId === scenario.id);
   const horizon = getDemoHorizon(scenario.sites)[activeSite.id];
 
+  if (cockpitMode === "group") return <GroupHome onOpenSite={openSite} />;
+
   return <>
+    <div className="local-view-toolbar" aria-label="Navigation dans le tableau de bord"><button type="button" onClick={showGroup}><span aria-hidden="true">←</span> Vue groupe</button><span>Accueil</span><i aria-hidden="true">/</i><strong>{activeSite.name}</strong></div>
     <PageHeader eyebrow={`Tableau de bord · ${scenario.moment}`} title="Pilotage du jour" description={`Vendredi 17 juillet · dîner · ${activeSite.name} · données fictives arrêtées à ${scenario.asOf}.`} site={activeSite.name} />
 
     {forecast.expectedCovers === null ?

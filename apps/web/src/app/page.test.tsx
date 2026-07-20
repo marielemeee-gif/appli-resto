@@ -5,7 +5,6 @@ import { demoScenarios, getDemoHistory, getDemoSiteView } from "@/demo/scenarios
 import { BriefingClient } from "@/components/briefing-client";
 import { RoiClient } from "@/components/roi-client";
 import BriefingPage from "./briefing/page";
-import MultisitesPage from "./multisites/page";
 import Home from "./page";
 import ValeurPage from "./valeur/page";
 
@@ -74,29 +73,27 @@ describe("Application de démonstration", () => {
     expect(titlesBySite[2]).not.toEqual(titlesBySite[0]);
   });
 
-  it("présente quatre destinations opérationnelles distinctes", () => {
+  it("présente une entrée groupe claire et trois destinations opérationnelles", () => {
     renderDemo(<Home />);
-    expect(screen.getByRole("heading", { level: 1, name: "Pilotage du jour" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Le groupe en un coup d’œil" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Prototype App, pilotage restaurants, accueil" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Specs PDF" })).toHaveAttribute("href", "/specs-prototype-app.pdf");
     expect(screen.getByRole("button", { name: "Cas fictifs" })).toHaveClass("examples-button");
     const navigation = screen.getByRole("navigation", { name: "Navigation principale" });
-    expect(within(navigation).getAllByRole("link")).toHaveLength(4);
-    expect(within(navigation).getByRole("link", { name: "Tableau de bord" })).toBeInTheDocument();
+    expect(within(navigation).getAllByRole("link")).toHaveLength(3);
+    expect(within(navigation).getByRole("link", { name: "Accueil" })).toBeInTheDocument();
     expect(within(navigation).getByRole("link", { name: "Décisions" })).toBeInTheDocument();
-    expect(within(navigation).getByRole("link", { name: "Établissements" })).toBeInTheDocument();
     expect(within(navigation).getByRole("link", { name: "Journal" })).toBeInTheDocument();
-    expect(navigation.querySelectorAll(".nav-icon")).toHaveLength(4);
+    expect(navigation.querySelectorAll(".nav-icon")).toHaveLength(3);
     expect(screen.queryByRole("link", { name: "Explications" })).not.toBeInTheDocument();
-    expect(screen.getByText("Concert · 4 800 places")).toBeInTheDocument();
-    expect(screen.queryByText("CDD serveur arrive à échéance")).not.toBeInTheDocument();
-    expect(screen.getByText("3 échéances utiles")).toBeInTheDocument();
-    expect(screen.getByText("Brouillon fûts et glaçons avant 14:00")).toBeInTheDocument();
+    expect(screen.getByText("339")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Voir le détail de République" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Voir le détail de Liberté" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Voir le détail de Gare" })).toBeInTheDocument();
   });
 
   it.each([
     [BriefingPage, "3 décisions avant le dîner"],
-    [MultisitesPage, "Où agir dans le groupe"],
     [ValeurPage, "Décisions prises"],
   ])("rend un écran métier cohérent", (Page, title) => {
     renderDemo(<Page />);
@@ -104,8 +101,9 @@ describe("Application de démonstration", () => {
   });
 
   it("ouvre un exemple fictif sans modifier le tableau de bord", () => {
-    const view = renderDemo(<Home />);
-    expect(view.container.querySelector(".forecast-primary strong")).toHaveTextContent("140");
+    renderDemo(<Home />);
+    const republique = screen.getByRole("heading", { name: "République" }).closest("article");
+    expect(within(republique!).getByText("140")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Cas fictifs" }));
     expect(screen.getByRole("dialog", { name: "Explorer un exemple fictif" })).toBeInTheDocument();
     expect(screen.getByText(/L’application, ses chiffres et vos décisions ne seront pas modifiés/i)).toBeInTheDocument();
@@ -118,11 +116,12 @@ describe("Application de démonstration", () => {
     fireEvent.click(screen.getByRole("button", { name: "Fermer l’exemple" }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(view.container.querySelector(".forecast-primary strong")).toHaveTextContent("140");
+    expect(within(republique!).getByText("140")).toBeInTheDocument();
   });
 
   it("permet de consulter sept jours sans alourdir le scénario actif", () => {
     renderDemo(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "Voir le détail de République" }));
     const horizon = screen.getByRole("heading", { name: "Les 7 prochains jours" }).closest("section");
     expect(horizon).not.toBeNull();
     expect(within(horizon!).getAllByRole("article")).toHaveLength(7);
@@ -136,7 +135,7 @@ describe("Application de démonstration", () => {
 
   it("partage une vue Liberté complète et ses décisions propres", () => {
     const view = renderDemo(<Home />);
-    fireEvent.change(screen.getByLabelText("Établissement actif"), { target: { value: "liberte" } });
+    fireEvent.click(screen.getByRole("button", { name: "Voir le détail de Liberté" }));
 
     expect(view.container.querySelector(".forecast-primary strong")).toHaveTextContent("108");
     expect(screen.getByText(/Fourchette 103–114 · 3.996 € de CA fictif/)).toBeInTheDocument();
@@ -173,14 +172,20 @@ describe("Application de démonstration", () => {
     expect(within(action!).getByText("Ajoutée au Journal.")).toBeInTheDocument();
   });
 
-  it("transforme la vue groupe en arbitrage compact même sans transfert", () => {
-    renderDemo(<MultisitesPage />);
+  it("transforme l’accueil en arbitrage groupe compact même sans transfert", () => {
+    renderDemo(<Home />);
     expect(screen.getByText("339")).toBeInTheDocument();
-    expect(screen.getByText("Qui a besoin d’aide, qui peut aider ?")).toBeInTheDocument();
-    expect(screen.getByText("Glissez pour comparer les 3 établissements")).toBeInTheDocument();
-    expect(screen.getByText("Manque 1")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Où regarder en premier ?" })).toBeInTheDocument();
+    expect(screen.getAllByText("Préparer 24 portions froides pour la terrasse")).toHaveLength(1);
     expect(screen.getByRole("heading", { name: "Ne pas déplacer d’équipe aujourd’hui" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Traiter le plan local" })).toHaveAttribute("href", "/briefing");
+  });
+
+  it("revient toujours à la vue groupe depuis un détail local", () => {
+    renderDemo(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "Voir le détail de Gare" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Pilotage du jour" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Vue groupe" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Le groupe en un coup d’œil" })).toBeInTheDocument();
   });
 
   it("exige un motif pour modifier une recommandation et le journalise", () => {
@@ -212,7 +217,8 @@ describe("Application de démonstration", () => {
     expect(within(activeAction!).getByText("Simulation locale : validée")).toBeInTheDocument();
 
     fireEvent.click(within(dialog).getByRole("button", { name: "Fermer l’exemple" }));
-    expect(document.querySelector(".forecast-primary strong")).toHaveTextContent("140");
+    const republique = screen.getByRole("heading", { name: "République" }).closest("article");
+    expect(within(republique!).getByText("140")).toBeInTheDocument();
   });
 
   it("ajoute une décision terrain et prépare un partage sans envoi automatique", () => {

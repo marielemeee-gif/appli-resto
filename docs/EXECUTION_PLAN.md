@@ -1,7 +1,111 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 17 validée et publiée sur `origin/main`**
-Date de cadrage : 18 juillet 2026
+Statut : **phase 18 validée — publication Git en attente**
+Date de cadrage : 20 juillet 2026
+
+## Phase 18 — moderniser l'accueil et clarifier le parcours groupe → lieu
+
+### 1. Résultat de la phase
+
+L'application s'ouvre sur une vue groupe immédiatement compréhensible : chiffres consolidés, situation des trois lieux et une action prioritaire propre à chaque carte. Un clic sur République, Liberté ou Gare ouvre ensuite un véritable détail local, avec un retour explicite au groupe, sans répéter une seconde fois la même vue dans un onglet séparé.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : l'accueil doit d'abord montrer la situation globale des trois établissements, puis permettre d'entrer dans le détail de chacun.
+- **Confirmé** : la modernisation doit rester simple, responsive et utilisable comme une application, pas comme une vitrine marketing.
+- **Constaté** : le Tableau de bord actuel ouvre directement sur République alors que la vue groupe est reléguée dans `Établissements` ; les deux pages répètent le sélecteur de site, les prévisions et les décisions.
+- **Décidé** : `Accueil` remplace le libellé `Tableau de bord` et devient l'unique entrée groupe.
+- **Décidé** : supprimer `Établissements` de la navigation ; l'ancienne route `/multisites` redirige vers `/cockpit` afin de conserver les anciens liens.
+- **Décidé** : limiter la navigation principale à `Accueil`, `Décisions` et `Journal`, tout en conservant `Specs PDF` et `Cas fictifs` comme actions secondaires visibles.
+- **Proposé** : l'accueil affiche un total groupe, le nombre de lieux sous tension, trois cartes d'établissement et une conclusion ou proposition multi-sites.
+- **Proposé** : chaque carte de lieu montre uniquement les éléments qui aident à choisir où agir — couverts, CA fictif, équipe, confiance, signal principal, décision prioritaire — puis un bouton `Voir le détail`.
+- **Proposé** : le détail local réutilise les calculs existants mais commence par un fil `Vue groupe / Nom du lieu` et un bouton `Retour au groupe` ; le changement de lieu reste possible.
+- **Proposé** : trois mini-courbes déterministes sur sept jours et des pictogrammes métier sobres remplacent l'idée de photos génériques. Ces visuels expliquent une tendance et n'imitent pas de vrais restaurants.
+- **Proposé** : direction visuelle `hospitality operations` — surfaces plus nettes, bento asymétrique, bleu nuit moins massif, accents turquoise/abricot plus francs, une seule police variable moderne auto-hébergée.
+- **Écarté** : ajouter une page d'accueil marketing, des photographies de banque d'images, une carte géographique fictive ou un nouvel onglet par établissement.
+- **Décidé après contrôle visuel** : ne pas ajouter un second bloc de trois décisions sur l'accueil ; les actions prioritaires sont déjà visibles dans les cartes, et leur traitement complet reste dans `Décisions`.
+
+### 3. Architecture et flux
+
+```text
+/ ou /cockpit
+  GroupHome
+    ├─ indicateurs groupe
+    ├─ 3 SiteOverviewCard + mini-tendance
+    └─ GroupDecisionCard (conclusion ou transfert)
+             │ Voir le détail
+             ▼
+  LocalCockpit(siteId)
+    ├─ retour au groupe + sélecteur compact
+    ├─ prévision / facteurs
+    ├─ horizon local
+    └─ vigies + raccourci Décisions
+
+/briefing ── décisions du site actif
+/valeur   ── journal du site actif
+/multisites ── redirection vers /cockpit
+```
+
+`DemoContext` reste la source du scénario, du site actif, du niveau `groupe` ou `détail local` et des décisions de session. L'accueil appelle `getDemoSiteView` et `getDemoHorizon` pour chacun des trois lieux ; il ne crée aucune nouvelle donnée numérique. Le site actif continue d'alimenter Décisions et Journal. Prévision, règles et explication restent séparées.
+
+### 4. Fichiers concernés
+
+- `components/cockpit-page.tsx` : orchestration accueil groupe / détail local.
+- `components/group-home.tsx` : nouvelle composition groupe, cartes de lieux et arbitrage multi-sites.
+- `components/site-trend.tsx` : mini-courbe SVG accessible construite à partir de l'horizon fictif existant.
+- `components/multisites-client.tsx` : extraction des éléments utiles puis suppression de la page dupliquée.
+- `components/app-shell.tsx` : navigation ramenée à trois destinations et en-tête mobile allégé.
+- `components/ui.tsx` : variantes d'en-tête groupe et détail local.
+- `app/multisites/page.tsx` : redirection de compatibilité.
+- `app/globals.css` : grille bento, cartes, mini-visuels, typographie et responsive.
+- `app/layout.tsx`, `package.json` : police variable auto-hébergée, uniquement si elle n'ajoute pas de dépendance runtime.
+- `app/page.test.tsx` : parcours groupe → lieu → décisions → journal et absence de doublon de navigation.
+- `PROJECTS/pilotage-restaurants/project-state.md` : suivi de phase.
+
+### 5. Étapes d'implémentation
+
+1. Extraire une vue groupe pure à partir des trois `DemoSiteView` et définir les trois priorités agrégées maximum.
+2. Construire l'accueil groupe avec les trois cartes de lieux et leurs mini-tendances utiles.
+3. Relier `Voir le détail`, `Retour au groupe` et le changement de lieu sans ajouter de nouvelle route métier.
+4. Intégrer la conclusion ou le transfert multi-sites à l'accueil puis rediriger l'ancienne vue `Établissements`.
+5. Simplifier la navigation et moderniser le système visuel, d'abord en desktop puis en responsive mobile.
+6. Rejouer le parcours complet, vérifier les états d'abstention et éliminer les contenus dupliqués ou disproportionnés.
+
+### 6. Vérifications
+
+```bash
+pnpm check:web
+pnpm check
+```
+
+- Tests : accueil initial en vue groupe, trois cartes peuplées, trois priorités maximum, ouverture de chaque détail, retour groupe, conservation du site actif dans Décisions et Journal, redirection `/multisites`.
+- Invariants : les totaux groupe égalent la somme des sites fiables ; chaque carte utilise la même prévision que son détail ; aucune donnée nouvelle n'est codée dans un composant visuel.
+- Parcours desktop : Accueil → Liberté → Décisions → Journal → Accueil → Gare.
+- Parcours mobile étroit : en-tête allégé, navigation à trois destinations, cartes de lieux dans un rail horizontal borné et aucun débordement global.
+- Contrôle visuel : hiérarchie au-dessus de la ligne de flottaison, densité, contraste, tailles tactiles de 44 px et mouvement désactivé avec `prefers-reduced-motion`.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : tous les agrégats dérivent de `getDemoSiteView`, avec tests d'égalité entre carte et détail.
+- **Fuite temporelle** : les mini-tendances reprennent uniquement l'horizon fictif déjà publié ; aucun résultat futur observé n'est ajouté.
+- **Prévision trop précise** : fourchette et confiance restent visibles dans le détail ; l'accueil présente des ordres de grandeur et signale l'abstention.
+- **API simulée irréaliste** : aucune connexion supplémentaire ; la mention `données fictives` reste visible sur le groupe et le détail.
+- **Règle inexécutable** : l'accueil ne déclenche aucune action irréversible et renvoie vers le flux de décision existant.
+- **Interface trompeuse** : pas de photos de faux établissements ni de carte géographique ; les mini-visuels sont étiquetés comme projections.
+- **Surcharge mobile** : contenu global borné à trois cartes dans un rail horizontal ; la liste répétée des mêmes priorités a été retirée et les détails restent derrière une action explicite.
+- **Régression des liens** : `/multisites` reste une redirection stable vers l'accueil.
+
+### 8. Critères de sortie
+
+- En moins de deux minutes, l'utilisateur identifie le groupe, le lieu sous tension et l'action prioritaire.
+- La première vue contient les chiffres utiles des trois lieux sans devoir utiliser le sélecteur.
+- Un clic ouvre un détail local clairement identifié et un retour groupe toujours visible.
+- Accueil et ancienne vue Établissements ne dupliquent plus les mêmes informations.
+- La navigation ne comporte que trois destinations métier et reste lisible à 390 px.
+- Les visuels ont une fonction opérationnelle : tendance, état ou contexte ; aucun élément décoratif ne suggère une donnée réelle.
+- Les décisions restent propres au lieu, limitées à trois, modifiables et journalisées.
+- L'abstention volontaire, les données fictives et la confiance restent explicites.
+- Tests, lint, types, build, desktop et mobile passent avant demande de validation.
 
 ## Phase 17 — peupler chaque vue active avec un instantané complet
 

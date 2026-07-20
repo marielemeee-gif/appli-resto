@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/manrope";
 import { DemoProvider } from "@/demo/demo-context";
 import "./globals.css";
 

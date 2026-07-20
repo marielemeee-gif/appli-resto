@@ -2,7 +2,7 @@
 
 import { useDemo } from "@/demo/demo-context";
 
-export function PageHeader({ eyebrow, title, description }: { eyebrow: string; title: string; description: string; site?: string }) {
+export function PageHeader({ eyebrow, title, description, showSiteSelect = true }: { eyebrow: string; title: string; description: string; site?: string; showSiteSelect?: boolean }) {
   const { scenario, activeSite, selectActiveSite } = useDemo();
 
   function changeSite(value: string) {
@@ -17,12 +17,12 @@ export function PageHeader({ eyebrow, title, description }: { eyebrow: string; t
         <h1>{title}</h1>
         <p>{description}</p>
       </div>
-      <label className="site-select">
+      {showSiteSelect && <label className="site-select">
         <span>Vue active</span>
         <select aria-label="Établissement actif" value={activeSite.id} onChange={(event) => changeSite(event.target.value)}>
           {scenario.sites.map((site) => <option value={site.id} key={site.id}>{site.name}</option>)}
         </select>
-      </label>
+      </label>}
     </header>
   );
 }

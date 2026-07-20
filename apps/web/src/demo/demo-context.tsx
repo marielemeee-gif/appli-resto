@@ -5,6 +5,7 @@ import { defaultScenarioId, DemoDecision, type DemoSite, getDemoHistory, getDemo
 
 type DecisionStatus = DemoDecision["status"];
 export type SupplierStatus = "recommended" | "drafted" | "confirmed_demo";
+export type CockpitMode = "group" | "site";
 type DemoContextValue = {
   scenario: ReturnType<typeof getDemoScenario>;
   activeSite: DemoSite;
@@ -12,8 +13,11 @@ type DemoContextValue = {
   decisions: DemoDecision[];
   storageError: string;
   supplierStatus: SupplierStatus;
+  cockpitMode: CockpitMode;
   selectScenario: (id: string) => void;
   selectActiveSite: (id: DemoSite["id"]) => void;
+  openSite: (id: DemoSite["id"]) => void;
+  showGroup: () => void;
   decide: (recommendationId: string, status: DecisionStatus, note?: string) => void;
   prepareSupplierDraft: () => void;
   confirmSupplierDraft: () => void;
@@ -26,6 +30,7 @@ const DemoContext = createContext<DemoContextValue | null>(null);
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [scenarioId, setScenarioId] = useState(defaultScenarioId);
   const [activeSiteId, setActiveSiteId] = useState<DemoSite["id"]>(getDemoScenario(defaultScenarioId).siteId);
+  const [cockpitMode, setCockpitMode] = useState<CockpitMode>("group");
   const [sessionDecisions, setSessionDecisions] = useState<DemoDecision[]>([]);
   const [supplierStates, setSupplierStates] = useState<Record<string, SupplierStatus>>({});
   const storageError = "";
@@ -42,14 +47,22 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     decisions,
     storageError,
     supplierStatus,
+    cockpitMode,
     selectScenario: (id) => {
       const nextScenario = getDemoScenario(id);
       setScenarioId(nextScenario.id);
       setActiveSiteId(nextScenario.siteId);
+      setCockpitMode("group");
     },
     selectActiveSite: (id) => {
       if (scenario.sites.some((item) => item.id === id)) setActiveSiteId(id);
     },
+    openSite: (id) => {
+      if (!scenario.sites.some((item) => item.id === id)) return;
+      setActiveSiteId(id);
+      setCockpitMode("site");
+    },
+    showGroup: () => setCockpitMode("group"),
     decide: (recommendationId, status, note) => {
       const recommendation = getDemoSiteView(scenario, activeSite.id).recommendations.find((item) => item.id === recommendationId);
       const dispatch = scenario.dispatch?.id === recommendationId ? scenario.dispatch : undefined;
@@ -115,10 +128,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     resetDemo: () => {
       setScenarioId(defaultScenarioId);
       setActiveSiteId(getDemoScenario(defaultScenarioId).siteId);
+      setCockpitMode("group");
       setSessionDecisions([]);
       setSupplierStates({});
     },
-  }), [activeSite, decisions, scenario, storageError, supplierStatus]);
+  }), [activeSite, cockpitMode, decisions, scenario, storageError, supplierStatus]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
