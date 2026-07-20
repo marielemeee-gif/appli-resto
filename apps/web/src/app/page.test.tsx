@@ -206,6 +206,15 @@ describe("Application de démonstration", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Le groupe en un coup d’œil" })).toBeInTheDocument();
   });
 
+  it("neutralise un ancien lien filtré lors d’une nouvelle ouverture", () => {
+    window.history.replaceState({}, "", "/cockpit/?site=republique");
+    renderDemo(<Home />);
+
+    expect(screen.getByRole("heading", { level: 1, name: "Le groupe en un coup d’œil" })).toBeInTheDocument();
+    expect(window.location.pathname).toBe("/cockpit/");
+    expect(window.location.search).toBe("");
+  });
+
   it("exige un motif pour modifier une recommandation et le journalise", () => {
     renderDemo(<><BriefingClient /><RoiClient /></>);
     const action = screen.getByRole("heading", { name: "Préparer 24 portions froides pour la terrasse" }).closest("article");

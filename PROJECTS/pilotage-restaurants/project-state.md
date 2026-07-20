@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Mettre à jour le PDF lié à `Specs PDF` avec une page concise « Du terrain au briefing groupe », actualiser le Markdown source, contrôler visuellement toutes les pages et remplacer la copie publique, sans modifier l’application.
+Corriger l’arrivée publique qui peut encore ouvrir le détail République lorsqu’un ancien onglet ou favori conserve `?site=republique`.
 
 ## Agreed scope and approvals
 
@@ -29,6 +29,7 @@ Mettre à jour le PDF lié à `Specs PDF` avec une page concise « Du terrain au
 - Phase 18 validée le 20 juillet 2026 : accueil groupe moderne, navigation à trois destinations, détail local explicite et suppression de la redondance avec `Établissements`.
 - Résultat de la phase 18 validé par l'utilisateur le 20 juillet 2026 ; commit et push vers `origin/main` autorisés, toujours sans `prototype-use-cases/`, après validation du message de commit.
 - Phase 19 documentaire validée le 20 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Update restaurant prototype study`, toujours sans `prototype-use-cases/`.
+- Correctif d’entrée post-phase 19 validé le 20 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Fix restored cockpit landing`, toujours sans `prototype-use-cases/`.
 
 ## Decisions made
 
@@ -107,7 +108,7 @@ Mettre à jour le PDF lié à `Specs PDF` avec une page concise « Du terrain au
 
 ## Current state
 
-Les phases 13 à 19 sont publiées sur `origin/main`. La phase 19 documentaire est enregistrée dans `3def283` (`Update restaurant prototype study`). Le PDF public contient 33 pages et le fonctionnement de l'application n'a pas été modifié.
+Les phases 13 à 19 sont publiées sur `origin/main`. Le correctif d’entrée est validé et son commit/push est autorisé : une ouverture ou restauration complète neutralise désormais les anciens filtres de lieu, tandis qu’un clic volontaire ouvre toujours le détail local.
 
 ## Touched files and artifacts
 
@@ -176,6 +177,8 @@ Les phases 13 à 19 sont publiées sur `origin/main`. La phase 19 documentaire e
 - Phase 19 visuelle : les 33 pages ont été rendues en PNG et inspectées, sans coupure, chevauchement ni glyphe défectueux ; les pages 29 à 33 suivent la palette et les composants visuels de l'application actuelle.
 - Phase 19 web : `pnpm check:web` réussit avec lint, contrôle TypeScript, 17 tests web et build Next.js.
 - GitHub : phase 19 poussée avec succès de `main` vers `origin/main` dans le commit `3def283` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
+- Correctif d’entrée post-phase 19 : `pnpm check:web` réussit avec lint, contrôle TypeScript, 18 tests web et build Next.js.
+- Contrôle navigateur local : `/cockpit/?site=republique` est nettoyé en `/cockpit/` et affiche l’accueil groupe ; un clic sur République ouvre son détail, puis une actualisation revient à l’accueil.
 
 ## Blockers and open questions
 
@@ -189,6 +192,6 @@ Les phases 13 à 19 sont publiées sur `origin/main`. La phase 19 documentaire e
 
 ## Next actions
 
-1. Enregistrer et pousser ce suivi de publication, sans ajouter `prototype-use-cases/`.
+1. Committer et pousser le correctif d’entrée sans ajouter `prototype-use-cases/`.
 2. Redéployer Render.
-3. Vérifier l'ouverture du PDF public de 33 pages.
+3. Vérifier l’ancien lien filtré sur le site public.

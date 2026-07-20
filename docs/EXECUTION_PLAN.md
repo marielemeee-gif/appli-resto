@@ -1,7 +1,15 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 19 validée — commit et push autorisés**
+Statut : **phase 19 publiée — correctif d’entrée validé, commit et push autorisés**
 Date de cadrage : 20 juillet 2026
+
+## Correctif post-phase 19 — neutraliser les anciens liens filtrés
+
+- **Constat public** : une session neuve sur `/` affiche bien l’accueil groupe, mais un onglet ou favori conservant `/cockpit/?site=republique` ouvre encore le détail local et ressemble à une mauvaise page d’arrivée.
+- **Décision** : toute nouvelle initialisation ou restauration complète du cockpit revient à la vue groupe et nettoie le filtre d’URL ; le détail local reste ouvert uniquement par une interaction dans l’application.
+- **Périmètre** : logique d’entrée de `CockpitPage`, tests de navigation et état du projet ; aucune donnée, prévision ou règle métier modifiée.
+- **Vérifications prévues** : URL racine, ancien lien filtré, ouverture d’un détail, changement de lieu, retour groupe, historique navigateur, tests web et build.
+- **Résultat local** : ancien lien République et actualisation d’un détail reviennent à `/cockpit/` et à l’accueil groupe ; un clic sur une carte ouvre encore le détail demandé. Lint, types, 18 tests web et build passent.
 
 ## Phase 19 — ajouter le parcours « Du terrain au briefing groupe » aux specs
 

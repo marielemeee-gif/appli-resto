@@ -35,7 +35,7 @@ export function CockpitPage() {
   const horizon = getDemoHorizon(scenario.sites)[activeSite.id];
 
   useEffect(() => {
-    function syncViewFromUrl() {
+    function syncViewFromHistory() {
       const requestedSite = new URLSearchParams(window.location.search).get("site");
       const site = scenario.sites.find((item) => item.id === requestedSite);
       if (site) {
@@ -51,13 +51,13 @@ export function CockpitPage() {
       setViewMode("group");
     }
 
-    syncViewFromUrl();
-    window.addEventListener("popstate", syncViewFromUrl);
-    window.addEventListener("pageshow", syncViewFromUrl);
+    returnToGroup();
+    window.addEventListener("popstate", syncViewFromHistory);
+    window.addEventListener("pageshow", returnToGroup);
     window.addEventListener("pilotage:show-group", returnToGroup);
     return () => {
-      window.removeEventListener("popstate", syncViewFromUrl);
-      window.removeEventListener("pageshow", syncViewFromUrl);
+      window.removeEventListener("popstate", syncViewFromHistory);
+      window.removeEventListener("pageshow", returnToGroup);
       window.removeEventListener("pilotage:show-group", returnToGroup);
     };
   }, [scenario.sites, selectActiveSite]);
