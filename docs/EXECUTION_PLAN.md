@@ -1,7 +1,14 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 18 validée — publication Git en attente**
+Statut : **phase 18 publiée — correctif d’entrée sur l’accueil testé localement**
 Date de cadrage : 20 juillet 2026
+
+### Correctif post-publication — accueil sans actualisation
+
+- **Problème observé** : l’accueil groupe et le détail République partageaient la même URL `/cockpit`, permettant au navigateur de restaurer le détail local lors de la réouverture d’un onglet ; une actualisation recréait ensuite l’état groupe.
+- **Décision** : `/cockpit` désigne toujours l’accueil groupe et un détail local utilise un paramètre explicite, par exemple `/cockpit/?site=republique`.
+- **Comportement** : retour navigateur, restauration d’onglet, logo, lien `Accueil`, bouton `Vue groupe` et `Réinitialiser` resynchronisent l’interface avec l’URL.
+- **Vérification** : 17 tests web, lint, types et build passent ; le parcours réel détail République → navigation fraîche vers `/cockpit` restaure la home sans actualisation.
 
 ## Phase 18 — moderniser l'accueil et clarifier le parcours groupe → lieu
 

@@ -19,10 +19,11 @@ function NavIcon({ name }: { name: string }) {
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { scenario, resetDemo, showGroup, storageError } = useDemo();
+  const { scenario, resetDemo, storageError } = useDemo();
   const [examplesOpen, setExamplesOpen] = useState(false);
   const currentPath = usePathname()?.replace(/\/$/, "") || "/";
   const closeExamples = useCallback(() => setExamplesOpen(false), []);
+  const showGroup = useCallback(() => window.dispatchEvent(new Event("pilotage:show-group")), []);
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -46,7 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="active-demo">
           <span><small>Mode démo</small><strong>{scenario.shortName}</strong></span>
           <button className="examples-button" type="button" onClick={() => setExamplesOpen(true)}>Cas fictifs</button>
-          <button className="reset-button" type="button" onClick={resetDemo}>Réinitialiser</button>
+          <button className="reset-button" type="button" onClick={() => { resetDemo(); showGroup(); }}>Réinitialiser</button>
         </div>
       </header>
       <main id="main-content" className="app-main">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDemo } from "@/demo/demo-context";
 import { getDemoHorizon, getDemoSiteView, type DemoWatchItem } from "@/demo/scenarios";
 import { Confidence, PageHeader, StateBanner } from "./ui";
@@ -26,14 +26,58 @@ function OperationalWatch({ items }: { items: DemoWatchItem[] }) {
 }
 
 export function CockpitPage() {
-  const { scenario, activeSite, cockpitMode, decisions, openSite, showGroup } = useDemo();
+  const { scenario, activeSite, decisions, selectActiveSite } = useDemo();
+  const [viewMode, setViewMode] = useState<"group" | "site">("group");
   const [horizonService, setHorizonService] = useState<"lunch" | "dinner">("dinner");
   const siteView = getDemoSiteView(scenario, activeSite.id);
   const forecast = siteView.forecast;
   const scenarioDecisions = decisions.filter((item) => item.scenarioId === scenario.id);
   const horizon = getDemoHorizon(scenario.sites)[activeSite.id];
 
-  if (cockpitMode === "group") return <GroupHome onOpenSite={openSite} />;
+  useEffect(() => {
+    function syncViewFromUrl() {
+      const requestedSite = new URLSearchParams(window.location.search).get("site");
+      const site = scenario.sites.find((item) => item.id === requestedSite);
+      if (site) {
+        selectActiveSite(site.id);
+        setViewMode("site");
+      } else {
+        setViewMode("group");
+      }
+    }
+
+    function returnToGroup() {
+      window.history.replaceState({}, "", "/cockpit/");
+      setViewMode("group");
+    }
+
+    syncViewFromUrl();
+    window.addEventListener("popstate", syncViewFromUrl);
+    window.addEventListener("pageshow", syncViewFromUrl);
+    window.addEventListener("pilotage:show-group", returnToGroup);
+    return () => {
+      window.removeEventListener("popstate", syncViewFromUrl);
+      window.removeEventListener("pageshow", syncViewFromUrl);
+      window.removeEventListener("pilotage:show-group", returnToGroup);
+    };
+  }, [scenario.sites, selectActiveSite]);
+
+  useEffect(() => {
+    if (viewMode === "site") window.history.replaceState({}, "", `/cockpit/?site=${activeSite.id}`);
+  }, [activeSite.id, viewMode]);
+
+  function openSite(siteId: typeof activeSite.id) {
+    window.history.pushState({}, "", `/cockpit/?site=${siteId}`);
+    setViewMode("site");
+    selectActiveSite(siteId);
+  }
+
+  function showGroup() {
+    window.history.pushState({}, "", "/cockpit/");
+    setViewMode("group");
+  }
+
+  if (viewMode === "group") return <GroupHome onOpenSite={openSite} />;
 
   return <>
     <div className="local-view-toolbar" aria-label="Navigation dans le tableau de bord"><button type="button" onClick={showGroup}><span aria-hidden="true">←</span> Vue groupe</button><span>Accueil</span><i aria-hidden="true">/</i><strong>{activeSite.name}</strong></div>

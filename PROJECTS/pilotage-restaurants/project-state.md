@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Moderniser l'application avec un accueil plus attrayant : vue globale des lieux et des chiffres, puis entrée simple dans le détail de chaque établissement, avec un parcours cohérent sur desktop et mobile.
+Corriger l’ouverture publique qui pouvait restaurer le détail République avant d’afficher la nouvelle home après actualisation.
 
 ## Agreed scope and approvals
 
@@ -103,7 +103,7 @@ Moderniser l'application avec un accueil plus attrayant : vue globale des lieux 
 
 ## Current state
 
-Les phases 13 à 18 sont publiées sur `origin/main`. La phase 18 est dans `73796a6` (`Modernize restaurant group cockpit`) : accueil groupe moderne, trois cartes peuplées, mini-tendances utiles, détail local explicite, navigation ramenée à trois destinations et ancienne route `Établissements` redirigée, sans changer les moteurs de données et de décision.
+Les phases 13 à 18 sont publiées sur `origin/main`. Un correctif post-publication est terminé localement : `/cockpit` correspond désormais sans ambiguïté à la home groupe, tandis qu’un détail utilise `?site=...`, ce qui empêche la restauration silencieuse de République lors de la réouverture d’un onglet.
 
 ## Touched files and artifacts
 
@@ -166,6 +166,7 @@ Les phases 13 à 18 sont publiées sur `origin/main`. La phase 18 est dans `7379
 - Phase 18 visuelle : accueil groupe et détail République contrôlés sur ordinateur ; vue mobile sans débordement global, en-tête allégé et trois cartes accessibles dans un rail horizontal compact.
 - Phase 18 anti-doublon : l'onglet `Établissements` et sa page parallèle disparaissent, et la seconde liste répétant les trois actions prioritaires a été retirée de l'accueil.
 - GitHub : phase 18 poussée avec succès de `main` vers `origin/main` dans le commit `73796a6` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
+- Correctif accueil : 17 tests web, lint, types et build Next.js passent ; vérification navigateur réussie pour `/cockpit` → République (`?site=republique`) → `/cockpit`, avec retour immédiat à la home sans actualisation.
 
 ## Blockers and open questions
 
@@ -179,6 +180,6 @@ Les phases 13 à 18 sont publiées sur `origin/main`. La phase 18 est dans `7379
 
 ## Next actions
 
-1. Enregistrer et pousser ce suivi de publication, sans ajouter `prototype-use-cases/`.
-2. Redéployer Render au commit `73796a6`.
-3. Vérifier l'accueil, les trois détails, les boutons d'en-tête, le favicon et `/specs-prototype-app.pdf` sur le lien public.
+1. Faire valider le correctif d’entrée sur l’accueil.
+2. Après accord, commit et push vers `origin/main`, sans ajouter `prototype-use-cases/`.
+3. Redéployer Render puis vérifier une ouverture fraîche de `/cockpit` et les trois URL de détail sur le lien public.

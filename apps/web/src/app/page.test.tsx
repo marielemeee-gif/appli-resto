@@ -12,7 +12,10 @@ function renderDemo(ui: React.ReactNode) {
   return render(<DemoProvider>{ui}</DemoProvider>);
 }
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});
 
 describe("Application de démonstration", () => {
   it("borne chaque monde à des paramètres et décisions réalistes", () => {
@@ -184,7 +187,22 @@ describe("Application de démonstration", () => {
     renderDemo(<Home />);
     fireEvent.click(screen.getByRole("button", { name: "Voir le détail de Gare" }));
     expect(screen.getByRole("heading", { level: 1, name: "Pilotage du jour" })).toBeInTheDocument();
+    expect(window.location.search).toBe("?site=gare");
+    fireEvent.change(screen.getByLabelText("Établissement actif"), { target: { value: "liberte" } });
+    expect(window.location.search).toBe("?site=liberte");
     fireEvent.click(screen.getByRole("button", { name: "Vue groupe" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Le groupe en un coup d’œil" })).toBeInTheDocument();
+    expect(window.location.search).toBe("");
+  });
+
+  it("restaure l’accueil groupe quand un onglet revient sur l’URL sans filtre", () => {
+    renderDemo(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "Voir le détail de République" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Pilotage du jour" })).toBeInTheDocument();
+
+    window.history.replaceState({}, "", "/cockpit/");
+    fireEvent(window, new Event("pageshow"));
+
     expect(screen.getByRole("heading", { level: 1, name: "Le groupe en un coup d’œil" })).toBeInTheDocument();
   });
 
