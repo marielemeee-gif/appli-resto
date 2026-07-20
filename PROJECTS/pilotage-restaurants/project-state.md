@@ -108,7 +108,7 @@ Corriger l’arrivée publique qui peut encore ouvrir le détail République lor
 
 ## Current state
 
-Les phases 13 à 19 sont publiées sur `origin/main`. Le correctif d’entrée est validé et son commit/push est autorisé : une ouverture ou restauration complète neutralise désormais les anciens filtres de lieu, tandis qu’un clic volontaire ouvre toujours le détail local.
+Les phases 13 à 19 et le correctif d’entrée sont publiés sur `origin/main`. Le correctif est enregistré dans `c1a7b28` (`Fix restored cockpit landing`) : une ouverture ou restauration complète neutralise les anciens filtres de lieu, tandis qu’un clic volontaire ouvre toujours le détail local.
 
 ## Touched files and artifacts
 
@@ -179,6 +179,7 @@ Les phases 13 à 19 sont publiées sur `origin/main`. Le correctif d’entrée e
 - GitHub : phase 19 poussée avec succès de `main` vers `origin/main` dans le commit `3def283` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
 - Correctif d’entrée post-phase 19 : `pnpm check:web` réussit avec lint, contrôle TypeScript, 18 tests web et build Next.js.
 - Contrôle navigateur local : `/cockpit/?site=republique` est nettoyé en `/cockpit/` et affiche l’accueil groupe ; un clic sur République ouvre son détail, puis une actualisation revient à l’accueil.
+- GitHub : correctif d’entrée poussé avec succès de `main` vers `origin/main` dans le commit `c1a7b28` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
 
 ## Blockers and open questions
 
@@ -192,6 +193,6 @@ Les phases 13 à 19 sont publiées sur `origin/main`. Le correctif d’entrée e
 
 ## Next actions
 
-1. Committer et pousser le correctif d’entrée sans ajouter `prototype-use-cases/`.
+1. Enregistrer et pousser ce suivi de publication sans ajouter `prototype-use-cases/`.
 2. Redéployer Render.
 3. Vérifier l’ancien lien filtré sur le site public.
