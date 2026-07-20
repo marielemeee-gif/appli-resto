@@ -107,7 +107,7 @@ Mettre à jour le PDF lié à `Specs PDF` avec une page concise « Du terrain au
 
 ## Current state
 
-Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`. La phase 19 documentaire est validée et son commit/push est autorisé. Le PDF public contient 33 pages et le fonctionnement de l'application n'a pas été modifié.
+Les phases 13 à 19 sont publiées sur `origin/main`. La phase 19 documentaire est enregistrée dans `3def283` (`Update restaurant prototype study`). Le PDF public contient 33 pages et le fonctionnement de l'application n'a pas été modifié.
 
 ## Touched files and artifacts
 
@@ -175,6 +175,7 @@ Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`.
 - Phase 19 : PDF maître et copie publique identiques, 33 pages A4 et 156 907 octets ; texte attendu extrait avec succès.
 - Phase 19 visuelle : les 33 pages ont été rendues en PNG et inspectées, sans coupure, chevauchement ni glyphe défectueux ; les pages 29 à 33 suivent la palette et les composants visuels de l'application actuelle.
 - Phase 19 web : `pnpm check:web` réussit avec lint, contrôle TypeScript, 17 tests web et build Next.js.
+- GitHub : phase 19 poussée avec succès de `main` vers `origin/main` dans le commit `3def283` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
 
 ## Blockers and open questions
 
@@ -188,6 +189,6 @@ Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`.
 
 ## Next actions
 
-1. Committer et pousser les six fichiers de la phase 19, sans ajouter `prototype-use-cases/`.
+1. Enregistrer et pousser ce suivi de publication, sans ajouter `prototype-use-cases/`.
 2. Redéployer Render.
 3. Vérifier l'ouverture du PDF public de 33 pages.
