@@ -103,7 +103,7 @@ Corriger l’ouverture publique qui pouvait restaurer le détail République ava
 
 ## Current state
 
-Les phases 13 à 18 sont publiées sur `origin/main`. Un correctif post-publication est terminé localement : `/cockpit` correspond désormais sans ambiguïté à la home groupe, tandis qu’un détail utilise `?site=...`, ce qui empêche la restauration silencieuse de République lors de la réouverture d’un onglet.
+Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`. Le correctif est dans `6d85315` (`Fix cockpit landing state`) : `/cockpit` correspond désormais sans ambiguïté à la home groupe, tandis qu’un détail utilise `?site=...`, ce qui empêche la restauration silencieuse de République lors de la réouverture d’un onglet.
 
 ## Touched files and artifacts
 
@@ -167,6 +167,7 @@ Les phases 13 à 18 sont publiées sur `origin/main`. Un correctif post-publicat
 - Phase 18 anti-doublon : l'onglet `Établissements` et sa page parallèle disparaissent, et la seconde liste répétant les trois actions prioritaires a été retirée de l'accueil.
 - GitHub : phase 18 poussée avec succès de `main` vers `origin/main` dans le commit `73796a6` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
 - Correctif accueil : 17 tests web, lint, types et build Next.js passent ; vérification navigateur réussie pour `/cockpit` → République (`?site=republique`) → `/cockpit`, avec retour immédiat à la home sans actualisation.
+- GitHub : correctif d’accueil poussé avec succès de `main` vers `origin/main` dans le commit `6d85315` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
 
 ## Blockers and open questions
 
@@ -180,6 +181,6 @@ Les phases 13 à 18 sont publiées sur `origin/main`. Un correctif post-publicat
 
 ## Next actions
 
-1. Faire valider le correctif d’entrée sur l’accueil.
-2. Après accord, commit et push vers `origin/main`, sans ajouter `prototype-use-cases/`.
-3. Redéployer Render puis vérifier une ouverture fraîche de `/cockpit` et les trois URL de détail sur le lien public.
+1. Enregistrer et pousser ce suivi de publication, sans ajouter `prototype-use-cases/`.
+2. Redéployer Render au commit `6d85315`.
+3. Vérifier une ouverture fraîche de `/cockpit` et les trois URL de détail sur le lien public.
