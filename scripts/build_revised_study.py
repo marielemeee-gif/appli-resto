@@ -178,19 +178,19 @@ def build_addendum() -> None:
         canvas,
         "Preuves disponibles",
         "Spécifications de la démo actuelle",
-        "Prototype App organise les preuves en quatre tâches et sépare strictement calcul, règle métier et explication.",
+        "Prototype App organise les preuves en trois destinations et sépare strictement calcul, règle métier et explication.",
         PAGE_H - 31 * mm,
     )
     y -= 8 * mm
     row_gap = 4 * mm
     card_h = 29 * mm
     rows = [
-        ("TABLEAU DE BORD", "Service courant, fourchette, confiance, horizon fictif à sept jours et quatre échéances utiles.", TEAL_PALE, TEAL),
+        ("ACCUEIL GROUPE", "Chiffres consolidés, état des trois lieux et une action prioritaire par établissement.", TEAL_PALE, TEAL),
+        ("DÉTAIL D'UN LIEU", "Fourchette, confiance, facteurs, horizon fictif à sept jours et échéances utiles.", PALE, TEAL),
         ("DÉCISIONS", "Trois priorités maximum, rôles Salle/Cuisine/Bar, échéances, motif et message préparé.", PALE, TEAL),
-        ("ÉTABLISSEMENTS", "Trois sites comparables et transfert simulé seulement s'il ne crée aucun déficit.", AMBER_PALE, AMBER),
         ("JOURNAL", "Décisions de session, gains estimés fictifs et gain observé volontairement indisponible.", PALE, TEAL),
         ("ACTIONS EXTERNES", "Brouillon fournisseur, SMS et WhatsApp nécessitent toujours une confirmation humaine.", TEAL_PALE, TEAL),
-        ("QUALITÉ LOGICIELLE", "13 tests web et 22 tests API, lint, types et build. Aucun secret ni donnée personnelle.", PALE, TEAL),
+        ("QUALITÉ LOGICIELLE", "17 tests web et 22 tests API, lint, types et build. Aucun secret ni donnée personnelle.", PALE, TEAL),
     ]
     for index, (heading, body, fill, accent) in enumerate(rows):
         card(canvas, LEFT, y, CONTENT_W, card_h, heading, body, fill, accent)
@@ -285,6 +285,78 @@ def build_addendum() -> None:
         CONTENT_W - 14 * mm,
         WHITE_BODY,
     )
+    canvas.showPage()
+
+    # Page 33 - from field input to group briefing.
+    header(canvas, 33, "PARCOURS MÉTIER DU PROTOTYPE")
+    y = title(
+        canvas,
+        "Cas fil rouge - pré-service",
+        "Du terrain au briefing groupe",
+        "Un signal libre devient une décision seulement après validation, enrichissement traçable et arbitrage humain. Exemple fictif, aucune API ni action externe réellement connectée.",
+        PAGE_H - 31 * mm,
+    )
+    y -= 7 * mm
+    canvas.setFillColor(NAVY)
+    canvas.roundRect(LEFT, y - 24 * mm, CONTENT_W, 24 * mm, 4 * mm, stroke=0, fill=1)
+    canvas.setFillColor(TEAL_PALE)
+    canvas.setFont("Helvetica-Bold", 7.4)
+    canvas.drawString(LEFT + 6 * mm, y - 7 * mm, "VENDREDI 10:20 - RÉPUBLIQUE - AVANT LE DÎNER")
+    paragraph(
+        canvas,
+        "« Terrasse confirmée, groupe de 22 à 19:30, livraison de glaçons annoncée à 13:30. »",
+        LEFT + 6 * mm,
+        y - 12 * mm,
+        CONTENT_W - 12 * mm,
+        WHITE_BODY,
+    )
+    y -= 32 * mm
+
+    col_gap = 5 * mm
+    card_w = (CONTENT_W - col_gap) / 2
+    card_h = 37 * mm
+    flow = [
+        ("01  SAISIE VALIDÉE", "Formulaire ou note vocale. La transcription est relue et confirmée par le manager avant tout calcul.", TEAL_PALE, TEAL),
+        ("02  ENRICHISSEMENT", "Caisse, réservations, planning et stock + météo, événements, travaux, trafic, STAR et parkings rennais horodatés.", PALE, TEAL),
+        ("03  TROIS PRIORITÉS", "24 portions avant 11:00<br/>40 kg de glaçons avant 14:00<br/>1 serveur décalé sur 19:00-22:00 avant 16:00", AMBER_PALE, AMBER),
+        ("04  ARBITRAGE HUMAIN", "Le responsable valide, modifie ou refuse, puis choisit de transmettre. Aucun planning, message ou ordre fournisseur automatique.", TEAL_PALE, TEAL),
+    ]
+    for index, (heading, body, fill, accent) in enumerate(flow):
+        col = index % 2
+        if col == 0 and index > 0:
+            y -= card_h + 5 * mm
+        card(canvas, LEFT + col * (card_w + col_gap), y, card_w, card_h, heading, body, fill, accent)
+    y -= card_h + 10 * mm
+
+    canvas.setFillColor(NAVY)
+    canvas.setFont("Helvetica-Bold", 14)
+    canvas.drawString(LEFT, y, "API et sources rennaises à instruire")
+    y -= 7 * mm
+    source_gap = 3 * mm
+    source_w = (CONTENT_W - 2 * source_gap) / 3
+    source_h = 29 * mm
+    sources = [
+        ("RENNES OPEN DATA", "Travaux · trafic temps réel<br/>parkings disponibles", TEAL_PALE, TEAL),
+        ("STAR + AGENDA", "GTFS / GTFS-RT<br/>OpenAgenda Rennes Métropole", PALE, TEAL),
+        ("MÉTÉO-FRANCE", "Pluie · température · vent<br/>aux coordonnées de Rennes", AMBER_PALE, AMBER),
+    ]
+    for index, (heading, body, fill, accent) in enumerate(sources):
+        card(canvas, LEFT + index * (source_w + source_gap), y, source_w, source_h, heading, body, fill, accent)
+    y -= source_h + 8 * mm
+
+    canvas.setFillColor(NAVY)
+    canvas.roundRect(LEFT, y - 23 * mm, CONTENT_W, 23 * mm, 4 * mm, stroke=0, fill=1)
+    canvas.setFillColor(TEAL_PALE)
+    canvas.setFont("Helvetica-Bold", 7.4)
+    canvas.drawString(LEFT + 6 * mm, y - 7 * mm, "GARDE-FOU")
+    paragraph(
+        canvas,
+        "Sources candidates, non connectées dans la démo. Fraîcheur, licence et qualité doivent être contrôlées ; la synthèse reste bornée à trois priorités et la décision finale appartient au responsable.",
+        LEFT + 6 * mm,
+        y - 12 * mm,
+        CONTENT_W - 12 * mm,
+        WHITE_BODY,
+    )
     canvas.save()
 
 
@@ -301,7 +373,7 @@ def merge() -> None:
     metadata.update(
         {
             "/Title": "Étude de faisabilité - pilotage prédictif des restaurants - révision prototype",
-            "/Subject": "Étude initiale complétée par le bilan du prototype fictif",
+            "/Subject": "Étude initiale complétée par le bilan du prototype fictif et son parcours terrain vers briefing groupe",
         }
     )
     writer.add_metadata(metadata)

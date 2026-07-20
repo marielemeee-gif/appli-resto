@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Corriger l’ouverture publique qui pouvait restaurer le détail République avant d’afficher la nouvelle home après actualisation.
+Mettre à jour le PDF lié à `Specs PDF` avec une page concise « Du terrain au briefing groupe », actualiser le Markdown source, contrôler visuellement toutes les pages et remplacer la copie publique, sans modifier l’application.
 
 ## Agreed scope and approvals
 
@@ -28,6 +28,7 @@ Corriger l’ouverture publique qui pouvait restaurer le détail République ava
 - Phase 17 validée le 18 juillet 2026 ; commit et push de ses huit fichiers vers `origin/main` autorisés avec le message `Populate restaurant views by location`, en excluant `prototype-use-cases/`.
 - Phase 18 validée le 20 juillet 2026 : accueil groupe moderne, navigation à trois destinations, détail local explicite et suppression de la redondance avec `Établissements`.
 - Résultat de la phase 18 validé par l'utilisateur le 20 juillet 2026 ; commit et push vers `origin/main` autorisés, toujours sans `prototype-use-cases/`, après validation du message de commit.
+- Phase 19 documentaire validée le 20 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Update restaurant prototype study`, toujours sans `prototype-use-cases/`.
 
 ## Decisions made
 
@@ -40,7 +41,7 @@ Corriger l’ouverture publique qui pouvait restaurer le détail République ava
 - Les six scénarios affichés proviennent des configurations fictives existantes ; aucun exemple chiffré non calculé n’a été ajouté.
 - Les nombres, fourchettes, facteurs et recommandations du laboratoire viennent de l'API ; la question manager et l'action pédagogique portent la mention « illustration fictive - non calculée ».
 - Responsive signifie ici desktop riche puis adaptation tablette/mobile, et non conception mobile prioritaire.
-- L'étude initiale est préservée ; la révision est un nouveau PDF de 32 pages avec un addendum daté de quatre pages.
+- L'étude initiale est préservée ; la révision est désormais un PDF de 33 pages avec un addendum daté de cinq pages.
 - Phase 10 proposée : les écrans publics utilisent des instantanés fictifs déterministes et un état partagé dans le navigateur ; l'API reste une preuve technique séparée.
 - Le laboratoire devient l'unique sélecteur de scénario ; les autres pages montrent seulement le cas actif.
 - Chaque scénario décisionnel doit croiser au moins trois paramètres et montrer référence, changement, contributions, heure limite et effet multi-sites éventuel.
@@ -97,13 +98,16 @@ Corriger l’ouverture publique qui pouvait restaurer le détail République ava
 - Nom visible `Service` remplacé par `Prototype App` dans l'en-tête, les métadonnées et le message de partage.
 - Phase 14 terminée localement : Établissements compare le groupe et conclut même sans transfert ; Décisions place les trois actions avant les outils secondaires.
 - Phase 14 inclut une réduction du défilement mobile et un favicon assiette/couverts pour l'onglet navigateur.
-- L'étude complète de 32 pages est conservée ; son addendum est actualisé et une copie publique est reliée par le bouton `Specs PDF`.
+- L'ancienne édition complète de 32 pages a été conservée jusqu'à la phase 18 ; sa copie publique reste reliée au bouton `Specs PDF`.
+- Phase 19 terminée localement : l'étude complète passe à 33 pages avec le parcours « Du terrain au briefing groupe », un cas fictif de pré-service, trois priorités et arbitrage humain.
+- La source Markdown et le PDF listent les sources rennaises candidates : travaux, trafic, parkings, STAR GTFS/GTFS-RT, OpenAgenda Rennes Métropole et Météo-France ; aucune n'est connectée dans la démonstration.
+- La page de spécifications est réalignée sur la navigation actuelle : Accueil groupe, détail d'un lieu, Décisions et Journal.
 - Correctif local après `11d102c` : `Specs PDF` devient safran plein, `Cas fictifs` turquoise plein et reste visible sur mobile ; seul `Réinitialiser` y est masqué.
 - Le résumé fournisseur replié est aligné sur les dimensions de `Consigne terrain et transmission` en desktop.
 
 ## Current state
 
-Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`. Le correctif est dans `6d85315` (`Fix cockpit landing state`) : `/cockpit` correspond désormais sans ambiguïté à la home groupe, tandis qu’un détail utilise `?site=...`, ce qui empêche la restauration silencieuse de République lors de la réouverture d’un onglet.
+Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`. La phase 19 documentaire est validée et son commit/push est autorisé. Le PDF public contient 33 pages et le fonctionnement de l'application n'a pas été modifié.
 
 ## Touched files and artifacts
 
@@ -168,6 +172,9 @@ Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`.
 - GitHub : phase 18 poussée avec succès de `main` vers `origin/main` dans le commit `73796a6` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
 - Correctif accueil : 17 tests web, lint, types et build Next.js passent ; vérification navigateur réussie pour `/cockpit` → République (`?site=republique`) → `/cockpit`, avec retour immédiat à la home sans actualisation.
 - GitHub : correctif d’accueil poussé avec succès de `main` vers `origin/main` dans le commit `6d85315` le 20 juillet 2026 ; la branche distante pointe sur ce hash.
+- Phase 19 : PDF maître et copie publique identiques, 33 pages A4 et 156 907 octets ; texte attendu extrait avec succès.
+- Phase 19 visuelle : les 33 pages ont été rendues en PNG et inspectées, sans coupure, chevauchement ni glyphe défectueux ; les pages 29 à 33 suivent la palette et les composants visuels de l'application actuelle.
+- Phase 19 web : `pnpm check:web` réussit avec lint, contrôle TypeScript, 17 tests web et build Next.js.
 
 ## Blockers and open questions
 
@@ -181,6 +188,6 @@ Les phases 13 à 18 et le correctif d’accueil sont publiés sur `origin/main`.
 
 ## Next actions
 
-1. Enregistrer et pousser ce suivi de publication, sans ajouter `prototype-use-cases/`.
-2. Redéployer Render au commit `6d85315`.
-3. Vérifier une ouverture fraîche de `/cockpit` et les trois URL de détail sur le lien public.
+1. Committer et pousser les six fichiers de la phase 19, sans ajouter `prototype-use-cases/`.
+2. Redéployer Render.
+3. Vérifier l'ouverture du PDF public de 33 pages.

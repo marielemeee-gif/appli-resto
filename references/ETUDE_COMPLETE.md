@@ -887,7 +887,7 @@ Cette section complète l'étude initiale sans la réécrire rétroactivement. D
 | Recommandations | Effectif, préparation, achats et transfert multi-sites avec heure limite | Règles simplifiées, sans exécution automatique |
 | Décision humaine | Validation, modification ou refus enregistrés dans le prototype | Aucun planning ni fournisseur réel modifié |
 | Explication | Séparation entre nombre calculé, règle déterministe et narration | Aucun LLM utilisé comme moteur numérique |
-| Démonstration | Tableau de bord, Décisions, Établissements et Journal ; exemples fictifs isolés dans une fenêtre | Ce n'est pas encore un produit de production |
+| Démonstration | Accueil groupe, détail local, Décisions et Journal ; exemples fictifs isolés dans une fenêtre | Ce n'est pas encore un produit de production |
 
 Le prototype public est accessible à l'adresse `https://pilotage-restaurants.onrender.com/`. Son code est versionné sur `https://github.com/marielemeee-gif/appli-resto`.
 
@@ -910,16 +910,47 @@ Chaque résultat sépare désormais trois responsabilités :
 
 ### 18.3. Organisation actuelle de l'application
 
-L'interface publique, nommée **Prototype App**, est volontairement limitée à quatre destinations :
+L'interface publique, nommée **Prototype App**, est volontairement limitée à trois destinations :
 
-1. **Tableau de bord** - prévision du service, fourchette, confiance, horizon fictif à sept jours et échéances opérationnelles ;
-2. **Décisions** - jusqu'à trois actions, effectifs Salle/Cuisine/Bar, échéances, validation, modification motivée, refus et transmission préparée ;
-3. **Établissements** - comparaison des trois sites, marge d'effectif mobilisable et transfert simulé uniquement lorsqu'il ne crée pas un second déficit ;
-4. **Journal** - décisions de session, gain estimé fictif et gain observé explicitement indisponible.
+1. **Accueil** - chiffres consolidés, état des trois établissements et une action prioritaire par lieu ; chaque carte ouvre le détail local, sa fourchette, ses facteurs et son horizon fictif à sept jours ;
+2. **Décisions** - jusqu'à trois actions propres au lieu actif, effectifs Salle/Cuisine/Bar, échéances, validation, modification motivée, refus et transmission préparée ;
+3. **Journal** - décisions de session, gain estimé fictif et gain observé explicitement indisponible.
 
 Les preuves des systèmes tiers sont consultables mais repliées. La commande fournisseur reste un brouillon fictif nécessitant une confirmation humaine ; aucun SMS, message WhatsApp, planning ou ordre fournisseur n'est envoyé automatiquement. L'interface privilégie l'ordinateur mais reste responsive, avec les outils secondaires repliés sur mobile.
 
-### 18.4. Ce que le prototype ne prouve pas
+### 18.4. Du terrain au briefing groupe
+
+Le parcours cible doit accepter un signal que les systèmes structurés ne connaissent pas encore, sans transformer une note libre en décision automatique. Le cas fil rouge suivant reste fictif et se déroule avant le dîner de République.
+
+**Vendredi, 10 h 20.** Le manager saisit un formulaire ou dicte une note : « terrasse confirmée, groupe de 22 à 19 h 30, livraison de glaçons annoncée à 13 h 30 ». S'il utilise la voix, la transcription est affichée et doit être validée avant tout enrichissement.
+
+La note validée est rapprochée de deux familles de données :
+
+- **internes** : caisse, réservations, planning prévu, inventaire bar et délais fournisseur ;
+- **locales** : météo à Rennes, agenda des événements, travaux et circulation, perturbations STAR et disponibilité des parkings.
+
+Le briefing ne restitue pas toutes les données. Il propose au maximum trois priorités encore exécutables :
+
+1. préparer 24 portions froides pour la terrasse avant 11 h 00 ;
+2. sécuriser 40 kg de glaçons avant la coupure fournisseur de 14 h 00 ;
+3. décaler un serveur sur le pic 19 h 00-22 h 00, décision avant 16 h 00.
+
+Le responsable groupe arbitre ensuite. Il peut valider la préparation, modifier la quantité de glaçons après contrôle du stock, refuser le déplacement d'équipe ou transmettre une consigne. Aucun message, planning ou ordre fournisseur n'est envoyé sans action humaine explicite.
+
+#### Liste courte des API et sources rennaises envisageables
+
+| API ou source | Signal utile avant service | Statut dans le prototype |
+|---|---|---|
+| [API Travaux Rennes Métropole](https://data.rennesmetropole.fr/explore/dataset/api-travaux-rennes-metropole/) et [travaux à 30 jours](https://data.rennesmetropole.fr/explore/dataset/travaux_30_jours/) | Nature, période et gêne des chantiers proches | Simulée, non connectée |
+| [État du trafic en temps réel - Explore API 2.1](https://data.rennesmetropole.fr/explore/dataset/etat-du-trafic-en-temps-reel/api/) | Vitesse, temps de parcours, congestion et fraîcheur | Simulée, non connectée |
+| [API Parkings Rennes Métropole](https://data.rennesmetropole.fr/explore/dataset/api-parkings-rennes-metropole/) | Statut, capacité et places disponibles en temps réel | Simulée, non connectée |
+| [Réseau STAR - GTFS et GTFS-RT](https://transport.data.gouv.fr/datasets/versions-des-horaires-theoriques-des-lignes-de-bus-et-de-metro-du-reseau-star-au-format-gtfs) | Horaires, alertes, mises à jour de trajet et positions | Simulée, non connectée |
+| [OpenAgenda Rennes Métropole](https://openagenda.com/fr/rennes-metropole) et [API OpenAgenda](https://developers.openagenda.com/) | Événements, horaires, lieux et catégories | Simulée, non connectée |
+| [Portail des données publiques Météo-France](https://donneespubliques.meteofrance.com/) | Pluie, température, vent et évolution de la prévision aux coordonnées de Rennes | Simulée, non connectée |
+
+Cette liste décrit des candidats à instruire pendant une phase dédiée. Avant intégration, il faudra confirmer licences, quotas, stabilité, historique disponible et mécanismes de repli. L'application actuelle n'appelle aucune de ces API.
+
+### 18.5. Ce que le prototype ne prouve pas
 
 - qu'un modèle battra la méthode d'un manager sur des données de caisse réelles ;
 - que les exports disponibles sont suffisamment propres et réguliers ;
@@ -931,7 +962,7 @@ Les preuves des systèmes tiers sont consultables mais repliées. La commande fo
 
 Les gains visibles dans le registre restent des estimations fictives. Le champ de gain observé demeure volontairement vide.
 
-### 18.5. Décision recommandée après le prototype
+### 18.6. Décision recommandée après le prototype
 
 La priorité n'est plus d'ajouter des écrans. La prochaine preuve doit venir du terrain :
 
@@ -941,7 +972,7 @@ La priorité n'est plus d'ajouter des écrans. La prochaine preuve doit venir du
 4. présenter les six scénarios au responsable, puis supprimer ceux qui ne changeraient aucune décision ;
 5. lancer un pilote en parallèle du fonctionnement normal uniquement si le backtest et les retours manager sont concluants.
 
-### 18.6. Verdict actualisé
+### 18.7. Verdict actualisé
 
 La faisabilité technique du prototype est maintenant démontrée. La faisabilité commerciale et opérationnelle reste à établir. Le principal risque a donc changé : il ne s'agit plus de savoir si l'on peut construire l'interface et les moteurs simples, mais si des données réelles permettent de produire, au bon moment, une décision que le manager applique et dont le gain peut être mesuré.
 

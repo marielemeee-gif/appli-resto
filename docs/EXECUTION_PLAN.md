@@ -1,7 +1,79 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 18 publiée — correctif d’entrée sur l’accueil testé localement**
+Statut : **phase 19 validée — commit et push autorisés**
 Date de cadrage : 20 juillet 2026
+
+## Phase 19 — ajouter le parcours « Du terrain au briefing groupe » aux specs
+
+### 1. Résultat de la phase
+
+L’étude révisée passe de 32 à 33 pages sans altérer ses 28 pages initiales. Une page concise montre, avec un seul cas fictif de pré-service, comment une note terrain validée devient trois priorités groupe puis un arbitrage humain.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : aucun fonctionnement applicatif ne change ; seuls le Markdown source, le générateur PDF et les PDF générés sont modifiés.
+- **Confirmé** : le cas reste fictif et concret métier, avant un dîner à République.
+- **Décidé** : le parcours tient en quatre étapes - saisie validée, enrichissement, trois priorités, arbitrage humain.
+- **Décidé** : les sources rennaises sont présentées comme des connecteurs envisageables ou simulés : météo, agenda local, circulation/travaux et perturbations STAR ; aucune connexion réelle n’est revendiquée.
+- **Décidé** : la page 30 est seulement réalignée sur l’application actuelle (Accueil, détail local, Décisions, Journal et 17 tests web).
+- **Écarté** : ajouter plusieurs scénarios, détailler une architecture vocale ou promettre une commande/action automatique.
+
+### 3. Architecture et flux
+
+```text
+note formulaire ou vocale validée
+  + caisse / réservations / planning / stock
+  + météo / agenda / circulation / STAR à Rennes
+        -> synthèse bornée à 3 priorités
+        -> responsable groupe modifie, valide ou refuse
+```
+
+Le Markdown reste la source éditoriale. `scripts/build_revised_study.py` génère l’addendum ReportLab, le fusionne avec `references/ETUDE_PREMIUM.pdf`, puis la sortie validée remplace la copie publique du bouton `Specs PDF`.
+
+### 4. Fichiers concernés
+
+- `references/ETUDE_COMPLETE.md` : section source du nouveau parcours et organisation actuelle corrigée.
+- `scripts/build_revised_study.py` : page 33 et libellés de l’addendum actualisés.
+- `output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf` : PDF maître régénéré.
+- `apps/web/public/specs-prototype-app.pdf` : copie publique remplacée à l’identique.
+- `PROJECTS/pilotage-restaurants/project-state.md` : état documentaire et vérifications.
+
+### 5. Étapes d’implémentation
+
+1. Ajouter le cas fil rouge dans le Markdown et réaligner la description de l’application.
+2. Dessiner la page 33 avec une chaîne de quatre étapes et les garde-fous humains.
+3. Régénérer le PDF maître, vérifier 33 pages et la présence des textes attendus.
+4. Rendre toutes les pages en PNG, inspecter la planche complète puis chaque page à taille lisible.
+5. Remplacer la copie publique et vérifier identité binaire, type MIME et build web.
+
+### 6. Vérifications
+
+```bash
+python scripts/build_revised_study.py
+pdfinfo output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf
+pdftotext output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf -
+pdftoppm -png -r 120 output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf tmp/pdfs/review/page
+cmp output/pdf/Analyse_pilotage_predictif_restaurants_premium_revision.pdf apps/web/public/specs-prototype-app.pdf
+pnpm check:web
+```
+
+### 7. Risques et solutions de repli
+
+- **Donnée incohérente** : toutes les valeurs du cas sont marquées fictives et réconcilient les trois priorités du prototype.
+- **Fuite temporelle** : la page décrit uniquement des informations disponibles avant le service et horodatées.
+- **Prévision trop précise** : aucune nouvelle prévision ponctuelle n’est inventée ; fourchette et confiance restent les principes de l’étude.
+- **API simulée irréaliste** : les sources rennaises sont explicitement « envisageables/simulées », jamais connectées dans le prototype.
+- **Règle inexécutable** : aucune action externe automatique ; échéance et validation humaine sont visibles.
+- **Interface trompeuse** : la note vocale nécessite validation de transcription et le cas fil rouge porte la mention fictive.
+- **Régression PDF** : conservation page à page des 28 pages initiales et revue visuelle des 33 pages.
+
+### 8. Critères de sortie
+
+- Une seule page nouvelle, lisible, sans chevauchement ni texte coupé.
+- Le flux demandé et les quatre étapes sont compris sans dépendre du reste de l’étude.
+- Les sources rennaises et les données internes sont nommées concrètement sans prétendre à une intégration active.
+- Trois priorités maximum et décision humaine explicite.
+- Markdown, PDF maître et copie publique cohérents ; application fonctionnellement inchangée.
 
 ### Correctif post-publication — accueil sans actualisation
 
