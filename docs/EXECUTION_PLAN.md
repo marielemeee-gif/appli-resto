@@ -1,6 +1,6 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 20 terminée localement — validation utilisateur attendue avant commit et push**
+Statut : **phase 20 validée et publiée sur `origin/main` — commit `c6677ec`**
 Date de cadrage : 22 juillet 2026
 
 ## Phase 20 — rendre la démonstration réellement opérationnelle

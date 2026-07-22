@@ -114,7 +114,7 @@ Moderniser l'application et la rendre plus réaliste sans la complexifier, en pr
 
 ## Current state
 
-Les phases 13 à 19 et le correctif d’entrée sont publiés sur `origin/main`. La phase 20 est validée et prête à être commitée puis poussée sur `origin/main` ; `prototype-use-cases/` reste exclu.
+Les phases 13 à 20 et le correctif d’entrée sont publiés sur `origin/main`. La phase 20 correspond au commit `c6677ec` ; `prototype-use-cases/` reste exclu.
 
 ## Touched files and artifacts
 
@@ -129,6 +129,10 @@ Les phases 13 à 19 et le correctif d’entrée sont publiés sur `origin/main`.
 - Données générées et `data/decisions.json` exclus de Git.
 
 ## Validation run and result
+
+- Phase 20 : commit `c6677ec` (`Add operational pre-service workflow`) poussé avec succès de `main` vers `origin/main` le 22 juillet 2026.
+- Phase 20 : lint, TypeScript, 18 tests web, build Next.js, 22 tests API et `git diff --check` réussis.
+- Phase 20 : parcours contrôlé à 1440 × 900 et 390 × 844, sans débordement horizontal ; valeurs vérifiées 325→339 groupe et 126→140 République.
 
 - `pnpm check` réussi après la refonte.
 - 6 tests web et 22 tests API réussis.
