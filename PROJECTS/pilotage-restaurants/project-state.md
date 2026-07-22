@@ -6,7 +6,7 @@ Publier un prototype démontrable de pilotage prédictif de trois restaurants fi
 
 ## Latest user ask
 
-Corriger l’arrivée publique qui peut encore ouvrir le détail République lorsqu’un ancien onglet ou favori conserve `?site=republique`.
+Moderniser l'application et la rendre plus réaliste sans la complexifier, en privilégiant une boucle opérationnelle complète plutôt qu'un nouveau redesign général.
 
 ## Agreed scope and approvals
 
@@ -30,6 +30,9 @@ Corriger l’arrivée publique qui peut encore ouvrir le détail République lor
 - Résultat de la phase 18 validé par l'utilisateur le 20 juillet 2026 ; commit et push vers `origin/main` autorisés, toujours sans `prototype-use-cases/`, après validation du message de commit.
 - Phase 19 documentaire validée le 20 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Update restaurant prototype study`, toujours sans `prototype-use-cases/`.
 - Correctif d’entrée post-phase 19 validé le 20 juillet 2026 ; commit et push vers `origin/main` autorisés avec le message `Fix restored cockpit landing`, toujours sans `prototype-use-cases/`.
+- Direction de phase 20 validée le 22 juillet 2026 : briefing initial, signal terrain validé, conséquences synchronisées, trois arbitrages et Journal ; le plan détaillé reste à valider avant développement.
+- Plan détaillé de phase 20 validé le 22 juillet 2026 ; développement local autorisé, avec validation du résultat obligatoire avant commit, push ou redéploiement.
+- Résultat de phase 20 validé le 22 juillet 2026 ; commit et push sur `origin/main` autorisés avec le message `Add operational pre-service workflow`, en excluant `prototype-use-cases/`.
 
 ## Decisions made
 
@@ -105,10 +108,13 @@ Corriger l’arrivée publique qui peut encore ouvrir le détail République lor
 - La page de spécifications est réalignée sur la navigation actuelle : Accueil groupe, détail d'un lieu, Décisions et Journal.
 - Correctif local après `11d102c` : `Specs PDF` devient safran plein, `Cas fictifs` turquoise plein et reste visible sur mobile ; seul `Réinitialiser` y est masqué.
 - Le résumé fournisseur replié est aligné sur les dimensions de `Consigne terrain et transmission` en desktop.
+- Phase 20 locale : briefing initial 08:00, signal terrain fictif contrôlé à 10:20, recalcul synchronisé 126→140 à République et 325→339 au groupe, trois arbitrages et progression de traitement.
+- Un graphique compact demande/capacité matérialise le pic de 19–20 h ; le Journal transforme son tableau en cartes lisibles sur mobile.
+- Le guide UX, les critères d'acceptation et le parcours de démonstration documentent le reset et les limites : transcription préenregistrée, aucune API ni action externe.
 
 ## Current state
 
-Les phases 13 à 19 et le correctif d’entrée sont publiés sur `origin/main`. Le correctif est enregistré dans `c1a7b28` (`Fix restored cockpit landing`) : une ouverture ou restauration complète neutralise les anciens filtres de lieu, tandis qu’un clic volontaire ouvre toujours le détail local.
+Les phases 13 à 19 et le correctif d’entrée sont publiés sur `origin/main`. La phase 20 est validée et prête à être commitée puis poussée sur `origin/main` ; `prototype-use-cases/` reste exclu.
 
 ## Touched files and artifacts
 
@@ -193,6 +199,6 @@ Les phases 13 à 19 et le correctif d’entrée sont publiés sur `origin/main`.
 
 ## Next actions
 
-1. Enregistrer et pousser ce suivi de publication sans ajouter `prototype-use-cases/`.
-2. Redéployer Render.
-3. Vérifier l’ancien lien filtré sur le site public.
+1. Construire uniquement la phase 20 et vérifier le parcours complet ordinateur/mobile.
+2. Mettre à jour le guide de démonstration et le reset.
+3. Faire valider le résultat avant commit, push et redéploiement ; ne jamais ajouter `prototype-use-cases/`.

@@ -1,5 +1,17 @@
 # Écrans et expérience utilisateur
 
+## Parcours actuel — du briefing au Journal
+
+L'application publique est organisée autour de trois destinations : `Accueil`, `Décisions` et `Journal`. L'Accueil commence par une vue groupe puis ouvre le détail de chaque établissement. Le cas fil rouge République suit une boucle unique :
+
+1. briefing initial fictif à 08:00 : 126 couverts, fourchette 120–132, confiance 76 % ;
+2. retour terrain fictif reçu à 10:20, sous forme de formulaire ou de transcription préremplie ;
+3. validation humaine obligatoire de trois faits : terrasse, groupe de 22, livraison de glaçons ;
+4. recalcul déterministe : 140 couverts, fourchette 135–146, confiance 84 % ;
+5. trois arbitrages maximum, puis inscription des décisions au Journal.
+
+Le formulaire et la note vocale sont deux présentations du même objet fictif. L'application ne capture aucun son et n'interprète aucun texte libre. `Réinitialiser` restaure l'état de 08:00.
+
 Le PDF de référence contient quatre maquettes conceptuelles. Le prototype doit reprendre leur logique, tout en restant implémentable et accessible.
 
 ## Navigation proposée
@@ -27,6 +39,8 @@ Comprendre la semaine et ouvrir le service prioritaire.
 - Facteurs principaux.
 - Trois décisions maximum.
 - Bouton d'ouverture du briefing.
+- Signal terrain à contrôler sur la vue groupe.
+- Dans le détail République, un graphique compact compare demande horaire et capacité d'équipe ; il ne constitue pas une nouvelle prévision.
 
 ### États
 
@@ -90,6 +104,7 @@ Prouver la valeur et comprendre quelles décisions sont réellement exécutables
 - Répartition par type de décision.
 - Dernières décisions.
 - Méthodes et hypothèses consultables.
+- Sur mobile, chaque ligne devient une carte verticale afin d'éviter un tableau horizontal tronqué.
 
 ## Écran 5 — détail et diagnostic
 
@@ -134,4 +149,3 @@ Prévoir un bouton ou sélecteur de scénario permettant de passer dans cet ordr
 4. déséquilibre multi-sites ;
 5. données insuffisantes et abstention ;
 6. résultat mensuel dans le registre du ROI.
-

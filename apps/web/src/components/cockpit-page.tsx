@@ -6,6 +6,7 @@ import { useDemo } from "@/demo/demo-context";
 import { getDemoHorizon, getDemoSiteView, type DemoWatchItem } from "@/demo/scenarios";
 import { Confidence, PageHeader, StateBanner } from "./ui";
 import { GroupHome } from "./group-home";
+import { ServiceLoadChart } from "./service-load-chart";
 
 const recommendationLabels: Record<string, string> = { staffing: "Équipe", preparation: "Préparation", purchase: "Achats" };
 function isService(value: string): value is "lunch" | "dinner" {
@@ -26,7 +27,7 @@ function OperationalWatch({ items }: { items: DemoWatchItem[] }) {
 }
 
 export function CockpitPage() {
-  const { scenario, activeSite, decisions, selectActiveSite } = useDemo();
+  const { scenario, activeSite, decisions, selectActiveSite, operationalStage, operationalImpact } = useDemo();
   const [viewMode, setViewMode] = useState<"group" | "site">("group");
   const [horizonService, setHorizonService] = useState<"lunch" | "dinner">("dinner");
   const siteView = getDemoSiteView(scenario, activeSite.id);
@@ -88,7 +89,7 @@ export function CockpitPage() {
     : <>
       <section className="executive-forecast" aria-labelledby="forecast-title">
         <div className="forecast-primary"><p className="eyebrow light">Dîner prévu</p><div><strong>{forecast.expectedCovers}</strong><span>couverts</span></div><p id="forecast-title">Fourchette {forecast.lowerCovers}–{forecast.upperCovers} · {forecast.expectedRevenue?.toLocaleString("fr-FR")} € de CA fictif</p></div>
-        <div className="forecast-change"><span>Depuis le dernier point</span><strong>{forecast.previousCovers} → {forecast.expectedCovers}</strong><p>{siteView.generated ? `Instantané local fictif pour ${activeSite.name}, cohérent avec la comparaison groupe.` : scenario.summary}</p><Confidence score={forecast.confidence} /></div>
+        <div className="forecast-change"><span>Depuis le dernier point</span><strong>{operationalImpact && activeSite.id === scenario.siteId ? operationalImpact.previousCovers : forecast.previousCovers} → {forecast.expectedCovers}</strong><p>{siteView.generated ? `Instantané local fictif pour ${activeSite.name}, cohérent avec la comparaison groupe.` : scenario.summary}</p><Confidence score={forecast.confidence} /></div>
         <Link className="button amber" href="/briefing">Traiter {siteView.recommendations.length} décisions</Link>
       </section>
 
@@ -99,6 +100,8 @@ export function CockpitPage() {
           <ol>{siteView.signals.map((signal) => <li key={signal.id}><span>{signal.label}</span><strong>{signal.current}</strong><small>{signal.impactCovers === null ? "Contrainte non chiffrée" : `${signal.impactCovers > 0 ? "+" : ""}${signal.impactCovers} couverts`} · {signal.updatedAt}</small></li>)}</ol>
         </div>
       </details>
+
+      {activeSite.id === scenario.siteId && <ServiceLoadChart stage={operationalStage} />}
     </>}
 
     <section className="week-horizon" aria-labelledby="week-title">

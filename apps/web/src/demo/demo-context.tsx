@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { defaultScenarioId, DemoDecision, type DemoSite, getDemoHistory, getDemoScenario, getDemoSiteView } from "./scenarios";
+import { deriveOperationalScenario, operationalImpact, type FieldSignalMode, type OperationalImpact, type OperationalStage } from "./operational-session";
 
 type DecisionStatus = DemoDecision["status"];
 export type SupplierStatus = "recommended" | "drafted" | "confirmed_demo";
@@ -12,6 +13,9 @@ type DemoContextValue = {
   decisions: DemoDecision[];
   storageError: string;
   supplierStatus: SupplierStatus;
+  operationalStage: OperationalStage;
+  operationalImpact: OperationalImpact | null;
+  applyFieldSignal: (mode: FieldSignalMode) => void;
   selectScenario: (id: string) => void;
   selectActiveSite: (id: DemoSite["id"]) => void;
   decide: (recommendationId: string, status: DecisionStatus, note?: string) => void;
@@ -28,9 +32,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [activeSiteId, setActiveSiteId] = useState<DemoSite["id"]>(getDemoScenario(defaultScenarioId).siteId);
   const [sessionDecisions, setSessionDecisions] = useState<DemoDecision[]>([]);
   const [supplierStates, setSupplierStates] = useState<Record<string, SupplierStatus>>({});
+  const [operationalStage, setOperationalStage] = useState<OperationalStage>("briefing");
   const storageError = "";
 
-  const scenario = getDemoScenario(scenarioId);
+  const baseScenario = getDemoScenario(scenarioId);
+  const scenario = useMemo(() => deriveOperationalScenario(baseScenario, operationalStage), [baseScenario, operationalStage]);
   const activeSite = scenario.sites.find((item) => item.id === activeSiteId) ?? scenario.sites.find((item) => item.id === scenario.siteId)!;
   const decisions = useMemo(() => [...getDemoHistory(scenario), ...sessionDecisions], [scenario, sessionDecisions]);
   const supplierStatus = scenario.supplierWorkflow ? supplierStates[scenario.supplierWorkflow.id] ?? "recommended" : "recommended";
@@ -45,10 +51,18 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     decisions,
     storageError,
     supplierStatus,
+    operationalStage,
+    operationalImpact: operationalStage === "field_update_applied" && scenario.id === defaultScenarioId ? operationalImpact : null,
+    applyFieldSignal: () => {
+      if (scenario.id !== defaultScenarioId) return;
+      setOperationalStage("field_update_applied");
+      setSessionDecisions((current) => current.filter((item) => item.scenarioId !== defaultScenarioId));
+    },
     selectScenario: (id) => {
       const nextScenario = getDemoScenario(id);
       setScenarioId(nextScenario.id);
       setActiveSiteId(nextScenario.siteId);
+      setOperationalStage(nextScenario.id === defaultScenarioId ? "briefing" : "field_update_applied");
     },
     selectActiveSite,
     decide: (recommendationId, status, note) => {
@@ -63,7 +77,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         title: recommendation?.title ?? `Transférer ${dispatch?.quantity} serveur de ${dispatch?.source} vers ${dispatch?.target}`,
         site: recommendation ? activeSite.name : "Groupe",
         status,
-        decidedAt: "2026-07-17T09:05:00+02:00",
+        decidedAt: operationalStage === "field_update_applied" ? "2026-07-17T10:24:00+02:00" : "2026-07-17T09:05:00+02:00",
         estimatedGain: status === "refused" ? 0 : Math.round((recommendation?.estimatedGain ?? dispatch?.estimatedGain ?? 0) * (status === "modified" ? 0.72 : 1)),
         deadline: recommendation?.deadline ?? dispatch?.deadline,
         note: note?.trim() || undefined,
@@ -118,8 +132,9 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       setActiveSiteId(getDemoScenario(defaultScenarioId).siteId);
       setSessionDecisions([]);
       setSupplierStates({});
+      setOperationalStage("briefing");
     },
-  }), [activeSite, decisions, scenario, selectActiveSite, storageError, supplierStatus]);
+  }), [activeSite, decisions, operationalStage, scenario, selectActiveSite, storageError, supplierStatus]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

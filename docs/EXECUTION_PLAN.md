@@ -1,7 +1,123 @@
 # Plan d’exécution du prototype
 
-Statut : **phase 19 publiée — correctif d’entrée validé, commit et push autorisés**
-Date de cadrage : 20 juillet 2026
+Statut : **phase 20 terminée localement — validation utilisateur attendue avant commit et push**
+Date de cadrage : 22 juillet 2026
+
+## Phase 20 — rendre la démonstration réellement opérationnelle
+
+### 1. Résultat de la phase
+
+L'application raconte un service continu plutôt qu'une suite d'écrans : briefing initial à 08:00, signal terrain fictif validé à 10:20, changement visible de la prévision et de la capacité, trois arbitrages maximum, puis traçabilité immédiate dans le Journal. L'accueil est plus compact, le détail gagne un seul visuel métier utile et le Journal devient lisible sans tableau horizontal sur mobile.
+
+### 2. Hypothèses et décisions
+
+- **Confirmé** : persona principale = responsable opérationnel d'un groupe fictif de trois restaurants ; résultat attendu = comprendre et arbitrer le service en moins de deux minutes.
+- **Confirmé** : aucune API réelle, donnée réelle, commande automatique, capture audio ou interprétation libre par un LLM.
+- **Décidé** : un seul cas fil rouge, déjà documenté dans le PDF : vendredi à République, note terrain à 10:20 avant le dîner.
+- **Décidé** : l'état initial reste à 08:00 avec 126 couverts prévus à République, fourchette 120-132, confiance 76 %, soit 325 couverts groupe.
+- **Décidé** : la note validée ajoute un groupe confirmé et la terrasse, puis signale la livraison de glaçons ; l'état dérivé passe à 140 couverts, fourchette 135-146, confiance 84 %, soit 339 couverts groupe.
+- **Décidé** : les trois priorités après validation restent préparation froide avant 11:00, glaçons avant 14:00 et renfort sur 19:00-22:00 avant 16:00.
+- **Décidé** : le formulaire structuré et la transcription vocale de démonstration produisent le même objet typé et déterministe. Une transcription doit être confirmée ; aucun texte arbitraire ne déclenche un calcul.
+- **Décidé** : le changement est local à la session et réversible par `Réinitialiser`. Un rechargement complet restaure le briefing initial, ce qui constitue la stratégie de reset de la démo.
+- **Décidé** : `Specs PDF` et `Cas fictifs` restent visibles conformément aux validations précédentes ; leur poids visuel peut être légèrement réduit mais ils ne sont ni supprimés ni cachés dans un menu.
+- **Écarté** : nouvel onglet, chatbot, photos de banque d'images, console de connecteurs, calendrier libre, vraie reconnaissance vocale et persistance multi-utilisateur.
+
+### 3. Architecture et flux
+
+```text
+fixture pré-service 08:00
+        + signal terrain typé 10:20
+        + fonction déterministe d'application
+                  |
+                  v
+scénario de session dérivé
+  - forecast / fourchette / confiance
+  - signaux et fraîcheur des sources
+  - capacité Salle / Cuisine / Bar
+  - 3 recommandations déterministes
+                  |
+        +---------+----------+
+        |                    |
+ Accueil + détail       Décisions
+        |                    |
+        +---------+----------+
+                  v
+          Journal de session
+```
+
+`operational-session.ts` contient le signal fictif, l'état avant/après et la transformation pure. `DemoProvider` reste l'unique propriétaire de l'état de session et expose le stade, l'impact et les actions. Les calculs numériques, les règles de recommandation et les textes explicatifs restent dans des structures distinctes. Aucun appel réseau n'est ajouté.
+
+### 4. Fichiers concernés
+
+- `apps/web/src/demo/operational-session.ts` : nouveau contrat du signal terrain, fixture 10:20, courbe horaire et transformation déterministe du scénario.
+- `apps/web/src/demo/demo-context.tsx` : stade de session, validation du signal, impact courant et reset.
+- `apps/web/src/demo/scenarios.ts` : types strictement nécessaires au scénario dérivé, sans réécrire les six cas isolés.
+- `apps/web/src/components/field-signal-panel.tsx` : panneau formulaire/transcription, confirmation humaine et résumé de l'impact.
+- `apps/web/src/components/service-load-chart.tsx` : demande horaire contre capacité, unique nouveau graphique métier.
+- `apps/web/src/components/group-home.tsx` et `cockpit-page.tsx` : accueil compact, chronologie et changement avant/après.
+- `apps/web/src/components/briefing-client.tsx` : progression des arbitrages et conséquences visibles après chaque décision.
+- `apps/web/src/components/roi-client.tsx` : historique en cartes sur mobile, tableau conservé sur ordinateur.
+- `apps/web/src/app/globals.css` : responsive, densité, états et micro-interactions sobres.
+- `apps/web/src/app/page.test.tsx` : invariants et parcours fil rouge.
+- `docs/05_UX_SCREENS.md`, `docs/06_ACCEPTANCE_TESTS.md`, `docs/10_INTEGRATION_DEMO.md` : écrans, acceptation, talk track et reset.
+- `PROJECTS/pilotage-restaurants/project-state.md` : état et validation de la phase.
+
+### 5. Étapes d'implémentation
+
+1. Écrire le contrat typé et les fixtures avant/après, avec une fonction pure testable et sans mutation du scénario source.
+2. Ajouter l'état de session au provider, le reset et le résumé d'impact réconciliant exactement les deltas.
+3. Installer sur l'accueil le signal terrain en attente, puis la chronologie 08:00 → 10:20 → prochaine échéance.
+4. Mettre à jour le détail local avec le changement expliqué et la courbe horaire demande/capacité.
+5. Relier Décisions au nouveau stade, afficher la progression 0/3 à 3/3 et conserver modification/refus/motif/transmission.
+6. Transformer le Journal mobile en cartes tout en conservant un tableau accessible sur ordinateur.
+7. Réduire les blocs disproportionnés et ajouter seulement les retours nécessaires : confirmation, changement de statut et focus visible.
+8. Mettre à jour le guide de démo : préparation, parcours de moins de cinq minutes, reset, scénario de secours et limites à annoncer.
+
+### 6. Vérifications
+
+Tests à ajouter dans `page.test.tsx` :
+
+- le reset affiche 126 couverts à République et 325 au groupe ;
+- une note non confirmée ne modifie rien ;
+- la validation passe à 140/339, réconcilie +14 couverts, la fourchette et la confiance ;
+- les besoins Salle et Bar changent sans fabriquer un planning complet ;
+- exactement trois priorités exécutables apparaissent avec leurs échéances ;
+- validation, modification motivée et refus mettent à jour la progression et le Journal ;
+- le changement de lieu ne propage pas le signal de République à Liberté ou Gare ;
+- `Réinitialiser` restaure l'état initial ;
+- les six cas fictifs restent isolés et l'abstention continue de fonctionner.
+
+Commandes :
+
+```bash
+pnpm check:web
+pnpm check
+git diff --check
+```
+
+Parcours navigateur : 1440 x 900 et 390 x 844, accueil → validation du signal → détail République → trois décisions → transmission préparée → Journal → reset. Vérifier absence de débordement, navigation clavier, focus, messages de statut et cohérence des nombres à chaque étape.
+
+### 7. Risques et solutions de repli
+
+- **Données incohérentes** : une seule transformation pure dérive tous les nombres ; tests de réconciliation groupe/site et avant/après.
+- **Fuite temporelle** : le signal porte 10:20 et seules les données connues à cette heure sont appliquées ; les échéances restent ultérieures.
+- **Prévision trop précise** : conserver fourchette et confiance, afficher +14 comme delta de fixture et non comme vérité terrain.
+- **API simulée irréaliste** : afficher source, dernière synchronisation et statut simulé ; aucun faux appel ni spinner réseau théâtral.
+- **Règle inexécutable** : après 11:00, 14:00 ou 16:00, l'action correspondante reste visible mais bloquée selon la règle existante.
+- **Interface trompeuse** : la note vocale est une transcription préenregistrée de démonstration ; validation humaine et mention fictive restent visibles.
+- **Texte libre incohérent avec les chiffres** : aucune saisie arbitraire n'est interprétée ; repli sur le formulaire structuré si le mode transcription ajoute de la confusion.
+- **Surcharge mobile** : chronologie compacte, outils secondaires repliés, cartes du Journal et une seule visualisation ; supprimer le graphique avant d'ajouter du défilement excessif.
+- **Régression des scénarios** : la transformation n'agit que sur le cas fil rouge de la session principale ; la bibliothèque isolée reste inchangée.
+
+### 8. Critères de sortie
+
+- Une personne comprend en moins de deux minutes ce qui a changé, pourquoi et avant quelle heure agir.
+- Le même signal met à jour sans contradiction Accueil, détail, Décisions et Journal.
+- Trois décisions maximum, chacune avec confiance, responsable implicite ou explicite, échéance, gain/risque fictif et statut.
+- La prévision numérique, la règle déterministe et l'explication restent séparées et testables.
+- Aucun appel externe, aucune action irréversible et aucune donnée non fictive.
+- Le parcours fonctionne au clavier, sur ordinateur et à 390 px sans débordement global.
+- `pnpm check` réussit et le guide de démonstration permet un reset fiable avant chaque présentation.
 
 ## Correctif post-phase 19 — neutraliser les anciens liens filtrés
 

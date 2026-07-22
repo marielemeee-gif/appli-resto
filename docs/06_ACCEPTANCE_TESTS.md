@@ -104,6 +104,30 @@ Une démonstration est acceptée si elle permet en moins de dix minutes de :
 6. provoquer une abstention ;
 7. retrouver la décision dans le registre du ROI.
 
+## A16 — signal terrain validé
+
+**Étant donné** le briefing initial République à 08:00
+**Quand** la note terrain de 10:20 n'est pas confirmée
+**Alors** la prévision reste à 126 couverts, le groupe à 325 et une seule consigne prudente est affichée.
+
+**Quand** le responsable relit puis valide la note
+**Alors** République passe à 140 couverts, le groupe à 339, la fourchette devient 135–146, la confiance 84 % et trois décisions maximum apparaissent.
+
+## A17 — cohérence de session et reset
+
+**Étant donné** le signal terrain validé et des décisions prises
+**Quand** l'utilisateur navigue entre Accueil, Décisions et Journal
+**Alors** les mêmes chiffres et statuts sont conservés sans appel réseau.
+
+**Quand** il choisit `Réinitialiser` ou recharge entièrement la démonstration
+**Alors** l'état initial fictif de 08:00 est restauré. Les autres établissements et les six exemples isolés ne sont pas modifiés par le signal République.
+
+## A18 — Journal mobile
+
+**Étant donné** une largeur de 390 px
+**Quand** le Journal contient plusieurs décisions
+**Alors** les champs date, type, décision, responsable, statut et gain estimé sont lisibles sous forme de cartes sans défilement horizontal global.
+
 ## Contrôles techniques attendus
 
 Codex doit préciser les commandes exactes après initialisation, mais le dépôt devra comporter :
@@ -116,4 +140,3 @@ Codex doit préciser les commandes exactes après initialisation, mais le dépô
 - lint et formatage ;
 - tests des parcours critiques ;
 - vérification visuelle des quatre écrans principaux.
-

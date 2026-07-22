@@ -1,5 +1,21 @@
 # Phase 6 — intégration et démonstration
 
+## Parcours public actuel — moins de cinq minutes
+
+Ce parcours de session est entièrement fictif et fonctionne dans le navigateur, sans dépendre d'une API externe :
+
+1. Ouvrir `/cockpit` et lire le briefing groupe initial : 325 couverts, dont 126 à République.
+2. Dans `Nouveau · 10:20`, choisir `Note vocale` ou `Formulaire`, contrôler les trois faits puis cocher la confirmation humaine.
+3. Cliquer `Valider et actualiser le briefing` : le groupe passe à 339, République à 140 et la confiance à 84 %.
+4. Ouvrir République pour voir le pic demande/capacité à 19–20 h et les facteurs datés.
+5. Ouvrir `/briefing`, traiter tout ou partie des trois arbitrages, éventuellement avec modification ou refus motivé.
+6. Préparer le message terrain : l'utilisateur choisit ensuite SMS ou WhatsApp ; aucun destinataire ni envoi n'est automatisé.
+7. Ouvrir `/valeur` pour retrouver les statuts et gains estimés fictifs. Le gain observé reste volontairement vide.
+
+Pour rejouer la démonstration, utiliser `Réinitialiser` sur ordinateur ou recharger complètement la page sur mobile. Le scénario revient au briefing initial de 08:00. Si le signal terrain ne doit pas être joué, les six cas fictifs restent consultables dans leur fenêtre sans modifier la session.
+
+À annoncer pendant la démonstration : la note vocale est une transcription préenregistrée, les systèmes tiers sont simulés, les calculs sont déterministes, et aucune commande fournisseur ni communication n'est envoyée automatiquement.
+
 ## Résultat
 
 Les cinq écrans consomment désormais l’API FastAPI locale via `NEXT_PUBLIC_API_URL`. Les fixtures visuelles de phase 5 ne servent plus de repli silencieux : chargement, erreur API, abstention et absence de décision sont affichés explicitement.

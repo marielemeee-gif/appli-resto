@@ -4,6 +4,7 @@ import { useDemo } from "@/demo/demo-context";
 import { getDemoHorizon, getDemoSiteView, type DemoSite } from "@/demo/scenarios";
 import { Confidence, PageHeader } from "./ui";
 import { SiteTrend } from "./site-trend";
+import { FieldSignalPanel } from "./field-signal-panel";
 
 const sitePresentation: Record<DemoSite["id"], { tone: "teal" | "amber" | "coral"; kicker: string; icon: React.ReactNode }> = {
   republique: {
@@ -24,7 +25,7 @@ const sitePresentation: Record<DemoSite["id"], { tone: "teal" | "amber" | "coral
 };
 
 export function GroupHome({ onOpenSite }: { onOpenSite: (siteId: DemoSite["id"]) => void }) {
-  const { scenario, decisions, decide } = useDemo();
+  const { scenario, decisions, decide, operationalStage } = useDemo();
   const horizon = getDemoHorizon(scenario.sites);
   const siteViews = scenario.sites.map((site) => getDemoSiteView(scenario, site.id));
   const reliableViews = siteViews.filter((view) => view.forecast.expectedCovers !== null);
@@ -38,10 +39,12 @@ export function GroupHome({ onOpenSite }: { onOpenSite: (siteId: DemoSite["id"])
   return <>
     <PageHeader eyebrow={`Accueil groupe · ${scenario.moment}`} title="Le groupe en un coup d’œil" description={`${scenario.name} · vendredi 17 juillet · dîner · données fictives arrêtées à ${scenario.asOf}.`} showSiteSelect={false} />
 
+    <FieldSignalPanel />
+
     <section className="group-hero" aria-labelledby="group-pulse-title">
       <div className="group-hero-lead">
-        <span className="group-live"><i /> Situation du dîner</span>
-        <h2 id="group-pulse-title">{tenseSites.length ? `${tenseSites.length} lieu sous tension, deux plans stables` : "Les trois lieux sont sous contrôle"}</h2>
+        <span className="group-live"><i /> {operationalStage === "briefing" ? "Briefing initial" : "Situation actualisée"}</span>
+        <h2 id="group-pulse-title">{operationalStage === "briefing" ? "Un retour terrain reste à arbitrer" : tenseSites.length ? `${tenseSites.length} lieu sous tension, deux plans stables` : "Les trois lieux sont sous contrôle"}</h2>
         <p>{scenario.differentiator}</p>
       </div>
       <div className="group-metrics" aria-label="Chiffres consolidés du groupe">

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useDemo } from "@/demo/demo-context";
 import { getDemoSiteView, isDeadlineExpired } from "@/demo/scenarios";
@@ -8,7 +9,7 @@ import { Confidence, PageHeader, StateBanner } from "./ui";
 const statusLabels = { accepted: "Validée", modified: "Modifiée", refused: "Refusée" };
 
 export function BriefingClient() {
-  const { scenario, activeSite, decisions, decide, supplierStatus, prepareSupplierDraft, confirmSupplierDraft, addCustomDecision } = useDemo();
+  const { scenario, activeSite, decisions, decide, supplierStatus, prepareSupplierDraft, confirmSupplierDraft, addCustomDecision, operationalStage } = useDemo();
   const [customTitle, setCustomTitle] = useState("");
   const [customOwner, setCustomOwner] = useState("Responsable bar");
   const [customDeadline, setCustomDeadline] = useState("16:00");
@@ -20,7 +21,8 @@ export function BriefingClient() {
   const forecast = siteView.forecast;
   const scenarioDecisions = decisions.filter((item) => item.scenarioId === scenario.id && (item.site === activeSite.name || item.site === "Groupe"));
   const decisionsToday = scenarioDecisions.filter((item) => item.decidedAt.startsWith("2026-07-17"));
-  const workflow = activeSite.id === scenario.siteId ? scenario.supplierWorkflow : undefined;
+  const decidedRecommendationCount = siteView.recommendations.filter((recommendation) => scenarioDecisions.some((item) => item.recommendationId === recommendation.id)).length;
+  const workflow = activeSite.id === scenario.siteId && operationalStage === "field_update_applied" ? scenario.supplierWorkflow : undefined;
   const workflowTotal = workflow?.items.reduce((sum, item) => sum + item.requestedQuantity * item.unitPrice, 0) ?? 0;
   const decisionLines = decisionsToday.map((item) => `- ${item.title}${item.owner ? ` · ${item.owner}` : ""}${item.deadline ? ` · avant ${item.deadline}` : ""}${item.note ? ` · ${item.note}` : ""}`);
   const shareMessage = [`Briefing fictif · ${activeSite.name} · dîner du 17 juillet`, `${forecast.expectedCovers ?? "Prévision suspendue"}${forecast.expectedCovers !== null ? ` couverts prévus (${forecast.lowerCovers}–${forecast.upperCovers})` : ""}`, "", "Décisions retenues", ...decisionLines, "", "Message préparé dans Prototype App."].join("\n");
@@ -42,7 +44,9 @@ export function BriefingClient() {
   }
 
   return <>
-    <PageHeader eyebrow="Décisions du service" title={forecast.expectedCovers === null ? "Corriger les données avant d’agir" : `${siteView.recommendations.length} décisions avant le dîner`} description={`${activeSite.name} · ici, on arbitre et on transmet. Le détail du calcul reste dans le Tableau de bord.`} site={activeSite.name} />
+    <PageHeader eyebrow="Décisions du service" title={forecast.expectedCovers === null ? "Corriger les données avant d’agir" : `${siteView.recommendations.length} décision${siteView.recommendations.length > 1 ? "s" : ""} avant le dîner`} description={`${activeSite.name} · ici, on arbitre et on transmet. Le détail du calcul reste dans le Tableau de bord.`} site={activeSite.name} />
+
+    {activeSite.id === scenario.siteId && (operationalStage === "briefing" ? <section className="briefing-stage pending"><div><span>1</span><div><strong>Retour terrain en attente de validation</strong><p>Le plan reste sur l’hypothèse de 08:00 tant que la note du manager n’est pas contrôlée.</p></div></div><Link className="button primary" href="/cockpit">Revenir à l’accueil</Link></section> : <section className="briefing-stage applied"><div><span>✓</span><div><strong>Briefing actualisé à 10:20</strong><p>Terrasse, groupe de 22 et livraison de glaçons ont été intégrés après validation humaine.</p></div></div><small>126 → 140 couverts</small></section>)}
 
     <details className="systems-details">
       <summary><span><strong>Sources actualisées · {siteView.systems.filter((system) => system.status === "fresh").length}/{siteView.systems.length}</strong><small>Preuves fictives et heures de synchronisation</small></span><em>Voir le détail</em></summary>
@@ -57,7 +61,7 @@ export function BriefingClient() {
       </section>
 
       <section className="action-sheet decision-worklist" aria-labelledby="action-title">
-        <div><p className="eyebrow">Plan du service</p><h2 id="action-title">Décider avant les échéances</h2></div>
+        <div className="action-sheet-heading"><div><p className="eyebrow">Plan du service</p><h2 id="action-title">Décider avant les échéances</h2></div><span>{decidedRecommendationCount}/{siteView.recommendations.length} traitée{decidedRecommendationCount > 1 ? "s" : ""}</span></div>
         {siteView.recommendations.length > 1 && <small className="mobile-swipe-hint">Glissez pour parcourir les {siteView.recommendations.length} priorités <span aria-hidden="true">→</span></small>}
         <div className={`action-stack count-${siteView.recommendations.length}`}>{siteView.recommendations.map((recommendation, index) => {
           const decision = scenarioDecisions.find((item) => item.recommendationId === recommendation.id);

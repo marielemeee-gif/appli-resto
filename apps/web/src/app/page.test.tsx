@@ -4,12 +4,18 @@ import { DemoProvider } from "@/demo/demo-context";
 import { demoScenarios, getDemoHistory, getDemoSiteView } from "@/demo/scenarios";
 import { BriefingClient } from "@/components/briefing-client";
 import { RoiClient } from "@/components/roi-client";
+import { FieldSignalPanel } from "@/components/field-signal-panel";
 import BriefingPage from "./briefing/page";
 import Home from "./page";
 import ValeurPage from "./valeur/page";
 
 function renderDemo(ui: React.ReactNode) {
   return render(<DemoProvider>{ui}</DemoProvider>);
+}
+
+function validateFieldSignal() {
+  fireEvent.click(screen.getByLabelText("Transcription relue et conforme"));
+  fireEvent.click(screen.getByRole("button", { name: "Valider et actualiser le briefing" }));
 }
 
 afterEach(() => {
@@ -89,24 +95,36 @@ describe("Application de démonstration", () => {
     expect(within(navigation).getByRole("link", { name: "Journal" })).toBeInTheDocument();
     expect(navigation.querySelectorAll(".nav-icon")).toHaveLength(3);
     expect(screen.queryByRole("link", { name: "Explications" })).not.toBeInTheDocument();
+    expect(screen.getByText("325")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Valider et actualiser le briefing" })).toBeDisabled();
+    validateFieldSignal();
     expect(screen.getByText("339")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Le briefing a été recalculé" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Voir le détail de République" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Voir le détail de Liberté" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Voir le détail de Gare" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Réinitialiser" }));
+    expect(screen.getByText("325")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Valider le retour du manager" })).toBeInTheDocument();
   });
 
-  it.each([
-    [BriefingPage, "3 décisions avant le dîner"],
-    [ValeurPage, "Décisions prises"],
-  ])("rend un écran métier cohérent", (Page, title) => {
-    renderDemo(<Page />);
-    expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
+  it("rend le Journal métier", () => {
+    renderDemo(<ValeurPage />);
+    expect(screen.getByRole("heading", { level: 1, name: "Décisions prises" })).toBeInTheDocument();
+  });
+
+  it("actualise les décisions après validation du signal terrain", () => {
+    renderDemo(<><FieldSignalPanel /><BriefingPage /></>);
+    expect(screen.getByRole("heading", { level: 1, name: "1 décision avant le dîner" })).toBeInTheDocument();
+    validateFieldSignal();
+    expect(screen.getByRole("heading", { level: 1, name: "3 décisions avant le dîner" })).toBeInTheDocument();
+    expect(screen.getByText("Briefing actualisé à 10:20")).toBeInTheDocument();
   });
 
   it("ouvre un exemple fictif sans modifier le tableau de bord", () => {
     renderDemo(<Home />);
     const republique = screen.getByRole("heading", { name: "République" }).closest("article");
-    expect(within(republique!).getByText("140")).toBeInTheDocument();
+    expect(within(republique!).getByText("126")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Cas fictifs" }));
     expect(screen.getByRole("dialog", { name: "Explorer un exemple fictif" })).toBeInTheDocument();
     expect(screen.getByText(/L’application, ses chiffres et vos décisions ne seront pas modifiés/i)).toBeInTheDocument();
@@ -119,7 +137,7 @@ describe("Application de démonstration", () => {
     fireEvent.click(screen.getByRole("button", { name: "Fermer l’exemple" }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(within(republique!).getByText("140")).toBeInTheDocument();
+    expect(within(republique!).getByText("126")).toBeInTheDocument();
   });
 
   it("permet de consulter sept jours sans alourdir le scénario actif", () => {
@@ -130,10 +148,10 @@ describe("Application de démonstration", () => {
     expect(within(horizon!).getAllByRole("article")).toHaveLength(7);
     expect(screen.getByLabelText("Établissement actif")).toHaveValue("republique");
     expect(within(horizon!).getByLabelText("Service")).toHaveValue("dinner");
-    expect(within(horizon!).getAllByText("140").length).toBeGreaterThan(0);
+    expect(within(horizon!).getAllByText("126").length).toBeGreaterThan(0);
 
     fireEvent.change(within(horizon!).getByLabelText("Service"), { target: { value: "lunch" } });
-    expect(within(horizon!).getAllByText("87").length).toBeGreaterThan(0);
+    expect(within(horizon!).getAllByText("78").length).toBeGreaterThan(0);
   });
 
   it("partage une vue Liberté complète et ses décisions propres", () => {
@@ -160,7 +178,8 @@ describe("Application de démonstration", () => {
   });
 
   it("une décision met à jour l'écran et le Journal", () => {
-    const view = renderDemo(<BriefingPage />);
+    const view = renderDemo(<><FieldSignalPanel /><BriefingPage /></>);
+    validateFieldSignal();
     expect(screen.getByRole("heading", { name: "Équipe du service" })).toBeInTheDocument();
     expect(screen.getByText("7 / 8")).toBeInTheDocument();
     expect(screen.getByText("1 / 2")).toBeInTheDocument();
@@ -177,6 +196,7 @@ describe("Application de démonstration", () => {
 
   it("transforme l’accueil en arbitrage groupe compact même sans transfert", () => {
     renderDemo(<Home />);
+    validateFieldSignal();
     expect(screen.getByText("339")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Où regarder en premier ?" })).toBeInTheDocument();
     expect(screen.getAllByText("Préparer 24 portions froides pour la terrasse")).toHaveLength(1);
@@ -216,7 +236,8 @@ describe("Application de démonstration", () => {
   });
 
   it("exige un motif pour modifier une recommandation et le journalise", () => {
-    renderDemo(<><BriefingClient /><RoiClient /></>);
+    renderDemo(<><FieldSignalPanel /><BriefingClient /><RoiClient /></>);
+    validateFieldSignal();
     const action = screen.getByRole("heading", { name: "Préparer 24 portions froides pour la terrasse" }).closest("article");
     fireEvent.click(within(action!).getByRole("button", { name: "Modifier" }));
     fireEvent.change(within(action!).getByLabelText("Décrivez la modification"), { target: { value: "Réduire le lot à 16 portions" } });
@@ -245,7 +266,7 @@ describe("Application de démonstration", () => {
 
     fireEvent.click(within(dialog).getByRole("button", { name: "Fermer l’exemple" }));
     const republique = screen.getByRole("heading", { name: "République" }).closest("article");
-    expect(within(republique!).getByText("140")).toBeInTheDocument();
+    expect(within(republique!).getByText("126")).toBeInTheDocument();
   });
 
   it("ajoute une décision terrain et prépare un partage sans envoi automatique", () => {
@@ -264,7 +285,8 @@ describe("Application de démonstration", () => {
   });
 
   it("prépare puis confirme humainement un brouillon fournisseur fictif", () => {
-    renderDemo(<><BriefingClient /><RoiClient /></>);
+    renderDemo(<><FieldSignalPanel /><BriefingClient /><RoiClient /></>);
+    validateFieldSignal();
     expect(screen.getByText("Fût blonde locale")).toBeInTheDocument();
     expect(screen.getByText("Glaçons alimentaires")).toBeInTheDocument();
     expect(screen.getByText("240 €")).toBeInTheDocument();
